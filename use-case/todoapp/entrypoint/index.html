@@ -3,11 +3,10 @@
 <html lang="" >
     <head>
         <meta charset="UTF-8">
-        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>エントリポイント · JavaScriptの入門書 #jsprimer</title>
+        <title>エントリーポイント · JavaScript Primer #jsprimer</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="description" content="">
-        <meta name="generator" content="GitBook 3.2.3">
+        <meta name="description" content="HTMLとJavaScriptモジュールを使い、アプリケーションで一番最初に呼び出されるエントリーポイントを作成します。">
+        <meta name="generator" content="HonKit 6.0.2">
         
         
         
@@ -25,11 +24,11 @@
                 
             
                 
-                <link rel="stylesheet" href="../../../gitbook/gitbook-plugin-highlight/website.css">
+                <link rel="stylesheet" href="../../../gitbook/@honkit/honkit-plugin-highlight/website.css">
                 
             
                 
-                <link rel="stylesheet" href="../../../gitbook/gitbook-plugin-fontsettings/website.css">
+                <link rel="stylesheet" href="../../../gitbook/@honkit/honkit-plugin-fontsettings/website.css">
                 
             
         
@@ -70,11 +69,77 @@
 
     <link rel="canonical" href="https://jsprimer.net/use-case/todoapp/entrypoint/">
 
-<meta name="google-site-verification" content="bMotEbgYwkzA3k4PkuyK_NUdz0bKh-Phz0oUwNmRSVo" />
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DWY0DLHWB6"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag("js", new Date());
+
+    gtag("config", "G-DWY0DLHWB6");
+</script>
+<script type="module">
+    // コンソールUIでコード実行したらイベントとして送信する
+    const onExecuteCode = (scriptType) => {
+        gtag("event", "execute_code", {
+            "event_category": "console",
+            "event_label": "execute_code",
+            "script_type": scriptType || "unknown"
+        });
+    };
+    let observer;
+    const observeEvalEvent = () => {
+        if (observer) {
+            observer.disconnect();
+        }
+        const callback = function(mutationsList) {
+            for (const mutation of mutationsList) {
+                const mirrorConsole = Array.from(mutation.addedNodes).find(node => Boolean(node.dataset.mirrorConsole));
+                if (mirrorConsole) {
+                    return onExecuteCode(mirrorConsole.dataset.mirrorConsole);
+                }
+            }
+        };
+        observer = new MutationObserver(callback);
+        observer.observe(document.body, { childList: true });
+    };
+    const eventMap = new WeakMap();
+    // 問題を報告ボタンを押したらイベントとして送信する
+    const onClickIssueReport = () => {
+        console.log("click_issue_report");
+        gtag("event", "click_issue_report", {
+            "event_category": "contribution",
+            "event_label": "click_issue_report"
+        });
+    };
+    const observeIssueReport = () => {
+        const targetButton = document.querySelector(".gitbook-plugin-github-issue-feedback");
+        // すでにイベントが登録されていたら何もしない
+        if (eventMap.has(targetButton)) {
+            return;
+        }
+        if (targetButton) {
+            targetButton.addEventListener("click", onClickIssueReport);
+            eventMap.set(targetButton, onClickIssueReport);
+        }
+    };
+    window.addEventListener("DOMContentLoaded", function() {
+        gitbook.events.on("page.change", function() {
+            observeEvalEvent();
+            observeIssueReport();
+        });
+    });
+
+</script>
+<meta name="google-site-verification" content="bMotEbgYwkzA3k4PkuyK_NUdz0bKh-Phz0oUwNmRSVo"/>
 <style>
     /*
-    Disable antialias
-    */
+     * Disable antialias
+     */
     * {
         -webkit-font-smoothing: initial !important
     }
@@ -85,7 +150,7 @@
     }
 
     /* deny access chapter */
-    .summary li.chapter>span {
+    .summary li.chapter > span {
         cursor: not-allowed;
         opacity: .3;
     }
@@ -110,38 +175,88 @@
         line-height: inherit;
         margin-bottom: 0px !important;
     }
+
+    /* Markdown */
+    /* Support horizon scroll */
+    /* https://stackoverflow.com/questions/17770257/scrolling-tables-horizontally-without-wrapping-them-in-div */
+    .markdown-section table {
+        max-width: 100%;
+        overflow-x: auto;
+        display: block;
+    }
+    .markdown-section sup,
+    .markdown-section sub {
+        font-size: 75%;
+    }
+
+    .book_footer {
+        text-align: center;
+        color: #000000;
+        background: #ddd;
+        font-size: 16px;
+        margin-top: 16px;
+        padding: 16px;
+    }
+
+    /* github-issue-feedback */
+    .gitbook-plugin-github-issue-feedback {
+        background-color: #333;
+        color: #fff;
+        opacity: 0.8;
+        padding: 4px;
+        margin-right: 24px;
+        margin-bottom: 4px;
+        border-radius: 6px;
+    }
+
+    .gitbook-plugin-github-issue-feedback:hover {
+        opacity: 1;
+    }
+
+    /* Hide footer on mobile */
+    /* Use navigation width */
+    @media (max-width: 1240px) {
+        .book_footer {
+            display: none;
+        }
+    }
+
+    .navigation {
+        min-width: 50px;
+    }
+
+    @media (min-width: 1240px) {
+        .honkit-plugin-sandpack {
+            width: calc(100% + 180px);
+            margin: 0 0 1em -90px;
+        }
+    }
+
+    .honkit-plugin-sandpack, .honkit-plugin-sandpack--buttonContainer {
+        margin-bottom: 1em;
+    }
+
 </style>
 <meta name="theme-color" content="#ffffff">
 <link rel="manifest" href="../../../manifest.json">
-<script src="https://unpkg.com/service-worker-updatefound-refresh-dialog@1.1.0/dist/service-worker-updatefound-refresh-dialog.umd.js"></script>
-<script>
-    if ("serviceWorker" in navigator) {
-        const isLocalhost = Boolean(
-            // preview
-            /netlify.com/.test(window.location.hostname) ||
-            // local
-            window.location.hostname === "localhost" ||
-            // [::1] is the IPv6 localhost address.
-            window.location.hostname === "[::1]" ||
-            // 127.0.0.1/8 is considered localhost for IPv4.
-            window.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/)
-        );
-        if (!isLocalhost) {
-            window.addEventListener("load", () => {
-                navigator.serviceWorker.register("../../../sw.js")
-                    .then(function(registration) {
-                        serviceWorkerUpdatefoundRefreshDialog.register(registration);
-                    });
-            });
+<script defer async>
+    // unregister old service worker(remove workbox)
+    // https://github.com/asciidwango/js-primer/pull/1701
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for (const registration of registrations) {
+            registration.unregister();
         }
-    }
+    }).catch(function(err) {
+        console.error(new Error("Can not getRegistrations", {
+            cause: err
+        }));
+    });
 </script>
-
 
     </head>
     <body>
         
-<div class="book">
+<div class="book honkit-cloak">
     <div class="book-summary">
         
             
@@ -173,7 +288,47 @@
             
         </li>
     
-        <li class="chapter " data-level="1.2" data-path="../../../intro/preparation/">
+        <li class="chapter " data-level="1.2" data-path="../../../intro/">
+            
+                <a href="../../../intro/">
+            
+                    
+                    はじめに
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="../../../intro/authors/">
+            
+                <a href="../../../intro/authors/">
+            
+                    
+                    著者紹介
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="../../../intro/sponsors/">
+            
+                <a href="../../../intro/sponsors/">
+            
+                    
+                    JavaScript Primerスポンサー
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="../../../intro/preparation/">
             
                 <a href="../../../intro/preparation/">
             
@@ -186,20 +341,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.3" data-path="../../../intro/goal/">
-            
-                <a href="../../../intro/goal/">
-            
-                    
-                    本書の目的
-            
-                </a>
-            
-
-            
-        </li>
-    
-        <li class="chapter " data-level="1.4" data-path="../../../intro/feedback/">
+        <li class="chapter " data-level="1.2.4" data-path="../../../intro/feedback/">
             
                 <a href="../../../intro/feedback/">
             
@@ -212,12 +354,17 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5" data-path="../../../basic/">
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../../../basic/">
             
                 <a href="../../../basic/">
             
                     
-                    第1部: 基本文法
+                    第一部: 基本文法
             
                 </a>
             
@@ -226,7 +373,7 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="1.5.1" data-path="../../../basic/introduction/">
+        <li class="chapter " data-level="1.3.1" data-path="../../../basic/introduction/">
             
                 <a href="../../../basic/introduction/">
             
@@ -239,7 +386,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.2" data-path="../../../basic/comments/">
+        <li class="chapter " data-level="1.3.2" data-path="../../../basic/comments/">
             
                 <a href="../../../basic/comments/">
             
@@ -252,7 +399,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.3" data-path="../../../basic/variables/">
+        <li class="chapter " data-level="1.3.3" data-path="../../../basic/variables/">
             
                 <a href="../../../basic/variables/">
             
@@ -265,7 +412,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.4" data-path="../../../basic/read-eval-print/">
+        <li class="chapter " data-level="1.3.4" data-path="../../../basic/read-eval-print/">
             
                 <a href="../../../basic/read-eval-print/">
             
@@ -278,7 +425,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.5" data-path="../../../basic/data-type/">
+        <li class="chapter " data-level="1.3.5" data-path="../../../basic/data-type/">
             
                 <a href="../../../basic/data-type/">
             
@@ -291,7 +438,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.6" data-path="../../../basic/operator/">
+        <li class="chapter " data-level="1.3.6" data-path="../../../basic/operator/">
             
                 <a href="../../../basic/operator/">
             
@@ -304,7 +451,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.7" data-path="../../../basic/implicit-coercion/">
+        <li class="chapter " data-level="1.3.7" data-path="../../../basic/implicit-coercion/">
             
                 <a href="../../../basic/implicit-coercion/">
             
@@ -317,7 +464,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.8" data-path="../../../basic/function-declaration/">
+        <li class="chapter " data-level="1.3.8" data-path="../../../basic/function-declaration/">
             
                 <a href="../../../basic/function-declaration/">
             
@@ -330,7 +477,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.9" data-path="../../../basic/statement-expression/">
+        <li class="chapter " data-level="1.3.9" data-path="../../../basic/statement-expression/">
             
                 <a href="../../../basic/statement-expression/">
             
@@ -343,7 +490,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.10" data-path="../../../basic/condition/">
+        <li class="chapter " data-level="1.3.10" data-path="../../../basic/condition/">
             
                 <a href="../../../basic/condition/">
             
@@ -356,7 +503,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.11" data-path="../../../basic/loop/">
+        <li class="chapter " data-level="1.3.11" data-path="../../../basic/loop/">
             
                 <a href="../../../basic/loop/">
             
@@ -369,7 +516,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.12" data-path="../../../basic/object/">
+        <li class="chapter " data-level="1.3.12" data-path="../../../basic/object/">
             
                 <a href="../../../basic/object/">
             
@@ -382,7 +529,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.13" data-path="../../../basic/prototype-object/">
+        <li class="chapter " data-level="1.3.13" data-path="../../../basic/prototype-object/">
             
                 <a href="../../../basic/prototype-object/">
             
@@ -395,7 +542,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.14" data-path="../../../basic/array/">
+        <li class="chapter " data-level="1.3.14" data-path="../../../basic/array/">
             
                 <a href="../../../basic/array/">
             
@@ -408,7 +555,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.15" data-path="../../../basic/string/">
+        <li class="chapter " data-level="1.3.15" data-path="../../../basic/string/">
             
                 <a href="../../../basic/string/">
             
@@ -421,7 +568,20 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.16" data-path="../../../basic/wrapper-object/">
+        <li class="chapter " data-level="1.3.16" data-path="../../../basic/string-unicode/">
+            
+                <a href="../../../basic/string-unicode/">
+            
+                    
+                    文字列とUnicode
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.17" data-path="../../../basic/wrapper-object/">
             
                 <a href="../../../basic/wrapper-object/">
             
@@ -434,7 +594,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.17" data-path="../../../basic/function-scope/">
+        <li class="chapter " data-level="1.3.18" data-path="../../../basic/function-scope/">
             
                 <a href="../../../basic/function-scope/">
             
@@ -447,7 +607,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.18" data-path="../../../basic/function-this/">
+        <li class="chapter " data-level="1.3.19" data-path="../../../basic/function-this/">
             
                 <a href="../../../basic/function-this/">
             
@@ -460,7 +620,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.19" data-path="../../../basic/class/">
+        <li class="chapter " data-level="1.3.20" data-path="../../../basic/class/">
             
                 <a href="../../../basic/class/">
             
@@ -473,7 +633,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.20" data-path="../../../basic/error-try-catch/">
+        <li class="chapter " data-level="1.3.21" data-path="../../../basic/error-try-catch/">
             
                 <a href="../../../basic/error-try-catch/">
             
@@ -486,12 +646,12 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.21" data-path="../../../basic/async/">
+        <li class="chapter " data-level="1.3.22" data-path="../../../basic/async/">
             
                 <a href="../../../basic/async/">
             
                     
-                    非同期処理
+                    非同期処理:Promise/Async Function
             
                 </a>
             
@@ -499,7 +659,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.22" data-path="../../../basic/map-and-set/">
+        <li class="chapter " data-level="1.3.23" data-path="../../../basic/map-and-set/">
             
                 <a href="../../../basic/map-and-set/">
             
@@ -512,7 +672,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.23" data-path="../../../basic/json/">
+        <li class="chapter " data-level="1.3.24" data-path="../../../basic/json/">
             
                 <a href="../../../basic/json/">
             
@@ -525,7 +685,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.24" data-path="../../../basic/date/">
+        <li class="chapter " data-level="1.3.25" data-path="../../../basic/date/">
             
                 <a href="../../../basic/date/">
             
@@ -538,7 +698,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.25" data-path="../../../basic/math/">
+        <li class="chapter " data-level="1.3.26" data-path="../../../basic/math/">
             
                 <a href="../../../basic/math/">
             
@@ -551,7 +711,20 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.26" data-path="../../../basic/ecmascript/">
+        <li class="chapter " data-level="1.3.27" data-path="../../../basic/module/">
+            
+                <a href="../../../basic/module/">
+            
+                    
+                    ECMAScriptモジュール
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.28" data-path="../../../basic/ecmascript/">
             
                 <a href="../../../basic/ecmascript/">
             
@@ -564,12 +737,12 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.27" data-path="../../../basic/other-parts/">
+        <li class="chapter " data-level="1.3.29" data-path="../../../basic/other-parts/">
             
                 <a href="../../../basic/other-parts/">
             
                     
-                    第1部: おわりに
+                    第一部: おわりに
             
                 </a>
             
@@ -582,12 +755,12 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6" data-path="../../">
+        <li class="chapter " data-level="1.4" data-path="../../">
             
                 <a href="../../">
             
                     
-                    第2部: 応用編（ユースケース）
+                    第二部: 応用編（ユースケース）
             
                 </a>
             
@@ -596,7 +769,7 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="1.6.1" data-path="../../setup-local-env/">
+        <li class="chapter " data-level="1.4.1" data-path="../../setup-local-env/">
             
                 <a href="../../setup-local-env/">
             
@@ -609,25 +782,12 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.2" data-path="../../module/">
-            
-                <a href="../../module/">
-            
-                    
-                    モジュール
-            
-                </a>
-            
-
-            
-        </li>
-    
-        <li class="chapter " data-level="1.6.3" data-path="../../ajaxapp/">
+        <li class="chapter " data-level="1.4.2" data-path="../../ajaxapp/">
             
                 <a href="../../ajaxapp/">
             
                     
-                    Ajaxで通信
+                    Ajax通信
             
                 </a>
             
@@ -636,12 +796,12 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="1.6.3.1" data-path="../../ajaxapp/entrypoint/">
+        <li class="chapter " data-level="1.4.2.1" data-path="../../ajaxapp/entrypoint/">
             
                 <a href="../../ajaxapp/entrypoint/">
             
                     
-                    エントリポイント
+                    エントリーポイント
             
                 </a>
             
@@ -649,9 +809,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.3.2" data-path="../../ajaxapp/xhr/">
+        <li class="chapter " data-level="1.4.2.2" data-path="../../ajaxapp/http/">
             
-                <a href="../../ajaxapp/xhr/">
+                <a href="../../ajaxapp/http/">
             
                     
                     HTTP通信
@@ -662,7 +822,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.3.3" data-path="../../ajaxapp/display/">
+        <li class="chapter " data-level="1.4.2.3" data-path="../../ajaxapp/display/">
             
                 <a href="../../ajaxapp/display/">
             
@@ -675,7 +835,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.3.4" data-path="../../ajaxapp/promise/">
+        <li class="chapter " data-level="1.4.2.4" data-path="../../ajaxapp/promise/">
             
                 <a href="../../ajaxapp/promise/">
             
@@ -693,7 +853,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.4" data-path="../../nodecli/">
+        <li class="chapter " data-level="1.4.3" data-path="../../nodecli/">
             
                 <a href="../../nodecli/">
             
@@ -707,7 +867,7 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="1.6.4.1" data-path="../../nodecli/helloworld/">
+        <li class="chapter " data-level="1.4.3.1" data-path="../../nodecli/helloworld/">
             
                 <a href="../../nodecli/helloworld/">
             
@@ -720,7 +880,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.4.2" data-path="../../nodecli/argument-parse/">
+        <li class="chapter " data-level="1.4.3.2" data-path="../../nodecli/argument-parse/">
             
                 <a href="../../nodecli/argument-parse/">
             
@@ -733,7 +893,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.4.3" data-path="../../nodecli/read-file/">
+        <li class="chapter " data-level="1.4.3.3" data-path="../../nodecli/read-file/">
             
                 <a href="../../nodecli/read-file/">
             
@@ -746,7 +906,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.4.4" data-path="../../nodecli/md-to-html/">
+        <li class="chapter " data-level="1.4.3.4" data-path="../../nodecli/md-to-html/">
             
                 <a href="../../nodecli/md-to-html/">
             
@@ -759,7 +919,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.4.5" data-path="../../nodecli/refactor-and-unittest/">
+        <li class="chapter " data-level="1.4.3.5" data-path="../../nodecli/refactor-and-unittest/">
             
                 <a href="../../nodecli/refactor-and-unittest/">
             
@@ -777,7 +937,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.5" data-path="../">
+        <li class="chapter " data-level="1.4.4" data-path="../">
             
                 <a href="../">
             
@@ -791,12 +951,12 @@
             <ul class="articles">
                 
     
-        <li class="chapter active" data-level="1.6.5.1" data-path="./">
+        <li class="chapter active" data-level="1.4.4.1" data-path="./">
             
                 <a href="./">
             
                     
-                    エントリポイント
+                    エントリーポイント
             
                 </a>
             
@@ -804,7 +964,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.5.2" data-path="../app-structure/">
+        <li class="chapter " data-level="1.4.4.2" data-path="../app-structure/">
             
                 <a href="../app-structure/">
             
@@ -817,12 +977,12 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.5.3" data-path="../form-event/">
+        <li class="chapter " data-level="1.4.4.3" data-path="../form-event/">
             
                 <a href="../form-event/">
             
                     
-                    フォームとイベント
+                    Todoアイテムの追加を実装する
             
                 </a>
             
@@ -830,7 +990,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.5.4" data-path="../event-model/">
+        <li class="chapter " data-level="1.4.4.4" data-path="../event-model/">
             
                 <a href="../event-model/">
             
@@ -843,12 +1003,12 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.5.5" data-path="../update-delete/">
+        <li class="chapter " data-level="1.4.4.5" data-path="../update-delete/">
             
                 <a href="../update-delete/">
             
                     
-                    Todoの更新と削除を実装する
+                    Todoアイテムの更新と削除を実装する
             
                 </a>
             
@@ -856,7 +1016,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.5.6" data-path="../final/">
+        <li class="chapter " data-level="1.4.4.6" data-path="../final/">
             
                 <a href="../final/">
             
@@ -879,14 +1039,53 @@
             
         </li>
     
+        <li class="chapter " data-level="1.5" data-path="../../../appendix/links/">
+            
+                <a href="../../../appendix/links/">
+            
+                    
+                    付録: 参考リンク集
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" data-path="../../../cheatsheet/">
+            
+                <a href="../../../cheatsheet/">
+            
+                    
+                    付録: JavaScriptチートシート
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7" data-path="../../../outro/">
+            
+                <a href="../../../outro/">
+            
+                    
+                    おわりに
+            
+                </a>
+            
+
+            
+        </li>
+    
 
     
 
     <li class="divider"></li>
 
     <li>
-        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
-            Published with GitBook
+        <a href="https://github.com/honkit/honkit" target="blank" class="gitbook-link">
+            Published with HonKit
         </a>
     </li>
 </ul>
@@ -904,8 +1103,17 @@
                     
 
 <!-- Header -->
+<meta name="keywords" content="JavaScript,ECMAScript,JS,入門,チュートリアル,書籍,本,無料,Node.js,ブラウザ"/>
+<link rel="author" href="https://www.hatena.ne.jp/efcl/"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css"/>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
+<!-- OGP -->
+<meta property="og:title" content="JavaScript Primer - 迷わないための入門書"/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://jsprimer.net/"/>
+<meta property="og:image" content="https://jsprimer.net/landing/img/cover-optimized.jpg"/>
+<meta property="og:site_name" content="JavaScript Primer"/>
+<meta property="og:description" content="JavaScript Primerは、JavaScriptの基礎から応用までを一貫して学べる入門書です。"/>
 <style>
     .book-header {
         display: flex;
@@ -943,6 +1151,11 @@
         /* Header分のズレを入れる */
         .page-wrapper {
             padding-top: 60px;
+        }
+
+        /* github-issue-feedbackを非表示にする */
+        .gitbook-plugin-github-issue-feedback {
+            display: none;
         }
     }
 
@@ -989,15 +1202,22 @@
     .header-right {
         order: 4;
         display: inline-flex;
-        flex-direction: column;
+        flex-direction: row;
         justify-content: center;
         align-items: center;
         /* icon size */
         font-size: 24px;
     }
 
-    .github-link {
+    .amazon-link, .github-link {
         color: #fff;
+        /* Padding and make Vertical */
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding-left: 4px;
+        padding-right: 4px;
     }
 
     /* Desktop */
@@ -1035,6 +1255,23 @@
         .algolia-autocomplete .algolia-docsearch-suggestion--subcategory-column {
             display: none !important;
         }
+
+        .algolia-autocomplete.algolia-autocomplete-right .ds-dropdown-menu {
+            right: inherit !important
+        }
+
+        .algolia-autocomplete.algolia-autocomplete-right .ds-dropdown-menu::before {
+            right: 50%;
+        }
+
+        .sbx-custom {
+            width: 92px !important;
+            padding: initial !important;
+        }
+
+        .amazon-link {
+            display: none;
+        }
     }
 
     /* SearchBox */
@@ -1042,12 +1279,6 @@
         height: 50px;
     }
 
-    @media (max-width: 768px) {
-        .sbx-custom {
-            width: 150px !important;
-            padding: initial !important;
-        }
-    }
 
     .sbx-custom {
         display: inline-block;
@@ -1225,9 +1456,9 @@
 <div class="book-header" role="navigation">
     
     <a class="book-header-title" href="../../..">
-        <img class="book-header-title-img" alt="js-primer"
+        <img class="book-header-title-img" alt="JavaScript Primer"
              src="../../../gitbook/icons/icon-128x128.png"/>
-        <h2 class="book-header-title-h" title="js-primer - JavaScriptの入門書">js-primer</h2>
+        <h2 class="book-header-title-h" title="JavaScript Primer - 迷わないための入門書">JavaScript Primer</h2>
     </a>
     <div class="searchbarWrapper header-center">
         <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
@@ -1259,26 +1490,39 @@
         </form>
     </div>
     <div class="header-right">
+        <!-- Icon: https://www.iconfinder.com/iconsets/circle-payment -->
+        <a class="amazon-link" title="Amazon: JavaScript Primer 改訂2版 迷わないための入門書"
+           href="https://www.amazon.co.jp/dp/4048931105/" target="_blank"><img
+                width="22"
+                height="22"
+                style="margin: 1px;"
+                src="../../../gitbook/icons/amazon-icon.png" alt=""></a>
         <a class="github-link" title="GitHub: asciidwango/js-primer" href="https://github.com/asciidwango/js-primer"
            target="_blank"><i
                 class="fa fa-github fa-fw"></i></a>
     </div>
 </div>
 
-<script type="text/javascript">
-    document.querySelector('.searchbox [type="reset"]').addEventListener('click', function() {
-        this.parentNode.querySelector('input').focus();
+<script defer>
+    // focus on search box
+    document.querySelector(".searchbox [type=\"reset\"]").addEventListener("click", function() {
+        this.parentNode.querySelector("input").focus();
     });
-</script>
-<script>
+    // init DocSearch
     var search = docsearch({
-        apiKey: 'fd28ebaba94be0c39fb9fa1b2fed4f23', // use a SEARCH-ONLY api key here
-        indexName: 'asciidwango',
-        inputSelector: '.sbx-custom__input',
+        apiKey: "fd28ebaba94be0c39fb9fa1b2fed4f23", // use a SEARCH-ONLY api key here
+        indexName: "asciidwango",
+        inputSelector: ".sbx-custom__input",
         debug: false // set to `true` if you want to inspect the dropdown menu's CSS
     });
 </script>
-
+<script>
+    window.addEventListener("DOMContentLoaded", function() {
+        gitbook.events.on("page.change", function() {
+            setTimeout(() => console.clear(), 1000);
+        });
+    });
+</script>
 
 
 
@@ -1289,200 +1533,246 @@
                             
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="entrypoint"><a name="entrypoint" class="plugin-anchor" href="#entrypoint"><i class="fa fa-link" aria-hidden="true"></i></a>&#x30A8;&#x30F3;&#x30C8;&#x30EA;&#x30DD;&#x30A4;&#x30F3;&#x30C8; </h1>
-<p>&#x30A8;&#x30F3;&#x30C8;&#x30EA;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x3068;&#x306F;&#x3001;&#x30A2;&#x30D7;&#x30EA;&#x30B1;&#x30FC;&#x30B7;&#x30E7;&#x30F3;&#x306E;&#x4E2D;&#x3067;&#x4E00;&#x756A;&#x6700;&#x521D;&#x306B;&#x547C;&#x3073;&#x51FA;&#x3055;&#x308C;&#x308B;&#x90E8;&#x5206;&#x306E;&#x3053;&#x3068;&#x3067;&#x3059;&#x3002;</p>
-<p><a href="../../ajaxapp/entrypoint/">Ajax&#x901A;&#x4FE1;:&#x30A8;&#x30F3;&#x30C8;&#x30EA;&#x30DD;&#x30A4;&#x30F3;&#x30C8;</a>&#x306E;&#x30E6;&#x30FC;&#x30B9;&#x30B1;&#x30FC;&#x30B9;&#x3067;&#x306F;&#x3001;&#x30A8;&#x30F3;&#x30C8;&#x30EA;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x306F;HTML&#xFF08;<code>index.html</code>&#xFF09;&#x306E;&#x307F;&#x3067;&#x3057;&#x305F;&#x3002;
-&#x307E;&#x305A;HTML&#x304C;&#x8AAD;&#x307F;&#x8FBC;&#x307E;&#x308C;&#x3001;&#x6B21;&#x306B;HTML&#x306E;&#x4E2D;&#x306B;&#x66F8;&#x304B;&#x308C;&#x3066;&#x3044;&#x308B;JavaScript&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x304C;&#x8AAD;&#x307F;&#x8FBC;&#x307E;&#x308C;&#x307E;&#x3059;&#x3002;</p>
-<p>&#x4ECA;&#x56DE;&#x306E;Todo&#x30A2;&#x30D7;&#x30EA;&#x306F;&#x51E6;&#x7406;&#x3092;&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x5316;&#x3057;&#x3001;&#x305D;&#x308C;&#x305E;&#x308C;&#x306E;&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x3092;&#x5225;&#x3005;&#x306E;JavaScript&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3068;&#x3057;&#x3066;&#x4F5C;&#x6210;&#x3057;&#x3066;&#x3044;&#x304D;&#x307E;&#x3059;&#x3002;
-JavaScript&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x306F;HTML&#x304B;&#x3089;<code>&lt;script type=&quot;module&quot;&gt;</code>&#x3067;&#x8AAD;&#x307F;&#x8FBC;&#x3080;&#x3053;&#x3068;&#x304C;&#x3067;&#x304D;&#x307E;&#x3059;&#x304C;&#x3001;<code>script</code>&#x30BF;&#x30B0;&#x6BCE;&#x306B;&#x5225;&#x3005;&#x306E;&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x30B9;&#x30B3;&#x30FC;&#x30D7;&#x3092;&#x6301;&#x3061;&#x307E;&#x3059;&#x3002;
-&#x305D;&#x306E;&#x305F;&#x3081;&#x3001;JavaScript&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x3092;&#x5225;&#x3005;&#x306E;<code>script</code>&#x30BF;&#x30B0;&#x3067;&#x8AAD;&#x307F;&#x8FBC;&#x3080;&#x3068;&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x540C;&#x58EB;&#x3067;&#x30B9;&#x30B3;&#x30FC;&#x30D7;&#x304C;&#x7570;&#x306A;&#x308B;&#x305F;&#x3081;&#x3001;&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x540C;&#x58EB;&#x3067;&#x9023;&#x643A;&#x3067;&#x304D;&#x307E;&#x305B;&#x3093;&#x3002;</p>
-<p>&#x6B21;&#x306E;&#x30B3;&#x30FC;&#x30C9;&#x306F;&#x3001;&#x305D;&#x308C;&#x305E;&#x308C;&#x306E;<code>&lt;script type=&quot;module&quot;&gt;</code>&#x540C;&#x58EB;&#x306E;&#x30B9;&#x30B3;&#x30FC;&#x30D7;&#x304C;&#x7570;&#x306A;&#x308B;&#x305F;&#x3081;&#x3001;&#x5225;&#x306E;<code>script</code>&#x30BF;&#x30B0;&#x3067;&#x5B9A;&#x7FA9;&#x3057;&#x305F;&#x5909;&#x6570;&#x306B;&#x30A2;&#x30AF;&#x30BB;&#x30B9;&#x51FA;&#x6765;&#x306A;&#x3044;&#x3053;&#x3068;&#x3092;&#x793A;&#x3057;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;&#x3053;&#x308C;&#x306F;JavaScript&#x306E;&#x30B3;&#x30FC;&#x30C9;&#x3092;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306B;&#x3057;&#x3066;<code>src</code>&#x5C5E;&#x6027;&#x3067;&#x8AAD;&#x307F;&#x8FBC;&#x3093;&#x3060;&#x5834;&#x5408;&#x3082;&#x540C;&#x69D8;&#x3067;&#x3059;&#x3002;</p>
-<pre><code class="lang-html">  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;module&quot;</span>&gt;</span><span class="javascript">
-    <span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> scopeA = <span class="hljs-string">&quot;A&quot;</span>;
+<style>
+    .page-sponsors {
+        background: #fafafa;
+    }
+    .page-sponsors .page-sponsors-list {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+        padding: 1em 0;
+        list-style: none;
+        gap: 8px;
+    }
+    .page-sponsors-footer {
+        text-align: center;
+        padding: 0;
+        margin: 0;
+    }
+</style>
+<div class="page-sponsors">
+
+    <div class="page-sponsors-footer">
+        JavaScript Primerの<a href="https://jsprimer.net/intro/sponsors/">スポンサーを募集中</a>
+    </div>
+
+</div>
+
+                                <html><head></head><body><h1 id="entrypoint"><a name="entrypoint" class="plugin-anchor" href="#entrypoint"><i class="fa fa-link" aria-hidden="true"></i></a>エントリーポイント </h1>
+<p>エントリーポイントとは、アプリケーションの中で一番最初に呼び出される部分のことです。</p>
+<p>「<a href="../../ajaxapp/entrypoint/">Ajax通信:エントリーポイント</a>」のユースケースでは、エントリーポイントはHTML（<code>index.html</code>）のみでした。
+まずHTMLが読み込まれ、次にHTMLの中に書かれている<code>script</code>要素で指定したJavaScriptファイルが読み込まれます。</p>
+<p>今回のTodoアプリはJavaScriptの処理をモジュール化し、それぞれのモジュールを別々のJavaScriptファイルとして作成していきます。
+JavaScriptモジュールはHTMLから<code>&lt;script type="module"&gt;</code>で読み込むことができますが、<code>script</code>要素ごとに別々のモジュールスコープを持ちます。
+モジュールスコープとは、モジュールのトップレベルに自動的に作成されるスコープで、グローバルスコープの下に作られます。
+JavaScriptモジュールを別々の<code>script</code>要素で読み込むと、モジュール同士でスコープが異なるため、モジュール同士で連携できません。</p>
+<p>次のコードは、それぞれの<code>&lt;script type="module"&gt;</code>同士のスコープが異なるため、別の<code>script</code>要素で定義した変数にアクセスできないことを示しています。
+これはJavaScriptモジュールをファイルにして<code>src</code>属性で読み込んだ場合も同様です。</p>
+<pre><code class="lang-html">  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"module"</span>&gt;</span><span class="language-javascript">
+    <span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> scopeA = <span class="hljs-string">"A"</span>;
   </span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
-  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;module&quot;</span>&gt;</span><span class="javascript">
-    <span class="hljs-comment">// &#x7570;&#x306A;&#x308B;module&#x30B9;&#x30B3;&#x30FC;&#x30D7;&#x306E;&#x5909;&#x6570;&#x306B;&#x306F;&#x76F4;&#x63A5;&#x306F;&#x30A2;&#x30AF;&#x30BB;&#x30B9;&#x3067;&#x304D;&#x306A;&#x3044;</span>
-    <span class="hljs-built_in">console</span>.log(scopeA); <span class="hljs-comment">// =&gt; ReferenceError: scopeA is not defined</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"module"</span>&gt;</span><span class="language-javascript">
+    <span class="hljs-comment">// 異なるmoduleスコープの変数には直接アクセスできない</span>
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(scopeA); <span class="hljs-comment">// =&gt; ReferenceError: scopeA is not defined</span>
   </span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
 </code></pre>
-<p>&#x305D;&#x306E;&#x305F;&#x3081;&#x3001;HTML&#x304B;&#x3089;&#x8AAD;&#x307F;&#x8FBC;&#x3080;&#x306E;&#x306F;1&#x3064;&#x306E;JavaScript&#x30D5;&#x30A1;&#x30A4;&#x30EB;(<code>index.js</code>)&#x3068;&#x3057;&#x3066;&#x3001;&#x3053;&#x306E;<code>index.js</code>&#x304B;&#x3089;&#x4ED6;&#x306E;&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x3092;&#x8AAD;&#x307F;&#x8FBC;&#x307F;&#x5229;&#x7528;&#x3057;&#x307E;&#x3059;&#x3002;
-&#x3053;&#x306E;&#x3088;&#x3046;&#x306B;&#x3059;&#x308B;&#x3053;&#x3068;&#x3067;&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x9593;&#x306F;1&#x3064;&#x306E;<code>&lt;script type=&quot;module&quot;&gt;</code>&#x306E;&#x30B9;&#x30B3;&#x30FC;&#x30D7;&#x5185;&#x306B;&#x53CE;&#x307E;&#x308B;&#x305F;&#x3081;&#x3001;&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x540C;&#x58EB;&#x3067;&#x9023;&#x643A;&#x3067;&#x304D;&#x307E;&#x3059;&#x3002;
-&#x3053;&#x306E;HTML&#x304B;&#x3089;&#x8AAD;&#x307F;&#x8FBC;&#x3080;JavaScript&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#xFF08;<code>index.js</code>&#xFF09;&#x3092;JavaScript&#x306B;&#x304A;&#x3051;&#x308B;&#x30A8;&#x30F3;&#x30C8;&#x30EA;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x3068;&#x3057;&#x307E;&#x3059;&#x3002;</p>
-<p>&#x3064;&#x307E;&#x308A;&#x3001;&#x4ECA;&#x56DE;&#x4F5C;&#x6210;&#x3059;&#x308B;Todo&#x30A2;&#x30D7;&#x30EA;&#x3067;&#x306F;&#x30A8;&#x30F3;&#x30C8;&#x30EA;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x3068;&#x3057;&#x3066;HTML&#x3068;JavaScript&#x306E;2&#x3064;&#x3092;&#x7528;&#x610F;&#x3057;&#x307E;&#x3059;&#x3002;</p>
+<p>このようにモジュールを別々の<code>script</code>要素で扱うとモジュール同士は連携できません。
+そのため、HTMLでは<code>script</code>要素で<code>index.js</code>のみを読み込み、この<code>index.js</code>から<code>import</code>文で他のモジュールを読み込みます。
+<code>import</code>文を使うことで、モジュール間は1つの<code>&lt;script type="module"&gt;</code>のスコープ内に収まるため、モジュール同士で連携できます。
+このHTMLから読み込むJavaScriptファイル（<code>index.js</code>）をJavaScriptにおけるエントリーポイントとします。</p>
+<p>つまり、今回作成するTodoアプリではエントリーポイントとしてHTMLとJavaScriptの2つを用意します。</p>
 <ul>
-<li><code>index.html</code>: &#x3082;&#x3063;&#x3068;&#x3082;&#x6700;&#x521D;&#x306B;&#x8AAD;&#x307F;&#x8FBC;&#x307E;&#x308C;&#x308B;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3001;<code>index.js</code>&#x3092;&#x8AAD;&#x307F;&#x8FBC;&#x3080;</li>
-<li><code>index.js</code>: <code>index.html</code>&#x304B;&#x3089;&#x8AAD;&#x307F;&#x8FBC;&#x308C;&#x308B;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3001;JavaScript&#x9593;&#x306B;&#x304A;&#x3044;&#x3066;&#x306F;&#x6700;&#x521D;&#x306B;&#x8AAD;&#x307F;&#x8FBC;&#x307E;&#x308C;&#x308B;</li>
+<li><code>index.html</code>: 最初に読み込まれるファイル、<code>index.js</code>を読み込む</li>
+<li><code>index.js</code>: <code>index.html</code>から読み込まれるファイル、JavaScriptでは最初に読み込まれる</li>
 </ul>
-<p>&#x3053;&#x306E;&#x30BB;&#x30AF;&#x30B7;&#x30E7;&#x30F3;&#x3067;&#x306F;&#x3001;&#x3053;&#x306E;2&#x3064;&#x306E;&#x30A8;&#x30F3;&#x30C8;&#x30EA;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x3092;&#x4F5C;&#x6210;&#x3057;&#x8AAD;&#x307F;&#x8FBC;&#x3080;&#x3068;&#x3053;&#x308D;&#x307E;&#x3067;&#x3092;&#x78BA;&#x8A8D;&#x3057;&#x307E;&#x3059;&#x3002;</p>
-<h2 id="project-directory"><a name="project-directory" class="plugin-anchor" href="#project-directory"><i class="fa fa-link" aria-hidden="true"></i></a>&#x30D7;&#x30ED;&#x30B8;&#x30A7;&#x30AF;&#x30C8;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x3092;&#x4F5C;&#x6210; </h2>
-<!-- ソースコードは first-entry/ -->
-<p>&#x4ECA;&#x56DE;&#x4F5C;&#x6210;&#x3059;&#x308B;&#x30A2;&#x30D7;&#x30EA;&#x306B;&#x306F;HTML&#x3084;CSS&#x3001;JavaScript&#x306A;&#x3069;&#x8907;&#x6570;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x5FC5;&#x8981;&#x3068;&#x306A;&#x308A;&#x307E;&#x3059;&#x3002;
-&#x305D;&#x306E;&#x305F;&#x3081;&#x3001;&#x307E;&#x305A;&#x305D;&#x308C;&#x3089;&#x3092;&#x914D;&#x7F6E;&#x3059;&#x308B;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x3092;&#x4F5C;&#x6210;&#x3057;&#x307E;&#x3059;&#x3002;</p>
-<p>&#x4EFB;&#x610F;&#x306E;&#x540D;&#x524D;&#x3067;&#x554F;&#x984C;&#x3042;&#x308A;&#x307E;&#x305B;&#x3093;&#x304C;&#x3001;&#x3053;&#x3053;&#x3067;&#x306F;<code>todoapp</code>&#x3068;&#x3044;&#x3046;&#x540D;&#x524D;&#x306E;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x3092;&#x4F5C;&#x6210;&#x3057;&#x307E;&#x3059;&#x3002;</p>
-<h2 id="preparing-html"><a name="preparing-html" class="plugin-anchor" href="#preparing-html"><i class="fa fa-link" aria-hidden="true"></i></a>HTML&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306E;&#x7528;&#x610F; </h2>
-<p>&#x30A8;&#x30F3;&#x30C8;&#x30EA;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x3068;&#x3057;&#x3066;&#x3001;&#x307E;&#x305A;&#x306F;&#x6700;&#x4F4E;&#x9650;&#x306E;&#x8981;&#x7D20;&#x3060;&#x3051;&#x3092;&#x914D;&#x7F6E;&#x3057;&#x305F;HTML&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x4F5C;&#x6210;&#x3057;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;
-&#x30A8;&#x30F3;&#x30C8;&#x30EA;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x3068;&#x306A;&#x308B;HTML&#x3068;&#x3057;&#x3066;<code>index.html</code>&#x3092;&#x4F5C;&#x6210;&#x3057;&#x3001;&#x6B21;&#x306E;&#x3088;&#x3046;&#x306A;&#x5185;&#x5BB9;&#x306B;&#x3057;&#x307E;&#x3059;&#x3002;
-<code>body</code>&#x8981;&#x7D20;&#x306E;&#x4E00;&#x756A;&#x4E0B;&#x3067;<code>&lt;script&gt;</code>&#x30BF;&#x30B0;&#x3092;&#x4F7F;&#x3044;&#x8AAD;&#x307F;&#x8FBC;&#x3093;&#x3067;&#x3044;&#x308B;<code>index.js</code>&#x304C;&#x3001;&#x4ECA;&#x56DE;&#x306E;&#x30A2;&#x30D7;&#x30EA;&#x30B1;&#x30FC;&#x30B7;&#x30E7;&#x30F3;&#x306E;&#x51E6;&#x7406;&#x3092;&#x8A18;&#x8FF0;&#x3059;&#x308B;JavaScript&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3067;&#x3059;&#x3002;</p>
-<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">&quot;en&quot;</span>&gt;</span>
+<p>このセクションでは、この2つのエントリーポイントを作成して読み込むところまでを確認します。</p>
+<h2 id="project-directory"><a name="project-directory" class="plugin-anchor" href="#project-directory"><i class="fa fa-link" aria-hidden="true"></i></a>プロジェクトディレクトリを作成 </h2>
+<p>今回作成するアプリには、HTMLやJavaScriptなど複数のファイルが必要となります。
+そのため、まずそれらのファイルを置くためのディレクトリを作成します。</p>
+<p>ここでは<code>todoapp</code>という名前で新しいディレクトリを作成します。
+ここからは作成した<code>todoapp</code>ディレクトリ以下で作業していきます。</p>
+<p>またこのプロジェクトで作成するファイルは、必ず文字コード（エンコーディング）を<strong>UTF-8</strong>、改行コードを<strong>LF</strong>にしてファイルを保存します。</p>
+<h2 id="preparing-html"><a name="preparing-html" class="plugin-anchor" href="#preparing-html"><i class="fa fa-link" aria-hidden="true"></i></a>HTMLファイルの用意 </h2>
+<p>エントリーポイントとして、まずは最低限の要素だけを配置したHTMLファイルを作成しましょう。
+エントリーポイントとなるHTMLとして<code>index.html</code>を<code>todoapp</code>ディレクトリに作成し、次のような内容にします。
+<code>body</code>要素の一番下で<code>script</code>要素を使って読み込んでいる<code>index.js</code>が、今回のアプリケーションの処理を記述するJavaScriptファイルです。</p>
+<div class="code-filename-block">
+    <p class="code-filename">index.html</p>
+</div>
+
+<pre><code class="lang-html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">html</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">"ja"</span>&gt;</span>
   <span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">&quot;utf-8&quot;</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">"utf-8"</span> /&gt;</span>
     <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>Todo App<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span>
   <span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
   <span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
     <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Todo App<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;module&quot;</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;index.js&quot;</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"module"</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"index.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
   <span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
 <span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span>
 </code></pre>
-<p><code>index.js</code>&#x306B;&#x306F;&#x3001;&#x30B9;&#x30AF;&#x30EA;&#x30D7;&#x30C8;&#x304C;&#x6B63;&#x3057;&#x304F;&#x8AAD;&#x307F;&#x8FBC;&#x307E;&#x308C;&#x305F;&#x3053;&#x3068;&#x3092;&#x78BA;&#x8A8D;&#x3067;&#x304D;&#x308B;&#x3088;&#x3046;&#x306B;&#x3001;&#x30B3;&#x30F3;&#x30BD;&#x30FC;&#x30EB;&#x306B;&#x30ED;&#x30B0;&#x3092;&#x51FA;&#x529B;&#x3059;&#x308B;&#x51E6;&#x7406;&#x3060;&#x3051;&#x3092;&#x66F8;&#x3044;&#x3066;&#x304A;&#x304D;&#x307E;&#x3059;&#x3002;</p>
-<pre><code class="lang-javascript"><span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;index.js: loaded&quot;</span>);
-</code></pre>
-<p>&#x6B21;&#x306F;&#x3053;&#x306E;HTML&#x3092;&#x30D6;&#x30E9;&#x30A6;&#x30B6;&#x3067;&#x958B;&#x304D;&#x30B3;&#x30F3;&#x30BD;&#x30FC;&#x30EB;&#x306B;&#x30ED;&#x30B0;&#x304C;&#x51FA;&#x529B;&#x3055;&#x308C;&#x308B;&#x3053;&#x3068;&#x3092;&#x78BA;&#x8A8D;&#x3057;&#x3066;&#x3044;&#x304D;&#x307E;&#x3059;&#x3002;</p>
-<h2 id="local-server"><a name="local-server" class="plugin-anchor" href="#local-server"><i class="fa fa-link" aria-hidden="true"></i></a>&#x30ED;&#x30FC;&#x30AB;&#x30EB;&#x30B5;&#x30FC;&#x30D0;&#x3067;HTML&#x3092;&#x78BA;&#x8A8D;&#x3059;&#x308B; </h2>
-<p>&#x30A6;&#x30A7;&#x30D6;&#x30D6;&#x30E9;&#x30A6;&#x30B6;&#x3067;<code>index.html</code>&#x3092;&#x958B;&#x304F;&#x305F;&#x3081;&#x306B;&#x958B;&#x767A;&#x7528;&#x306E;&#x30ED;&#x30FC;&#x30AB;&#x30EB;&#x30B5;&#x30FC;&#x30D0;&#x30FC;&#x3092;&#x6E96;&#x5099;&#x3057;&#x307E;&#x3059;&#x3002;
-&#x30ED;&#x30FC;&#x30AB;&#x30EB;&#x30B5;&#x30FC;&#x30D0;&#x30FC;&#x3092;&#x7ACB;&#x3061;&#x4E0A;&#x3052;&#x305A;&#x306B;&#x76F4;&#x63A5;HTML&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x958B;&#x304F;&#x3053;&#x3068;&#x3082;&#x3067;&#x304D;&#x307E;&#x3059;&#x304C;&#x3001;&#x305D;&#x306E;&#x5834;&#x5408;<code>file:///</code>&#x304B;&#x3089;&#x59CB;&#x307E;&#x308B;URL&#x306B;&#x306A;&#x308A;&#x307E;&#x3059;&#x3002;
-<code>file</code>&#x30B9;&#x30AD;&#x30FC;&#x30DE;&#x3067;&#x306F;<a href="https://developer.mozilla.org/ja/docs/Web/Security/Same-origin_policy" target="_blank">Same Origin Policy</a>&#x306B;&#x3088;&#x308A;&#x3001;JavaScript&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x3092;&#x59CB;&#x3081;&#x591A;&#x304F;&#x306E;API&#x306B;&#x5236;&#x9650;&#x304C;&#x3042;&#x308A;&#x30A2;&#x30D7;&#x30EA;&#x30B1;&#x30FC;&#x30B7;&#x30E7;&#x30F3;&#x306F;&#x6B63;&#x3057;&#x304F;&#x52D5;&#x4F5C;&#x3057;&#x307E;&#x305B;&#x3093;&#x3002;
-&#x672C;&#x7AE0;&#x306F;&#x30ED;&#x30FC;&#x30AB;&#x30EB;&#x30B5;&#x30FC;&#x30D0;&#x30FC;&#x3092;&#x7ACB;&#x3061;&#x4E0A;&#x3052;&#x305F;&#x4E0A;&#x3067;&#x3001;<code>http</code>&#x30B9;&#x30AD;&#x30FC;&#x30DE;&#x306E;URL&#x3067;&#x30A2;&#x30AF;&#x30BB;&#x30B9;&#x3059;&#x308B;&#x3053;&#x3068;&#x3092;&#x524D;&#x63D0;&#x3068;&#x3057;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;</p>
-<p>&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x30E9;&#x30A4;&#x30F3;&#x3067;<code>todoapp</code>&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x3078;&#x79FB;&#x52D5;&#x3057;&#x3001;&#x6B21;&#x306E;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x3067;&#x30ED;&#x30FC;&#x30AB;&#x30EB;&#x30B5;&#x30FC;&#x30D0;&#x3092;&#x8D77;&#x52D5;&#x3057;&#x307E;&#x3059;&#x3002;
-<code>npx</code>&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x3092;&#x4F7F;&#x3044;&#x3001;&#x3053;&#x306E;&#x66F8;&#x7C4D;&#x7528;&#x306B;&#x4F5C;&#x6210;&#x3055;&#x308C;&#x305F;<code>@js-primer/local-server</code>&#x3068;&#x3044;&#x3046;&#x30ED;&#x30FC;&#x30AB;&#x30EB;&#x30B5;&#x30FC;&#x30D0;&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x3092;&#x30C0;&#x30A6;&#x30F3;&#x30ED;&#x30FC;&#x30C9;&#x3068;&#x540C;&#x6642;&#x306B;&#x5B9F;&#x884C;&#x3057;&#x307E;&#x3059;&#x3002;
- &#x307E;&#x3060;<code>npx</code>&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x306E;&#x7528;&#x610F;&#x3067;&#x304D;&#x3066;&#x3044;&#x306A;&#x3051;&#x308C;&#x3070;&#x3001;&#x5148;&#x306B;<a href="../../setup-local-env/">&#x30A2;&#x30D7;&#x30EA;&#x30B1;&#x30FC;&#x30B7;&#x30E7;&#x30F3;&#x958B;&#x767A;&#x306E;&#x6E96;&#x5099;</a>&#x3092;&#x53C2;&#x7167;&#x3057;&#x3066;&#x304F;&#x3060;&#x3055;&#x3044;&#x3002;</p>
-<pre><code class="lang-shell-session"># todoapp/&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x306B;&#x79FB;&#x52D5;&#x3059;&#x308B;
-$ cd todoapp/
-# todoapp/&#x3092;&#x30EB;&#x30FC;&#x30C8;&#x306B;&#x3057;&#x305F;&#x30ED;&#x30FC;&#x30AB;&#x30EB;&#x30B5;&#x30FC;&#x30D0;&#x3092;&#x8D77;&#x52D5;&#x3059;&#x308B;
-$ npx @js-primer/local-server
+<p>次に<code>index.js</code>を<code>todoapp</code>ディレクトリに作成し、次のような内容にします。
+<code>index.js</code>にはスクリプトが正しく読み込まれたことを確認できるように、コンソールにログを出力する処理だけを書いておきます。</p>
+<div class="code-filename-block">
+    <p class="code-filename">index.js</p>
+</div>
 
-todoapp&#x306E;&#x30ED;&#x30FC;&#x30AB;&#x30EB;&#x30B5;&#x30FC;&#x30D0;&#x3092;&#x8D77;&#x52D5;&#x3057;&#x307E;&#x3057;&#x305F;&#x3002;
-&#x6B21;&#x306E;URL&#x3092;&#x30D6;&#x30E9;&#x30A6;&#x30B6;&#x3067;&#x958B;&#x3044;&#x3066;&#x304F;&#x3060;&#x3055;&#x3044;&#x3002;
+<pre><code class="lang-javascript"><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">"index.js: loaded"</span>);
+</code></pre>
+<p>ここまでの<code>todoapp</code>ディレクトリのファイル配置は次のようになっています。</p>
+<pre><code>todoapp
+├── index.html
+└── index.js
+</code></pre><p>次はこの<code>index.html</code>をブラウザで開いて、コンソールにログが出力されることを確認していきます。</p>
+<h2 id="local-server"><a name="local-server" class="plugin-anchor" href="#local-server"><i class="fa fa-link" aria-hidden="true"></i></a>ローカルサーバーでHTMLを確認する </h2>
+<p>ウェブブラウザで<code>index.html</code>を開く前に、開発用のローカルサーバーを準備します。
+ローカルサーバーを立ち上げずに直接HTMLファイルを開くこともできますが、その場合<code>file:///</code>からはじまるURLになります。
+<code>file</code>スキーマでは<a href="https://developer.mozilla.org/ja/docs/Web/Security/Same-origin_policy" target="_blank">Same Origin Policy</a>により、JavaScriptモジュールが正しく動作しません。
+そのため、本章ではローカルサーバーを立ち上げた上で、<code>http</code>からはじまるURLでアクセスすることを前提としています。</p>
+<p>コマンドラインで<code>todoapp</code>ディレクトリへ移動し、次のコマンドでローカルサーバーを起動します。
+<code>npx</code>コマンドを使って、この書籍用に作成された<code>@js-primer/local-server</code>というローカルサーバーモジュールをダウンロードと同時に実行します。
+まだ<code>npx</code>コマンドが用意できていなければ、先に「<a href="../../setup-local-env/">アプリケーション開発の準備</a>」の章を参照してください。</p>
+<pre><code class="lang-shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">todoapp/ディレクトリに移動する</span>
+<span class="hljs-meta prompt_">$ </span><span class="language-bash"><span class="hljs-built_in">cd</span> todoapp/</span>
+<span class="hljs-meta prompt_"># </span><span class="language-bash">todoapp/をルートにしたローカルサーバーを起動する</span>
+<span class="hljs-meta prompt_">$ </span><span class="language-bash">npx --<span class="hljs-built_in">yes</span> @js-primer/local-server</span>
+
+todoappのローカルサーバーを起動しました。
+次のURLをブラウザで開いてください。
 
   URL: http://localhost:3000
 </code></pre>
-<p>&#x8D77;&#x52D5;&#x3057;&#x305F;&#x30ED;&#x30FC;&#x30AB;&#x30EB;&#x30B5;&#x30FC;&#x30D0;&#x306E;URL&#xFF08;<code>http://localhost:3000</code>&#xFF09;&#x3078;&#x30D6;&#x30E9;&#x30A6;&#x30B6;&#x3067;&#x30A2;&#x30AF;&#x30BB;&#x30B9;&#x3057;&#x3066;&#x307F;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;
-&#x30D6;&#x30E9;&#x30A6;&#x30B6;&#x306B;&#x306F;<code>index.html</code>&#x306E;&#x5185;&#x5BB9;&#x304C;&#x8868;&#x793A;&#x3055;&#x308C;&#x3001;&#x958B;&#x767A;&#x8005;&#x30C4;&#x30FC;&#x30EB;&#x306E;&#x30B3;&#x30F3;&#x30BD;&#x30FC;&#x30EB;&#x306B;<code>index.js: loaded</code>&#x3068;&#x3044;&#x3046;&#x30ED;&#x30B0;&#x304C;&#x51FA;&#x529B;&#x3055;&#x308C;&#x3066;&#x3044;&#x308B;&#x3053;&#x3068;&#x304C;&#x78BA;&#x8A8D;&#x3067;&#x304D;&#x307E;&#x3059;&#x3002;</p>
-<p><img src="img/first-entry.png" alt="&#x30ED;&#x30B0;&#x304C;&#x8868;&#x793A;&#x3055;&#x308C;&#x3066;&#x3044;&#x308B;Web&#x30B3;&#x30F3;&#x30BD;&#x30FC;&#x30EB;"></p>
-<hr>
-<h3 id="view-console-log-in-dev-tools"><a name="view-console-log-in-dev-tools" class="plugin-anchor" href="#view-console-log-in-dev-tools"><i class="fa fa-link" aria-hidden="true"></i></a>&#x958B;&#x767A;&#x8005;&#x30C4;&#x30FC;&#x30EB;&#x3067;&#x306E;&#x30B3;&#x30F3;&#x30BD;&#x30FC;&#x30EB;&#x30ED;&#x30B0;&#x306E;&#x78BA;&#x8A8D;&#x65B9;&#x6CD5; </h3>
-<p>Console API&#x3067;&#x51FA;&#x529B;&#x3057;&#x305F;&#x30ED;&#x30B0;&#x3092;&#x78BA;&#x8A8D;&#x3059;&#x308B;&#x306B;&#x306F;&#x3001;&#x30A6;&#x30A7;&#x30D6;&#x30D6;&#x30E9;&#x30A6;&#x30B6;&#x306E;&#x958B;&#x767A;&#x8005;&#x30C4;&#x30FC;&#x30EB;&#x3092;&#x958B;&#x304F;&#x5FC5;&#x8981;&#x304C;&#x3042;&#x308A;&#x307E;&#x3059;&#x3002;
-&#x307B;&#x3068;&#x3093;&#x3069;&#x306E;&#x30D6;&#x30E9;&#x30A6;&#x30B6;&#x3067;&#x958B;&#x767A;&#x8005;&#x30C4;&#x30FC;&#x30EB;&#x304C;&#x540C;&#x68B1;&#x3055;&#x308C;&#x3066;&#x3044;&#x307E;&#x3059;&#x304C;&#x3001;&#x672C;&#x7AE0;&#x3067;&#x306F;Firefox&#x3092;&#x4F7F;&#x3063;&#x3066;&#x78BA;&#x8A8D;&#x3057;&#x307E;&#x3059;&#x3002;
-&#x958B;&#x767A;&#x8005;&#x30C4;&#x30FC;&#x30EB;&#x306E;<strong>&#x30B3;&#x30F3;&#x30BD;&#x30FC;&#x30EB;</strong>&#x30BF;&#x30D6;&#x3092;&#x958B;&#x304F;&#x3068;Console API&#x3067;&#x51FA;&#x529B;&#x3057;&#x305F;&#x30ED;&#x30B0;&#x3092;&#x78BA;&#x8A8D;&#x3067;&#x304D;&#x307E;&#x3059;&#x3002;</p>
-<p>Firefox&#x306E;&#x958B;&#x767A;&#x8005;&#x30C4;&#x30FC;&#x30EB;&#x306F;&#x6B21;&#x306E;&#x3044;&#x305A;&#x308C;&#x304B;&#x306E;&#x65B9;&#x6CD5;&#x3067;&#x958B;&#x304D;&#x307E;&#x3059;&#x3002;</p>
+<p>起動したローカルサーバーのURL（<code>http://localhost:3000</code>）へブラウザでアクセスしてみましょう。
+ブラウザには<code>index.html</code>の内容が表示され、開発者ツールのコンソールに<code>index.js: loaded</code>というログが出力されていることが確認できます。</p>
+<p><img src="img/first-entry.png" alt="Webコンソールにログが表示されている"></img></p>
+<h3 id="view-console-log-in-dev-tools"><a name="view-console-log-in-dev-tools" class="plugin-anchor" href="#view-console-log-in-dev-tools"><i class="fa fa-link" aria-hidden="true"></i></a>開発者ツールでのコンソールログの確認方法 </h3>
+<p>Console APIで出力したログを確認するには、ウェブブラウザの開発者ツールを開く必要があります。
+ほとんどのブラウザに開発者ツールが同梱されていますが、本章ではFirefoxを使って確認します。
+開発者ツールの<strong>コンソール</strong>タブを開くとConsole APIで出力したログを確認できます。</p>
+<p>Firefoxの開発者ツールは次のいずれかの方法で開きます。</p>
 <ul>
-<li>Firefox &#x30E1;&#x30CB;&#x30E5;&#x30FC;&#xFF08;&#x30E1;&#x30CB;&#x30E5;&#x30FC;&#x30D0;&#x30FC;&#x304C;&#x3042;&#x308B;&#x5834;&#x5408;&#x3084;macOS&#x3067;&#x306F;&#x3001;&#x30C4;&#x30FC;&#x30EB;&#x30E1;&#x30CB;&#x30E5;&#x30FC;&#xFF09;&#x306E; Web &#x958B;&#x767A;&#x30B5;&#x30D6;&#x30E1;&#x30CB;&#x30E5;&#x30FC;&#x3067; &quot;Web &#x30B3;&#x30F3;&#x30BD;&#x30FC;&#x30EB;&quot; &#x3092;&#x9078;&#x629E;&#x3059;&#x308B;</li>
-<li>&#x30AD;&#x30FC;&#x30DC;&#x30FC;&#x30C9;&#x30B7;&#x30E7;&#x30FC;&#x30C8;&#x30AB;&#x30C3;&#x30C8;<code>Ctrl+Shift+K</code>&#xFF08;macOS&#x3067;&#x306F;<code>Command+Option+K</code>&#xFF09;&#x3092;&#x62BC;&#x4E0B;&#x3059;&#x308B;</li>
+<li>Firefox メニュー（メニューバーがある場合や macOS では、ツールメニュー）の "ブラウザーツール"のサブメニューから "ウェブ開発ツール" を選択する</li>
+<li>キーボードショートカット<code>Ctrl+Shift+K</code>（macOSでは<code>Command+Option+K</code>）を押下する</li>
 </ul>
-<p>&#x8A73;&#x7D30;&#x306F;&quot;<a href="https://developer.mozilla.org/ja/docs/Tools/Web_Console/Opening_the_Web_Console" target="_blank">Web&#x30B3;&#x30F3;&#x30BD;&#x30FC;&#x30EB;&#x3092;&#x958B;&#x304F;</a>&quot;&#x3092;&#x53C2;&#x7167;&#x3057;&#x3066;&#x304F;&#x3060;&#x3055;&#x3044;&#x3002;</p>
-<h3 id="error-not-display-console-log"><a name="error-not-display-console-log" class="plugin-anchor" href="#error-not-display-console-log"><i class="fa fa-link" aria-hidden="true"></i></a>[&#x30A8;&#x30E9;&#x30FC;&#x4F8B;] &#x30B3;&#x30F3;&#x30BD;&#x30FC;&#x30EB;&#x30ED;&#x30B0;&#x304C;&#x8868;&#x793A;&#x3055;&#x308C;&#x306A;&#x3044; </h3>
-<p>HTML&#x306F;&#x8868;&#x793A;&#x3055;&#x308C;&#x308B;&#x304C;&#x30B3;&#x30F3;&#x30BD;&#x30FC;&#x30EB;&#x30ED;&#x30B0;&#x306B;<code>index.js: loaded</code>&#x304C;&#x8868;&#x793A;&#x3055;&#x308C;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F;&#x6B21;&#x306E;&#x3088;&#x3046;&#x306A;&#x554F;&#x984C;&#x3067;&#x3042;&#x308B;&#x304B;&#x3092;&#x78BA;&#x8A8D;&#x3057;&#x3066;&#x898B;&#x3066;&#x304F;&#x3060;&#x3055;&#x3044;&#x3002;</p>
-<ul>
-<li><code>index.js</code>&#x306E;&#x8AAD;&#x307F;&#x8FBC;&#x307F;&#x306B;&#x5931;&#x6557;&#x3057;&#x3066;&#x3044;&#x308B;</li>
-<li>JavaScript&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x306B;&#x975E;&#x5BFE;&#x5FDC;&#x306E;&#x30D6;&#x30E9;&#x30A6;&#x30B6;&#x3092;&#x5229;&#x7528;&#x3057;&#x3066;&#x3044;&#x308B;</li>
-</ul>
-<blockquote>
-<p><code>index.js</code>&#x306E;&#x8AAD;&#x307F;&#x8FBC;&#x307F;&#x306B;&#x5931;&#x6557;&#x3057;&#x3066;&#x3044;&#x308B;</p>
-</blockquote>
-<p>scirpt&#x30BF;&#x30B0;&#x306B;&#x6307;&#x5B9A;&#x3057;&#x305F;<code>index.js</code>&#x306E;&#x30D1;&#x30B9;&#x306B;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x304C;&#x5B58;&#x5728;&#x3057;&#x3066;&#x3044;&#x308B;&#x304B;&#x3092;&#x78BA;&#x8A8D;&#x3057;&#x3066;&#x304F;&#x3060;&#x3055;&#x3044;&#x3002;
-<code>&lt;script type=&quot;module&quot; src=&quot;index.js&quot;&gt;</code>&#x3068;&#x3057;&#x3066;&#x3057;&#x305F;&#x5834;&#x5408;&#x306F;<code>index.html</code>&#x3068;<code>index.js</code>&#x306F;&#x540C;&#x3058;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x306B;&#x914D;&#x7F6E;&#x3059;&#x308B;&#x5FC5;&#x8981;&#x304C;&#x3042;&#x308A;&#x307E;&#x3059;&#x3002;</p>
-<p>&#x307E;&#x305F;&#x3001;<em>CORS policy Invalid</em>&#x306E;&#x3088;&#x3046;&#x306A;&#x30A8;&#x30E9;&#x30FC;&#x304C;&#x30B3;&#x30F3;&#x30BD;&#x30FC;&#x30EB;&#x306B;&#x8868;&#x793A;&#x3055;&#x308C;&#x3066;&#x3044;&#x308B;&#x5834;&#x5408;&#x306F;&#x3001;<a href="https://developer.mozilla.org/ja/docs/Web/Security/Same-origin_policy" target="_blank">Same Origin Policy</a>&#x306B;&#x3088;&#x308A;<code>index.js</code>&#x306E;&#x8AAD;&#x307F;&#x8FBC;&#x307F;&#x304C;&#x5931;&#x6557;&#x3057;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;
-&#x5148;&#x307B;&#x3069;&#x3082;&#x66F8;&#x3044;&#x305F;&#x3088;&#x3046;&#x306B;&#x3001;<code>file:</code>&#x304B;&#x3089;&#x59CB;&#x307E;&#x308B;&#x30DA;&#x30FC;&#x30B8;&#x4E0A;&#x304B;&#x3089;&#x306F;JavaScript&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x3092;&#x8AAD;&#x307F;&#x8FBC;&#x3081;&#x306A;&#x3044;&#x30D6;&#x30E9;&#x30A6;&#x30B6;&#x3082;&#x3042;&#x308A;&#x307E;&#x3059;&#x3002;
-&#x305D;&#x306E;&#x305F;&#x3081;&#x3001;&#x30ED;&#x30FC;&#x30AB;&#x30EB;&#x30B5;&#x30FC;&#x30D0;&#x3092;&#x8D77;&#x52D5;&#x3057;&#x3001;&#x30ED;&#x30FC;&#x30AB;&#x30EB;&#x30B5;&#x30FC;&#x30D0;(<code>http:</code>&#x304B;&#x3089;&#x59CB;&#x307E;&#x308B;URL)&#x306B;&#x30A2;&#x30AF;&#x30BB;&#x30B9;&#x3057;&#x3066;&#x3044;&#x308B;&#x3053;&#x3068;&#x3092;&#x78BA;&#x8A8D;&#x3057;&#x3066;&#x304F;&#x3060;&#x3055;&#x3044;&#x3002;</p>
-<blockquote>
-<p>JavaScript&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x306B;&#x975E;&#x5BFE;&#x5FDC;&#x306E;&#x30D6;&#x30E9;&#x30A6;&#x30B6;&#x3092;&#x5229;&#x7528;&#x3057;&#x3066;&#x3044;&#x308B;</p>
-</blockquote>
-<p>JavaScript&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x306F;&#x307E;&#x3060;&#x65B0;&#x3057;&#x3044;&#x6A5F;&#x80FD;&#x3067;&#x3042;&#x308B;&#x305F;&#x3081;&#x3001;&#x30D0;&#x30FC;&#x30B8;&#x30E7;&#x30F3;&#x304C;60&#x4EE5;&#x4E0A;&#x306E;Firefox&#x304C;&#x5FC5;&#x8981;&#x3067;&#x3059;&#x3002;
-&#x30D0;&#x30FC;&#x30B8;&#x30E7;&#x30F3;&#x304C;60&#x672A;&#x6E80;&#x306E;Firefox&#x3067;&#x306F;&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x3067;&#x3042;&#x308B;<code>index.js</code>&#x304C;&#x8AAD;&#x307F;&#x8FBC;&#x3081;&#x306A;&#x3044;&#x305F;&#x3081;&#x30B3;&#x30F3;&#x30BD;&#x30FC;&#x30EB;&#x30ED;&#x30B0;&#x306F;&#x51FA;&#x529B;&#x3055;&#x308C;&#x307E;&#x305B;&#x3093;&#x3002;</p>
-<p>&#x4ECA;&#x56DE;&#x306E;Todo&#x30A2;&#x30D7;&#x30EA;&#x3067;&#x306F;&#x3001;&#x30CD;&#x30A4;&#x30C6;&#x30A3;&#x30D6;&#x3067;JavaScript&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x306B;&#x5BFE;&#x5FDC;&#x3057;&#x3066;&#x3044;&#x308B;&#x30D6;&#x30E9;&#x30A6;&#x30B6;&#x304C;&#x5FC5;&#x8981;&#x3067;&#x3059;&#x3002;
-<a href="https://caniuse.com/#feat=es6-module" target="_blank">Can I Use</a>&#x306B;&#x3066;&#x30CD;&#x30A4;&#x30C6;&#x30A3;&#x30D6;&#x3067;JavaScript&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x306B;&#x5BFE;&#x5FDC;&#x3057;&#x3066;&#x3044;&#x308B;&#x30D6;&#x30E9;&#x30A6;&#x30B6;&#x304C;&#x307E;&#x3068;&#x3081;&#x3089;&#x308C;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;
-&#x975E;&#x5BFE;&#x5FDC;&#x306E;&#x30D6;&#x30E9;&#x30A6;&#x30B6;&#x3067;&#x3082;Bundler&#x3068;&#x547C;&#x3070;&#x308C;&#x308B;&#x30C4;&#x30FC;&#x30EB;&#x3092;&#x4F7F;&#x3046;&#x3053;&#x3068;&#x3067;&#x5BFE;&#x5FDC;&#x3067;&#x304D;&#x307E;&#x3059;&#x304C;&#x3001;&#x672C;&#x7AE0;&#x3067;&#x306F;&#x7701;&#x7565;&#x3057;&#x307E;&#x3059;&#x3002;</p>
-<hr>
-<h2 id="module-entry-point"><a name="module-entry-point" class="plugin-anchor" href="#module-entry-point"><i class="fa fa-link" aria-hidden="true"></i></a>&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x306E;&#x30A8;&#x30F3;&#x30C8;&#x30EA;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x306E;&#x4F5C;&#x6210; </h2>
+<p>詳細は「<a href="https://developer.mozilla.org/ja/docs/Learn/Common_questions/What_are_browser_developer_tools" target="_blank">ブラウザーの開発者ツールとは？</a>」を参照してください。</p>
+<h3 id="error-not-display-console-log"><a name="error-not-display-console-log" class="plugin-anchor" href="#error-not-display-console-log"><i class="fa fa-link" aria-hidden="true"></i></a>コンソールログが表示されない </h3>
+<p>HTMLは表示されるがコンソールログに<code>index.js: loaded</code>が表示されない場合は、次のような問題に該当してないかを確認してください。</p>
+<h4 id="fail-to-load-javascript-module"><a name="fail-to-load-javascript-module" class="plugin-anchor" href="#fail-to-load-javascript-module"><i class="fa fa-link" aria-hidden="true"></i></a>[エラー例] <code>index.js</code>の読み込みに失敗している </h4>
+<p><code>script</code>要素の<code>src</code>属性に指定した<code>index.js</code>のパスにファイルが存在しているかを確認してください。
+<code>&lt;script type="module" src="index.js"&gt;</code>とした場合は<code>index.html</code>と<code>index.js</code>は同じディレクトリに配置する必要があります。</p>
+<p>また、<em>CORS policy Invalid</em>のようなエラーがコンソールに表示されている場合は、<a href="https://developer.mozilla.org/ja/docs/Web/Security/Same-origin_policy" target="_blank">Same Origin Policy</a>により<code>index.js</code>の読み込みが失敗しています。
+先ほども紹介したように、<code>file:</code>からはじまるページ上からはJavaScriptモジュールは正しく動作しません。
+そのため、ローカルサーバーを起動し、ローカルサーバー（<code>http:</code>からはじまるURL）にアクセスしていることを確認してください。</p>
+<h4 id="unsupport-javascript-module"><a name="unsupport-javascript-module" class="plugin-anchor" href="#unsupport-javascript-module"><i class="fa fa-link" aria-hidden="true"></i></a>[エラー例] JavaScriptモジュールに非対応のブラウザを利用している </h4>
+<p>JavaScriptモジュールはまだ新しい機能であるため、バージョンが60以上のFirefoxが必要です。
+バージョンが60未満のFirefoxでは、JavaScriptモジュールである<code>index.js</code>が読み込めないためコンソールログは出力されません。</p>
+<p>今回のTodoアプリでは、ネイティブでJavaScriptモジュールに対応しているブラウザが必要です。
+<a href="https://caniuse.com/#feat=es6-module" target="_blank">Can I Use</a>にネイティブでJavaScriptモジュールに対応しているブラウザがまとめられています。
+非対応のブラウザでもBundlerと呼ばれるツールを使うことで対応できますが、本章では省略します。</p>
+<hr></hr>
+<h2 id="module-entry-point"><a name="module-entry-point" class="plugin-anchor" href="#module-entry-point"><i class="fa fa-link" aria-hidden="true"></i></a>モジュールのエントリーポイントの作成 </h2>
 <!-- ソースコードは module-entry/ -->
-<p>&#x6700;&#x5F8C;&#x306B;&#x30A8;&#x30F3;&#x30C8;&#x30EA;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x3068;&#x306A;&#x308B;<code>index.js</code>&#x304B;&#x3089;&#x5225;&#x306E;JavaScript&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x3068;&#x3057;&#x3066;&#x8AAD;&#x307F;&#x8FBC;&#x3093;&#x3067;&#x898B;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;
-&#x3053;&#x306E;&#x30A2;&#x30D7;&#x30EA;&#x3067;&#x306F;JavaScript&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x304C;&#x8907;&#x6570;&#x767B;&#x5834;&#x3059;&#x308B;&#x305F;&#x3081;<code>src/</code>&#x3068;&#x3044;&#x3046;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x3092;&#x4F5C;&#x308A;&#x3001;<code>src/</code>&#x306E;&#x4E0B;&#x306B;JavaScript&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x3092;&#x66F8;&#x304F;&#x3053;&#x3068;&#x306B;&#x3057;&#x307E;&#x3059;&#x3002;
-&#x4ECA;&#x56DE;&#x306F;<code>src/App.js</code>&#x306B;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x4F5C;&#x6210;&#x3057;&#x3001;&#x3053;&#x308C;&#x3092;<code>index.js</code>&#x304B;&#x3089;&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x3068;&#x3057;&#x3066;&#x8AAD;&#x307F;&#x8FBC;&#x307F;&#x307E;&#x3059;&#x3002;</p>
-<p>&#x6700;&#x7D42;&#x7684;&#x306B;&#x73FE;&#x5728;&#x306E;<code>todoapp</code>&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x306F;&#x6B21;&#x306E;&#x3088;&#x3046;&#x306A;&#x69CB;&#x9020;&#x306B;&#x306A;&#x308A;&#x307E;&#x3059;&#x3002;</p>
+<p>最後にエントリーポイントとなる<code>index.js</code>から別のJavaScriptファイルをモジュールとして読み込んでみましょう。
+このアプリではJavaScriptモジュールが複数登場するため<code>src/</code>というディレクトリを作り、<code>src/</code>の下にJavaScriptモジュールを書くことにします。
+今回は<code>src/App.js</code>というファイルを作成し、これを<code>index.js</code>からモジュールとして読み込みます。</p>
+<p>次のようなファイル配置となるように<code>src/App.js</code>を作成します。</p>
 <pre><code>todoapp
-&#x251C;&#x2500;&#x2500; index.html
-&#x251C;&#x2500;&#x2500; index.js
-&#x251C;&#x2500;&#x2500; node_modules
-&#x251C;&#x2500;&#x2500; package.json
-&#x2514;&#x2500;&#x2500; src
-    &#x2514;&#x2500;&#x2500; App.js
-</code></pre><p><code>src/App.js</code>&#x306B;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x4F5C;&#x6210;&#x3057;&#x3001;&#x6B21;&#x306E;&#x3088;&#x3046;&#x306A;&#x5185;&#x5BB9;&#x306E;JavaScript&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x3068;&#x3057;&#x307E;&#x3059;&#x3002;
-&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x306F;&#x3001;&#x57FA;&#x672C;&#x7684;&#x306B;&#x306F;&#x4F55;&#x304B;&#x3057;&#x3089;&#x3092;&#x5916;&#x90E8;&#x306B;&#x516C;&#x958B;&#xFF08;<code>export</code>&#xFF09;&#x3057;&#x307E;&#x3059;&#x3002;
-<code>App.js</code>&#x306F;<code>App</code>&#x3068;&#x3044;&#x3046;&#x30AF;&#x30E9;&#x30B9;&#x3092;&#x516C;&#x958B;&#x3059;&#x308B;&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x3068;&#x3057;&#x3066;&#x3001;&#x4ECA;&#x56DE;&#x306F;&#x30B3;&#x30F3;&#x30BD;&#x30FC;&#x30EB;&#x30ED;&#x30B0;&#x3092;&#x51FA;&#x529B;&#x3059;&#x308B;&#x3060;&#x3051;&#x3067;&#x3059;&#x3002;</p>
-<pre><code class="lang-javascript"><span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;App.js: loaded&quot;</span>);
-<span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> </span>{
-    <span class="hljs-keyword">constructor</span>() {
-        <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;App initialized&quot;</span>);
+├── index.html
+├── index.js
+└── src
+    └── App.js
+</code></pre><p><code>src/App.js</code>ファイルを作成し、次のような内容のJavaScriptモジュールとします。
+<code>App.js</code>は<code>App</code>というクラスを名前つきエクスポートしているモジュールです。
+また、<code>App</code>クラスのコンストラクタにはコンソールログを出力するコードを確認用に書いておきます。</p>
+<div class="code-filename-block">
+    <p class="code-filename">src/App.js</p>
+</div>
+
+<pre><code class="lang-javascript"><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">"App.js: loaded"</span>);
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">App</span> {
+    <span class="hljs-title function_">constructor</span>(<span class="hljs-params"></span>) {
+        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">"App initialized"</span>);
     }
 }
 </code></pre>
-<p>&#x6B21;&#x306B;&#x3001;&#x3053;&#x306E;<code>src/App.js</code>&#x3092;<code>index.js</code>&#x304B;&#x3089;&#x53D6;&#x308A;&#x8FBC;&#x307F;(<code>import</code>)&#x3057;&#x307E;&#x3059;&#x3002;
-<code>index.js</code>&#x3092;&#x6B21;&#x306E;&#x3088;&#x3046;&#x306B;&#x66F8;&#x304D;&#x63DB;&#x3048;&#x3001;<code>App.js</code>&#x304B;&#x3089;<code>App</code>&#x30AF;&#x30E9;&#x30B9;&#x3092;&#x53D6;&#x308A;&#x8FBC;&#x307F;&#x30A4;&#x30F3;&#x30B9;&#x30BF;&#x30F3;&#x30B9;&#x5316;&#x3057;&#x307E;&#x3059;&#x3002;</p>
-<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> { App } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;./src/App.js&quot;</span>;
-<span class="hljs-keyword">const</span> app = <span class="hljs-keyword">new</span> App();
+<p>次に、この<code>src/App.js</code>を<code>index.js</code>から利用するために<code>import</code>します。
+<code>index.js</code>を次のように書き換え、<code>App.js</code>から<code>App</code>クラスをインポートしてインスタンス化します。</p>
+<div class="code-filename-block">
+    <p class="code-filename">index.js</p>
+</div>
+
+<pre><code class="lang-javascript"><span class="hljs-keyword">import</span> { <span class="hljs-title class_">App</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">"./src/App.js"</span>;
+<span class="hljs-keyword">const</span> app = <span class="hljs-keyword">new</span> <span class="hljs-title class_">App</span>();
 </code></pre>
-<p>&#x518D;&#x5EA6;&#x30ED;&#x30FC;&#x30AB;&#x30EB;&#x30B5;&#x30FC;&#x30D0;&#x306E;URL&#xFF08;<code>http://127.0.0.1:3030</code>&#xFF09;&#x306B;&#x30D6;&#x30E9;&#x30A6;&#x30B6;&#x3067;&#x30A2;&#x30AF;&#x30BB;&#x30B9;&#x3057;&#x3001;&#x30EA;&#x30ED;&#x30FC;&#x30C9;&#x3057;&#x3066;&#x307F;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;
-&#x30B3;&#x30F3;&#x30BD;&#x30FC;&#x30EB;&#x30ED;&#x30B0;&#x306B;&#x306F;&#x3001;&#x6B21;&#x306E;&#x3088;&#x3046;&#x306B;&#x51E6;&#x7406;&#x306E;&#x9806;&#x756A;&#x3069;&#x304A;&#x308A;&#x306E;&#x30ED;&#x30B0;&#x304C;&#x51FA;&#x529B;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;</p>
+<p>再度ローカルサーバーのURL（<code>http://localhost:3000</code>）にブラウザでアクセスし、リロードしてみましょう。
+コンソールログには、次のように処理の順番どおりのログが出力されます。</p>
 <pre><code>App.js: loaded
 App initialized
-</code></pre><p>&#x307E;&#x305A;<code>index.js</code>&#x304B;&#x3089;<code>src/App.js</code>&#x306E;<code>App</code>&#x30AF;&#x30E9;&#x30B9;&#x304C;&#x53D6;&#x308A;&#x8FBC;&#x307E;&#x308C;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;
-&#x6B21;&#x306B;<code>App</code>&#x30AF;&#x30E9;&#x30B9;&#x304C;&#x30A4;&#x30F3;&#x30B9;&#x30BF;&#x30F3;&#x30B9;&#x5316;&#x3055;&#x308C;&#x3066;&#x3044;&#x308B;&#x3053;&#x3068;&#x304C;&#x30ED;&#x30B0;&#x304B;&#x3089;&#x78BA;&#x8A8D;&#x3067;&#x304D;&#x307E;&#x3059;&#x3002;</p>
-<p>&#x3053;&#x308C;&#x3067;HTML&#x3068;JavaScript&#x305D;&#x308C;&#x305E;&#x308C;&#x306E;&#x30A8;&#x30F3;&#x30C8;&#x30EA;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x306E;&#x4F5C;&#x6210;&#x3068;&#x52D5;&#x4F5C;&#x3092;&#x78BA;&#x8A8D;&#x3067;&#x304D;&#x307E;&#x3057;&#x305F;&#x3002;</p>
-<h3 id="error-import-app-js"><a name="error-import-app-js" class="plugin-anchor" href="#error-import-app-js"><i class="fa fa-link" aria-hidden="true"></i></a>[&#x30A8;&#x30E9;&#x30FC;&#x4F8B;] App.js&#x306E;&#x8AAD;&#x307F;&#x8FBC;&#x307F;&#x306B;&#x5931;&#x6557;&#x3059;&#x308B; </h3>
-<p>&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x69CB;&#x9020;&#x3084;<code>import</code>&#x5BA3;&#x8A00;&#x3067;&#x6307;&#x5B9A;&#x3057;&#x305F;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x30D1;&#x30B9;&#x304C;&#x7570;&#x306A;&#x308B;&#x3068;&#x3001;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x8AAD;&#x307F;&#x8FBC;&#x3080;&#x3053;&#x3068;&#x304C;&#x3067;&#x304D;&#x305A;&#x306B;&#x30A8;&#x30E9;&#x30FC;&#x3068;&#x306A;&#x3063;&#x3066;&#x3057;&#x307E;&#x3044;&#x307E;&#x3059;&#x3002;
-&#x3053;&#x306E;&#x5834;&#x5408;&#x306F;&#x958B;&#x767A;&#x8005;&#x30C4;&#x30FC;&#x30EB;&#x3092;&#x958B;&#x304D;&#x3001;&#x30B3;&#x30F3;&#x30BD;&#x30FC;&#x30EB;&#x306B;&#x30A8;&#x30E9;&#x30FC;&#x304C;&#x51FA;&#x3066;&#x3044;&#x306A;&#x3044;&#x304B;&#x3092;&#x78BA;&#x8A8D;&#x3057;&#x3066;&#x898B;&#x3066;&#x304F;&#x3060;&#x3055;&#x3044;&#x3002;</p>
-<p><code>import</code>&#x5BA3;&#x8A00;&#x3092;&#x4F7F;&#x3063;&#x305F;JavaScript&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x8AAD;&#x307F;&#x8FBC;&#x3080;&#x3067;&#x8D77;&#x304D;&#x308B;&#x5178;&#x578B;&#x7684;&#x306A;&#x30A8;&#x30E9;&#x30FC;&#x3068;&#x5BFE;&#x51E6;&#x3092;&#x6B21;&#x306B;&#x307E;&#x3068;&#x3081;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;</p>
-<blockquote>
-<p>SyntaxError: import declarations may only appear at top level of a module</p>
-</blockquote>
-<p>&#x300C;<code>import</code>&#x5BA3;&#x8A00;&#x306F;&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x306E;&#x30C8;&#x30C3;&#x30D7;&#x30EC;&#x30D9;&#x30EB;&#x3067;&#x3057;&#x304B;&#x5229;&#x7528;&#x3067;&#x304D;&#x307E;&#x305B;&#x3093;&#x300D;&#x3068;&#x3044;&#x3046;&#x30A8;&#x30E9;&#x30FC;&#x304C;&#x3067;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;
-&#x3053;&#x306E;&#x30A8;&#x30E9;&#x30FC;&#x304C;&#x3067;&#x3066;&#x3044;&#x308B;&#x3068;&#x3044;&#x3046;&#x3053;&#x3068;&#x306F;&#x3001;<code>import</code>&#x5BA3;&#x8A00;&#x3092;&#x4F7F;&#x3048;&#x308B;&#x6761;&#x4EF6;&#x3092;&#x6E80;&#x305F;&#x3057;&#x3066;&#x3044;&#x306A;&#x3044;&#x3068;&#x3044;&#x3046;&#x3053;&#x3068;&#x3067;&#x3059;&#x3002;
-&#x3064;&#x307E;&#x308A;&#x3001;<code>import</code>&#x5BA3;&#x8A00;&#x304C;&#x30C8;&#x30C3;&#x30D7;&#x30EC;&#x30D9;&#x30EB;&#x3067;&#x306F;&#x306A;&#x3044;&#x6240;&#x306B;&#x66F8;&#x304B;&#x308C;&#x3066;&#x3044;&#x308B;&#x3001;&#x307E;&#x305F;&#x306F;&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x3067;&#x306F;&#x306A;&#x3044;&#x5B9F;&#x884C;&#x30B3;&#x30F3;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x3067;&#x5B9F;&#x884C;&#x3055;&#x308C;&#x3066;&#x3044;&#x308B;&#x3068;&#x3044;&#x3046;&#x3053;&#x3068;&#x3067;&#x3059;&#x3002;</p>
-<p><code>import</code>&#x5BA3;&#x8A00;&#x304C;&#x30C8;&#x30C3;&#x30D7;&#x30EC;&#x30D9;&#x30EB;&#x3067;&#x306F;&#x306A;&#x3044;&#x6240;&#x306B;&#x66F8;&#x304B;&#x308C;&#x3066;&#x3044;&#x308B;&#x3068;&#x3044;&#x3046;&#x306E;&#x306F;&#x3001;&#x95A2;&#x6570;&#x306E;&#x4E2D;&#x306A;&#x3069;&#x306B;<code>import</code>&#x5BA3;&#x8A00;&#x3092;&#x884C;&#x3063;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;
-&#x3053;&#x306E;&#x5834;&#x5408;&#x306F;<code>import</code>&#x5BA3;&#x8A00;&#x3092;&#x30C8;&#x30C3;&#x30D7;&#x30EC;&#x30D9;&#x30EB;&#xFF08;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306E;&#x76F4;&#x4E0B;&#xFF09;&#x306B;&#x79FB;&#x52D5;&#x3055;&#x305B;&#x3066;&#x307F;&#x3066;&#x304F;&#x3060;&#x3055;&#x3044;&#x3002;</p>
-<p>&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x3067;&#x306F;&#x306A;&#x3044;&#x5B9F;&#x884C;&#x30B3;&#x30F3;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x3067;&#x5B9F;&#x884C;&#x3055;&#x308C;&#x3066;&#x3044;&#x308B;&#x3068;&#x3044;&#x3046;&#x306E;&#x306F;&#x3001;&#x88CF;&#x3092;&#x8FD4;&#x305B;&#x3070;&#x5B9F;&#x884C;&#x30B3;&#x30F3;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x304C;Script&#x3068;&#x306A;&#x3063;&#x3066;&#x3044;&#x308B;&#x3068;&#x3044;&#x3046;&#x3053;&#x3068;&#x3067;&#x3059;&#x3002;
-JavaScript&#x306B;&#x306F;&#x5B9F;&#x884C;&#x30B3;&#x30F3;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x3068;&#x3057;&#x3066;Script&#x3068;Module&#x304C;&#x3042;&#x308A;&#x307E;&#x3059;&#x3002;
-<code>import</code>&#x5BA3;&#x8A00;&#x306F;&#x5B9F;&#x884C;&#x30B3;&#x30F3;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x304C;Module&#x3067;&#x306A;&#x3044;&#x3068;&#x5229;&#x7528;&#x3067;&#x304D;&#x307E;&#x305B;&#x3093;&#x3002;
-&#x305D;&#x306E;&#x305F;&#x3081;&#x3001;script&#x30BF;&#x30B0;&#x306E;<code>type</code>&#x6307;&#x5B9A;&#x3092;&#x5FD8;&#x308C;&#x3066;&#x3044;&#x306A;&#x3044;&#x304B;&#x3092;&#x30C1;&#x30A7;&#x30C3;&#x30AF;&#x3057;&#x3066;&#x307F;&#x3066;&#x304F;&#x3060;&#x3055;&#x3044;&#x3002;</p>
-<p>&#x5B9F;&#x884C;&#x30B3;&#x30F3;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x3092;&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x3068;&#x3057;&#x3066;&#x5B9F;&#x884C;&#x3059;&#x308B;&#x306B;&#x306F;<code>&lt;script type=&quot;module&quot; src=&quot;index.js&quot;&gt;</code>&#x306E;&#x3088;&#x3046;&#x306B;<code>type=module</code>&#x3092;&#x6307;&#x5B9A;&#x3059;&#x308B;&#x5FC5;&#x8981;&#x304C;&#x3042;&#x308A;&#x307E;&#x3059;&#x3002;
-&#xFF08;<code>index.js</code>&#x304B;&#x3089;<code>import</code>&#x5BA3;&#x8A00;&#x3067;&#x8AAD;&#x307F;&#x8FBC;&#x3093;&#x3060;<code>App.js</code>&#x306F;&#x5B9F;&#x884C;&#x30B3;&#x30F3;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x3092;&#x5F15;&#x304D;&#x7D99;&#x3050;&#x305F;&#x3081;&#x3001;&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x306E;&#x5B9F;&#x884C;&#x30B3;&#x30F3;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x3067;&#x51E6;&#x7406;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;&#xFF09;</p>
-<blockquote>
-<p>&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x306E;&#x30BD;&#x30FC;&#x30B9; &#x201C;<a href="http://localhost:3000/src/App&#x201D;" target="_blank">http://localhost:3000/src/App&#x201D;</a> &#x306E;&#x8AAD;&#x307F;&#x8FBC;&#x307F;&#x306B;&#x5931;&#x6557;&#x3057;&#x307E;&#x3057;&#x305F;&#x3002;</p>
-</blockquote>
-<p><code>App.js</code>&#x304C;&#x8AAD;&#x307F;&#x8FBC;&#x3081;&#x3066;&#x3044;&#x306A;&#x3044;&#x3068;&#x3044;&#x3046;&#x30A8;&#x30E9;&#x30FC;&#x304C;&#x3067;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;
-&#x30A8;&#x30E9;&#x30FC;&#x30E1;&#x30C3;&#x30BB;&#x30FC;&#x30B8;&#x3092;&#x3088;&#x304F;&#x898B;&#x308B;&#x3068;<code>App</code>&#x3068;&#x306A;&#x3063;&#x3066;&#x3044;&#x3066;<code>App.js</code>&#x3067;&#x306F;&#x3042;&#x308A;&#x307E;&#x305B;&#x3093;&#x3002;</p>
-<p><code>import</code>&#x5BA3;&#x8A00;&#x3067;&#x306F;&#x3001;&#x8AAD;&#x307F;&#x8FBC;&#x3080;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306E;&#x62E1;&#x5F35;&#x5B50;&#x3092;&#x7701;&#x7565;&#x3057;&#x307E;&#x305B;&#x3093;&#x3002;
-&#x305D;&#x306E;&#x305F;&#x3081;&#x3001;<code>App</code>&#x306E;&#x3088;&#x3046;&#x306B;&#x62E1;&#x5F35;&#x5B50;&#xFF08;<code>.js</code>&#xFF09;&#x3092;&#x7701;&#x7565;&#x3057;&#x3066;&#x66F8;&#x3044;&#x3066;&#x3044;&#x308B;&#x5834;&#x5408;&#x306F;&#x3053;&#x306E;&#x30A8;&#x30E9;&#x30FC;&#x304C;&#x767A;&#x751F;&#x3057;&#x307E;&#x3059;&#x3002;</p>
+</code></pre><p>まず<code>index.js</code>から<code>src/App.js</code>が名前つきエクスポートしている<code>App</code>クラスを名前つきインポートしています。
+次に<code>App</code>クラスがインスタンス化されていることがログから確認できます。</p>
+<p>これでHTMLとJavaScriptそれぞれのエントリーポイントの作成と動作を確認できました。</p>
+<h3 id="error-import-app-js"><a name="error-import-app-js" class="plugin-anchor" href="#error-import-app-js"><i class="fa fa-link" aria-hidden="true"></i></a>App.jsの読み込みに失敗する </h3>
+<p>ここまでのJavaScriptモジュールの読み込みでエラーが発生して動かない場合には、次のことを確認します。</p>
+<p>ディレクトリ構造や<code>import</code>文で指定したファイルパスが異なると、ファイルを読み込むことができずにエラーとなってしまいます。
+この場合は開発者ツールを開き、コンソールにエラーが出ていないかを確認してみてください。</p>
+<p><code>import</code>文を使ったJavaScriptのモジュール読み込み時に起きる典型的なエラーと対処を次にまとめています。</p>
+<h4 id="syntax-error-import-declarations"><a name="syntax-error-import-declarations" class="plugin-anchor" href="#syntax-error-import-declarations"><i class="fa fa-link" aria-hidden="true"></i></a>[エラー例] SyntaxError: import declarations may only appear at top level of a module </h4>
+<p>「<code>import</code>宣言はモジュールのトップレベルでしか利用できません」というエラーが出ています。
+このエラーが出ているということは、<code>import</code>文を使える条件を満たしていないということです。
+つまり、<code>import</code>文がトップレベルではないところに書かれている、またはモジュールではない実行コンテキストで実行されているということです。</p>
+<p>関数の中などに<code>import</code>宣言していると、<code>import</code>宣言がトップレベルではないためエラーが発生します。
+この場合は<code>import</code>文をトップレベル（プログラムの直下）に移動させてみてください。</p>
+<p>モジュールではない実行コンテキストで実行されているというのは、裏を返せば実行コンテキストがScriptとなっているということです。
+JavaScriptには実行コンテキストとしてScriptとModuleがあります。
+<code>import</code>文は実行コンテキストがModuleでないと利用できません。
+そのため、<code>script</code>要素の<code>type</code>属性に<code>module</code>指定を忘れていないかをチェックしてみてください。</p>
+<p>実行コンテキストをモジュールとして実行するには<code>&lt;script type="module" src="index.js"&gt;</code>のように<code>type=module</code>を指定する必要があります
+（<code>index.js</code>から<code>import</code>文で読み込んだ<code>App.js</code>は実行コンテキストを引き継ぐため、モジュールの実行コンテキストで処理されます）。</p>
+<h4 id="fail-to-load-src-app"><a name="fail-to-load-src-app" class="plugin-anchor" href="#fail-to-load-src-app"><i class="fa fa-link" aria-hidden="true"></i></a>[エラー例] モジュールのソース “<a href="http://localhost:3000/src/App”" target="_blank">http://localhost:3000/src/App”</a> の読み込みに失敗しました。 </h4>
+<p><code>App.js</code>を読み込めないというエラーが出ています。
+エラーメッセージをよく見ると<code>App</code>となっていて<code>App.js</code>ではありません。</p>
+<p><code>import</code>文では、読み込むファイルの拡張子を省略しません。
+そのため、<code>App</code>のように拡張子（<code>.js</code>）を省略して書いている場合はこのエラーが発生します。</p>
 <!-- doctest:disable -->
-<pre><code class="lang-js"><span class="hljs-comment">// &#x30A8;&#x30E9;&#x30FC;&#x3068;&#x306A;&#x308B;&#x4F8B;</span>
-<span class="hljs-keyword">import</span> { App } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;./src/App&quot;</span>;
+<pre><code class="lang-js"><span class="hljs-comment">// エラーとなる例</span>
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">App</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">"./src/App"</span>;
 </code></pre>
-<p>&#x6B63;&#x3057;&#x304F;&#x306F;&#x6B21;&#x306E;&#x3088;&#x3046;&#x306B;&#x62E1;&#x5F35;&#x5B50;&#x307E;&#x3067;&#x542B;&#x3081;&#x305F;&#x30D1;&#x30B9;&#x3092;&#x8A18;&#x8FF0;&#x3057;&#x307E;&#x3059;&#x3002;
-&#x307E;&#x305F;&#x6307;&#x5B9A;&#x3057;&#x305F;&#x30D1;&#x30B9;&#xFF08;<code>./src/App.js</code>&#xFF09;&#x306B;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x304C;&#x5B58;&#x5728;&#x3059;&#x308B;&#x304B;&#x3092;&#x78BA;&#x8A8D;&#x3057;&#x3066;&#x304F;&#x3060;&#x3055;&#x3044;&#x3002;</p>
+<p>正しくは次のように拡張子まで含めたパスを記述します。
+また指定したパス（<code>./src/App.js</code>）にファイルが存在するかを確認してください。</p>
 <!-- doctest:disable -->
-<pre><code class="lang-js"><span class="hljs-comment">// &#x6B63;&#x3057;&#x3044;&#x4F8B;</span>
-<span class="hljs-keyword">import</span> { App } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;./src/App.js&quot;</span>;
+<pre><code class="lang-js"><span class="hljs-comment">// 正しい例</span>
+<span class="hljs-keyword">import</span> { <span class="hljs-title class_">App</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">"./src/App.js"</span>;
 </code></pre>
-<h2 id="conclusion"><a name="conclusion" class="plugin-anchor" href="#conclusion"><i class="fa fa-link" aria-hidden="true"></i></a>&#x307E;&#x3068;&#x3081; </h2>
-<p>&#x3053;&#x306E;&#x30BB;&#x30AF;&#x30B7;&#x30E7;&#x30F3;&#x3067;&#x306F;&#x6B21;&#x306E;&#x3053;&#x3068;&#x3092;&#x884C;&#x3044;&#x307E;&#x3057;&#x305F;&#x3002;</p>
+<h2 id="conclusion"><a name="conclusion" class="plugin-anchor" href="#conclusion"><i class="fa fa-link" aria-hidden="true"></i></a>まとめ </h2>
+<p>このセクションでは、エントリーポイントとなるHTMLを作成し、JavaScriptモジュールのエントリーポイントとなるJavaScriptファイルを読み込むところまでを実装しました。</p>
+<h2 id="section-checklist"><a name="section-checklist" class="plugin-anchor" href="#section-checklist"><i class="fa fa-link" aria-hidden="true"></i></a>このセクションのチェックリスト </h2>
 <ul>
-<li style="list-style: none"><input type="checkbox" disabled="disabled" checked="checked"> todoapp&#x3068;&#x3044;&#x3046;&#x540D;&#x524D;&#x306E;&#x30D7;&#x30ED;&#x30B8;&#x30A7;&#x30AF;&#x30C8;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x3092;&#x4F5C;&#x6210;&#x3057;&#x305F;</li>
-<li style="list-style: none"><input type="checkbox" disabled="disabled" checked="checked"> &#x30A8;&#x30F3;&#x30C8;&#x30EA;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x3068;&#x306A;&#x308B;index.html&#x3092;&#x4F5C;&#x6210;&#x3057;&#x305F;</li>
-<li style="list-style: none"><input type="checkbox" disabled="disabled" checked="checked"> JavaScript&#x306E;&#x30A8;&#x30F3;&#x30C8;&#x30EA;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x3068;&#x306A;&#x308B;index.js&#x3092;&#x4F5C;&#x6210;&#x3057;index.html&#x304B;&#x3089;&#x8AAD;&#x307F;&#x8FBC;&#x3093;&#x3060;</li>
-<li style="list-style: none"><input type="checkbox" disabled="disabled" checked="checked"> &#x30ED;&#x30FC;&#x30AB;&#x30EB;&#x30B5;&#x30FC;&#x30D0;&#x3092;&#x4F7F;&#x3063;&#x3066;index.html&#x304C;&#x8868;&#x793A;&#x3067;&#x304D;&#x305F;</li>
-<li style="list-style: none"><input type="checkbox" disabled="disabled" checked="checked"> src/App.js&#x3092;&#x4F5C;&#x6210;&#x3057;&#x3001;index.js&#x304B;&#x3089;import&#x6587;&#x3067;&#x8AAD;&#x307F;&#x8FBC;&#x3081;&#x308B;&#x306E;&#x3092;&#x78BA;&#x8A8D;&#x3057;&#x305F;</li>
+<li><code>todoapp</code>という名前のプロジェクトディレクトリを作成した</li>
+<li>エントリーポイントとなる<code>index.html</code>を作成した</li>
+<li>JavaScriptのエントリーポイントとなる<code>index.js</code>を作成し<code>index.html</code>から読み込んだ</li>
+<li>ローカルサーバーを使って<code>index.html</code>を表示した</li>
+<li><code>src/App.js</code>を作成し、<code>index.js</code>から<code>import</code>文で読み込めるのを確認した</li>
 </ul>
-<p>&#x73FE;&#x5728;&#x306E;Todo&#x30A2;&#x30D7;&#x30EA;&#x306F;&#x6B21;&#x306E;URL&#x3067;&#x78BA;&#x8A8D;&#x3067;&#x304D;&#x307E;&#x3059;&#x3002;</p>
+<p>ここまでのTodoアプリは次のURLで確認できます。</p>
 <ul>
 <li><a href="https://jsprimer.net/use-case/todoapp/entrypoint/module-entry/" target="_blank">https://jsprimer.net/use-case/todoapp/entrypoint/module-entry/</a></li>
 </ul>
-
+<!-- sandpack:{"files":{"/src/App.js":{"code":"console.log(\"App.js: loaded\");\nexport class App {\n    constructor() {\n        console.log(\"App initialized\");\n    }\n}\n"},"/index.js":{"code":"import { App } from \"./src/App.js\";\nconst app = new App();\n"},"/src/index.js":{"code":"/* このファイルは本編とは無関係のファイルなので無視してください。 本編のindex.jsは一つ上のディレクトリにあります */","hidden":true},"/index.html":{"active":true,"code":"<!DOCTYPE html>\n<html lang=\"ja\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <title>Todo App</title>\n  </head>\n  <body>\n    <h1>Todo App</h1>\n    <script type=\"module\" src=\"index.js\"></script>\n  </body>\n</html>\n"}},"entry":"/index.js","main":"/index.js","environment":"static","template":"vanilla","options":{"showLineNumbers":true,"editorHeight":550,"showConsole":true,"showConsoleButton":true,"externalResources":["https://jsprimer.net/use-case/todoapp/final/final/index.css"]},"honkitSettings":{"isOpen":true,"hideExitButton":true}} -->
+</body></html>
                                 
+
                                 </section>
                             
                         </div>
                     </div>
                 
+<footer class="book_footer">
+    <p>Copyright (c) 2016-present <a href="https://github.com/asciidwango/js-primer" target="_blank">jsprimer project</a></p>
+</footer>
+
             </div>
 
             
@@ -1503,21 +1793,61 @@ JavaScript&#x306B;&#x306F;&#x5B9F;&#x884C;&#x30B3;&#x30F3;&#x30C6;&#x30AD;&#x30B
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"author":"azu","title":"エントリポイント","level":"1.6.5.1","depth":3,"next":{"title":"アプリの構成要素","level":"1.6.5.2","depth":3,"path":"use-case/todoapp/app-structure/README.md","ref":"./use-case/todoapp/app-structure/README.md","articles":[]},"previous":{"title":"Todoアプリ","level":"1.6.5","depth":2,"path":"use-case/todoapp/README.md","ref":"./use-case/todoapp/README.md","articles":[{"title":"エントリポイント","level":"1.6.5.1","depth":3,"path":"use-case/todoapp/entrypoint/README.md","ref":"./use-case/todoapp/entrypoint/README.md","articles":[]},{"title":"アプリの構成要素","level":"1.6.5.2","depth":3,"path":"use-case/todoapp/app-structure/README.md","ref":"./use-case/todoapp/app-structure/README.md","articles":[]},{"title":"フォームとイベント","level":"1.6.5.3","depth":3,"path":"use-case/todoapp/form-event/README.md","ref":"./use-case/todoapp/form-event/README.md","articles":[]},{"title":"イベントとモデル","level":"1.6.5.4","depth":3,"path":"use-case/todoapp/event-model/README.md","ref":"./use-case/todoapp/event-model/README.md","articles":[]},{"title":"Todoの更新と削除を実装する","level":"1.6.5.5","depth":3,"path":"use-case/todoapp/update-delete/README.md","ref":"./use-case/todoapp/update-delete/README.md","articles":[]},{"title":"Todoアプリのリファクタリング","level":"1.6.5.6","depth":3,"path":"use-case/todoapp/final/README.md","ref":"./use-case/todoapp/final/README.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["-search","-lunr","page-toc-button","include-codeblock","anchors","canonical-link","ga","js-console","github-issue-feedback","todo"],"root":"./source/","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"docSearch":{"apiKey":"fd28ebaba94be0c39fb9fa1b2fed4f23","index":"asciidwango"},"github-issue-feedback":{"repo":"asciidwango/js-primer"},"todo":{},"fontsettings":{"theme":"white","family":"sans","size":2},"js-console":{},"canonical-link":{"baseURL":"https://jsprimer.net"},"highlight":{},"page-toc-button":{"maxTocDepth":2,"minTocSize":2},"ga":{"configuration":"auto","token":"UA-2184335-18"},"include-codeblock":{"check":false,"edit":false,"lang":"","fixlang":false,"template":"./resources/gitbook-plugin-include-codeblock.hbs","theme":"chrome","unindent":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"edit-link":{"base":"https://github.com/asciidwango/js-primer/edit/master/source/","label":"Edit"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"anchors":{}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"index.md","glossary":"GLOSSARY.md","summary":"README.md"},"variables":{"esversion":"2018","console":"<a class=\"gitbook-plugin-js-console\" aria-hidden=\"true\"></a>"},"title":"JavaScriptの入門書 #jsprimer","gitbook":">=3.0.0","description":"この書籍はES2015以降をベースとしたJavaScript入門書となる予定"},"file":{"path":"use-case/todoapp/entrypoint/README.md","mtime":"2019-01-08T09:00:37.401Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-01-08T09:01:51.003Z"},"basePath":"../../..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"author":"azu","description":"HTMLとJavaScriptモジュールを使い、アプリケーションで一番最初に呼び出されるエントリーポイントを作成します。","sponsors":[],"title":"エントリーポイント","level":"1.4.4.1","depth":3,"next":{"title":"アプリの構成要素","level":"1.4.4.2","depth":3,"path":"use-case/todoapp/app-structure/README.md","ref":"./use-case/todoapp/app-structure/README.md","articles":[]},"previous":{"title":"Todoアプリ","level":"1.4.4","depth":2,"path":"use-case/todoapp/README.md","ref":"./use-case/todoapp/README.md","articles":[{"title":"エントリーポイント","level":"1.4.4.1","depth":3,"path":"use-case/todoapp/entrypoint/README.md","ref":"./use-case/todoapp/entrypoint/README.md","articles":[]},{"title":"アプリの構成要素","level":"1.4.4.2","depth":3,"path":"use-case/todoapp/app-structure/README.md","ref":"./use-case/todoapp/app-structure/README.md","articles":[]},{"title":"Todoアイテムの追加を実装する","level":"1.4.4.3","depth":3,"path":"use-case/todoapp/form-event/README.md","ref":"./use-case/todoapp/form-event/README.md","articles":[]},{"title":"イベントとモデル","level":"1.4.4.4","depth":3,"path":"use-case/todoapp/event-model/README.md","ref":"./use-case/todoapp/event-model/README.md","articles":[]},{"title":"Todoアイテムの更新と削除を実装する","level":"1.4.4.5","depth":3,"path":"use-case/todoapp/update-delete/README.md","ref":"./use-case/todoapp/update-delete/README.md","articles":[]},{"title":"Todoアプリのリファクタリング","level":"1.4.4.6","depth":3,"path":"use-case/todoapp/final/README.md","ref":"./use-case/todoapp/final/README.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["-search","-lunr","page-toc-button","include-codeblock","anchors","canonical-link","js-console","github-issue-feedback","sandpack"],"root":"./source/","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"docSearch":{"index":"83I8JIFICQ","apiKey":"9169ce4cd84fcf2376f29d9585c89254"},"github-issue-feedback":{"repo":"asciidwango/js-primer","label":"問題を報告する"},"fontsettings":{"theme":"white","family":"sans","size":2},"js-console":{},"canonical-link":{"baseURL":"https://jsprimer.net"},"highlight":{},"page-toc-button":{"maxTocDepth":2,"minTocSize":2},"include-codeblock":{"check":false,"edit":false,"lang":"","fixlang":false,"template":"./resources/gitbook-plugin-include-codeblock.hbs","theme":"chrome","unindent":false},"sandpack":{},"edit-link":{"base":"https://github.com/asciidwango/js-primer/edit/master/source/","label":"Edit"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"anchors":{}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"IPAexMincho","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"index.md","glossary":"GLOSSARY.md","summary":"README.md"},"variables":{"esversion":"2024","nodeversion":"22.7.0","npmversion":"10.8.2","triplebackticks":"```","console":"<a class=\"gitbook-plugin-js-console\" aria-hidden=\"true\"></a>"},"title":"JavaScript Primer #jsprimer","gitbook":">=3.0.0","description":"JavaScriptの基本的な書き方からアプリケーションの作成などのユースケースを学ぶための入門書です"},"file":{"path":"use-case/todoapp/entrypoint/README.md","mtime":"2025-01-01T08:47:03.426Z","type":"markdown"},"gitbook":{"version":"6.0.2","time":"2025-01-01T08:47:22.257Z"},"basePath":"../../..","book":{"language":""}});
         });
     </script>
 </div>
 
         
+    <noscript>
+        <style>
+            .honkit-cloak {
+                display: block !important;
+            }
+        </style>
+    </noscript>
+    <script>
+        // Restore sidebar state as critical path for prevent layout shift
+        function __init__getSidebarState(defaultValue){
+            var baseKey = "";
+            var key = baseKey + ":sidebar";
+            try {
+                var value = localStorage[key];
+                if (value === undefined) {
+                    return defaultValue;
+                }
+                var parsed = JSON.parse(value);
+                return parsed == null ? defaultValue : parsed;
+            } catch (e) {
+                return defaultValue;
+            }
+        }
+        function __init__restoreLastSidebarState() {
+            var isMobile = window.matchMedia("(max-width: 600px)").matches;
+            if (isMobile) {
+                // Init last state if not mobile
+                return;
+            }
+            var sidebarState = __init__getSidebarState(true);
+            var book = document.querySelector(".book");
+            // Show sidebar if it enabled
+            if (sidebarState && book) {
+                book.classList.add("without-animation", "with-summary");
+            }
+        }
+
+        try {
+            __init__restoreLastSidebarState();
+        } finally {
+            var book = document.querySelector(".book");
+            book.classList.remove("honkit-cloak");
+        }
+    </script>
     <script src="../../../gitbook/gitbook.js"></script>
     <script src="../../../gitbook/theme.js"></script>
     
         
         <script src="../../../gitbook/gitbook-plugin-page-toc-button/plugin.js"></script>
-        
-    
-        
-        <script src="../../../gitbook/gitbook-plugin-ga/plugin.js"></script>
         
     
         
@@ -1529,11 +1859,11 @@ JavaScript&#x306B;&#x306F;&#x5B9F;&#x884C;&#x30B3;&#x30F3;&#x30C6;&#x30AD;&#x30B
         
     
         
-        <script src="../../../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        <script src="../../../gitbook/honkit-plugin-sandpack/honkit-plugin-sandpack.js"></script>
         
     
         
-        <script src="../../../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        <script src="../../../gitbook/@honkit/honkit-plugin-fontsettings/fontsettings.js"></script>
         
     
 

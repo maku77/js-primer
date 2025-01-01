@@ -3,11 +3,10 @@
 <html lang="" >
     <head>
         <meta charset="UTF-8">
-        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>JavaScriptとは · JavaScriptの入門書 #jsprimer</title>
+        <title>JavaScriptとは · JavaScript Primer #jsprimer</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="description" content="">
-        <meta name="generator" content="GitBook 3.2.3">
+        <meta name="description" content="JavaScriptとはどのような用途に使われているプログラミング言語なのか、どのような言語的な特性をもっているのかについてを簡単に紹介します。">
+        <meta name="generator" content="HonKit 6.0.2">
         
         
         
@@ -25,11 +24,11 @@
                 
             
                 
-                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-highlight/website.css">
+                <link rel="stylesheet" href="../../gitbook/@honkit/honkit-plugin-highlight/website.css">
                 
             
                 
-                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-fontsettings/website.css">
+                <link rel="stylesheet" href="../../gitbook/@honkit/honkit-plugin-fontsettings/website.css">
                 
             
         
@@ -70,11 +69,77 @@
 
     <link rel="canonical" href="https://jsprimer.net/basic/introduction/">
 
-<meta name="google-site-verification" content="bMotEbgYwkzA3k4PkuyK_NUdz0bKh-Phz0oUwNmRSVo" />
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DWY0DLHWB6"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag("js", new Date());
+
+    gtag("config", "G-DWY0DLHWB6");
+</script>
+<script type="module">
+    // コンソールUIでコード実行したらイベントとして送信する
+    const onExecuteCode = (scriptType) => {
+        gtag("event", "execute_code", {
+            "event_category": "console",
+            "event_label": "execute_code",
+            "script_type": scriptType || "unknown"
+        });
+    };
+    let observer;
+    const observeEvalEvent = () => {
+        if (observer) {
+            observer.disconnect();
+        }
+        const callback = function(mutationsList) {
+            for (const mutation of mutationsList) {
+                const mirrorConsole = Array.from(mutation.addedNodes).find(node => Boolean(node.dataset.mirrorConsole));
+                if (mirrorConsole) {
+                    return onExecuteCode(mirrorConsole.dataset.mirrorConsole);
+                }
+            }
+        };
+        observer = new MutationObserver(callback);
+        observer.observe(document.body, { childList: true });
+    };
+    const eventMap = new WeakMap();
+    // 問題を報告ボタンを押したらイベントとして送信する
+    const onClickIssueReport = () => {
+        console.log("click_issue_report");
+        gtag("event", "click_issue_report", {
+            "event_category": "contribution",
+            "event_label": "click_issue_report"
+        });
+    };
+    const observeIssueReport = () => {
+        const targetButton = document.querySelector(".gitbook-plugin-github-issue-feedback");
+        // すでにイベントが登録されていたら何もしない
+        if (eventMap.has(targetButton)) {
+            return;
+        }
+        if (targetButton) {
+            targetButton.addEventListener("click", onClickIssueReport);
+            eventMap.set(targetButton, onClickIssueReport);
+        }
+    };
+    window.addEventListener("DOMContentLoaded", function() {
+        gitbook.events.on("page.change", function() {
+            observeEvalEvent();
+            observeIssueReport();
+        });
+    });
+
+</script>
+<meta name="google-site-verification" content="bMotEbgYwkzA3k4PkuyK_NUdz0bKh-Phz0oUwNmRSVo"/>
 <style>
     /*
-    Disable antialias
-    */
+     * Disable antialias
+     */
     * {
         -webkit-font-smoothing: initial !important
     }
@@ -85,7 +150,7 @@
     }
 
     /* deny access chapter */
-    .summary li.chapter>span {
+    .summary li.chapter > span {
         cursor: not-allowed;
         opacity: .3;
     }
@@ -110,38 +175,88 @@
         line-height: inherit;
         margin-bottom: 0px !important;
     }
+
+    /* Markdown */
+    /* Support horizon scroll */
+    /* https://stackoverflow.com/questions/17770257/scrolling-tables-horizontally-without-wrapping-them-in-div */
+    .markdown-section table {
+        max-width: 100%;
+        overflow-x: auto;
+        display: block;
+    }
+    .markdown-section sup,
+    .markdown-section sub {
+        font-size: 75%;
+    }
+
+    .book_footer {
+        text-align: center;
+        color: #000000;
+        background: #ddd;
+        font-size: 16px;
+        margin-top: 16px;
+        padding: 16px;
+    }
+
+    /* github-issue-feedback */
+    .gitbook-plugin-github-issue-feedback {
+        background-color: #333;
+        color: #fff;
+        opacity: 0.8;
+        padding: 4px;
+        margin-right: 24px;
+        margin-bottom: 4px;
+        border-radius: 6px;
+    }
+
+    .gitbook-plugin-github-issue-feedback:hover {
+        opacity: 1;
+    }
+
+    /* Hide footer on mobile */
+    /* Use navigation width */
+    @media (max-width: 1240px) {
+        .book_footer {
+            display: none;
+        }
+    }
+
+    .navigation {
+        min-width: 50px;
+    }
+
+    @media (min-width: 1240px) {
+        .honkit-plugin-sandpack {
+            width: calc(100% + 180px);
+            margin: 0 0 1em -90px;
+        }
+    }
+
+    .honkit-plugin-sandpack, .honkit-plugin-sandpack--buttonContainer {
+        margin-bottom: 1em;
+    }
+
 </style>
 <meta name="theme-color" content="#ffffff">
 <link rel="manifest" href="../../manifest.json">
-<script src="https://unpkg.com/service-worker-updatefound-refresh-dialog@1.1.0/dist/service-worker-updatefound-refresh-dialog.umd.js"></script>
-<script>
-    if ("serviceWorker" in navigator) {
-        const isLocalhost = Boolean(
-            // preview
-            /netlify.com/.test(window.location.hostname) ||
-            // local
-            window.location.hostname === "localhost" ||
-            // [::1] is the IPv6 localhost address.
-            window.location.hostname === "[::1]" ||
-            // 127.0.0.1/8 is considered localhost for IPv4.
-            window.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/)
-        );
-        if (!isLocalhost) {
-            window.addEventListener("load", () => {
-                navigator.serviceWorker.register("../../sw.js")
-                    .then(function(registration) {
-                        serviceWorkerUpdatefoundRefreshDialog.register(registration);
-                    });
-            });
+<script defer async>
+    // unregister old service worker(remove workbox)
+    // https://github.com/asciidwango/js-primer/pull/1701
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for (const registration of registrations) {
+            registration.unregister();
         }
-    }
+    }).catch(function(err) {
+        console.error(new Error("Can not getRegistrations", {
+            cause: err
+        }));
+    });
 </script>
-
 
     </head>
     <body>
         
-<div class="book">
+<div class="book honkit-cloak">
     <div class="book-summary">
         
             
@@ -173,7 +288,47 @@
             
         </li>
     
-        <li class="chapter " data-level="1.2" data-path="../../intro/preparation/">
+        <li class="chapter " data-level="1.2" data-path="../../intro/">
+            
+                <a href="../../intro/">
+            
+                    
+                    はじめに
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="../../intro/authors/">
+            
+                <a href="../../intro/authors/">
+            
+                    
+                    著者紹介
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="../../intro/sponsors/">
+            
+                <a href="../../intro/sponsors/">
+            
+                    
+                    JavaScript Primerスポンサー
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="../../intro/preparation/">
             
                 <a href="../../intro/preparation/">
             
@@ -186,20 +341,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.3" data-path="../../intro/goal/">
-            
-                <a href="../../intro/goal/">
-            
-                    
-                    本書の目的
-            
-                </a>
-            
-
-            
-        </li>
-    
-        <li class="chapter " data-level="1.4" data-path="../../intro/feedback/">
+        <li class="chapter " data-level="1.2.4" data-path="../../intro/feedback/">
             
                 <a href="../../intro/feedback/">
             
@@ -212,12 +354,17 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5" data-path="../">
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../">
             
                 <a href="../">
             
                     
-                    第1部: 基本文法
+                    第一部: 基本文法
             
                 </a>
             
@@ -226,7 +373,7 @@
             <ul class="articles">
                 
     
-        <li class="chapter active" data-level="1.5.1" data-path="./">
+        <li class="chapter active" data-level="1.3.1" data-path="./">
             
                 <a href="./">
             
@@ -239,7 +386,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.2" data-path="../comments/">
+        <li class="chapter " data-level="1.3.2" data-path="../comments/">
             
                 <a href="../comments/">
             
@@ -252,7 +399,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.3" data-path="../variables/">
+        <li class="chapter " data-level="1.3.3" data-path="../variables/">
             
                 <a href="../variables/">
             
@@ -265,7 +412,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.4" data-path="../read-eval-print/">
+        <li class="chapter " data-level="1.3.4" data-path="../read-eval-print/">
             
                 <a href="../read-eval-print/">
             
@@ -278,7 +425,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.5" data-path="../data-type/">
+        <li class="chapter " data-level="1.3.5" data-path="../data-type/">
             
                 <a href="../data-type/">
             
@@ -291,7 +438,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.6" data-path="../operator/">
+        <li class="chapter " data-level="1.3.6" data-path="../operator/">
             
                 <a href="../operator/">
             
@@ -304,7 +451,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.7" data-path="../implicit-coercion/">
+        <li class="chapter " data-level="1.3.7" data-path="../implicit-coercion/">
             
                 <a href="../implicit-coercion/">
             
@@ -317,7 +464,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.8" data-path="../function-declaration/">
+        <li class="chapter " data-level="1.3.8" data-path="../function-declaration/">
             
                 <a href="../function-declaration/">
             
@@ -330,7 +477,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.9" data-path="../statement-expression/">
+        <li class="chapter " data-level="1.3.9" data-path="../statement-expression/">
             
                 <a href="../statement-expression/">
             
@@ -343,7 +490,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.10" data-path="../condition/">
+        <li class="chapter " data-level="1.3.10" data-path="../condition/">
             
                 <a href="../condition/">
             
@@ -356,7 +503,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.11" data-path="../loop/">
+        <li class="chapter " data-level="1.3.11" data-path="../loop/">
             
                 <a href="../loop/">
             
@@ -369,7 +516,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.12" data-path="../object/">
+        <li class="chapter " data-level="1.3.12" data-path="../object/">
             
                 <a href="../object/">
             
@@ -382,7 +529,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.13" data-path="../prototype-object/">
+        <li class="chapter " data-level="1.3.13" data-path="../prototype-object/">
             
                 <a href="../prototype-object/">
             
@@ -395,7 +542,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.14" data-path="../array/">
+        <li class="chapter " data-level="1.3.14" data-path="../array/">
             
                 <a href="../array/">
             
@@ -408,7 +555,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.15" data-path="../string/">
+        <li class="chapter " data-level="1.3.15" data-path="../string/">
             
                 <a href="../string/">
             
@@ -421,7 +568,20 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.16" data-path="../wrapper-object/">
+        <li class="chapter " data-level="1.3.16" data-path="../string-unicode/">
+            
+                <a href="../string-unicode/">
+            
+                    
+                    文字列とUnicode
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.17" data-path="../wrapper-object/">
             
                 <a href="../wrapper-object/">
             
@@ -434,7 +594,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.17" data-path="../function-scope/">
+        <li class="chapter " data-level="1.3.18" data-path="../function-scope/">
             
                 <a href="../function-scope/">
             
@@ -447,7 +607,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.18" data-path="../function-this/">
+        <li class="chapter " data-level="1.3.19" data-path="../function-this/">
             
                 <a href="../function-this/">
             
@@ -460,7 +620,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.19" data-path="../class/">
+        <li class="chapter " data-level="1.3.20" data-path="../class/">
             
                 <a href="../class/">
             
@@ -473,7 +633,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.20" data-path="../error-try-catch/">
+        <li class="chapter " data-level="1.3.21" data-path="../error-try-catch/">
             
                 <a href="../error-try-catch/">
             
@@ -486,12 +646,12 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.21" data-path="../async/">
+        <li class="chapter " data-level="1.3.22" data-path="../async/">
             
                 <a href="../async/">
             
                     
-                    非同期処理
+                    非同期処理:Promise/Async Function
             
                 </a>
             
@@ -499,7 +659,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.22" data-path="../map-and-set/">
+        <li class="chapter " data-level="1.3.23" data-path="../map-and-set/">
             
                 <a href="../map-and-set/">
             
@@ -512,7 +672,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.23" data-path="../json/">
+        <li class="chapter " data-level="1.3.24" data-path="../json/">
             
                 <a href="../json/">
             
@@ -525,7 +685,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.24" data-path="../date/">
+        <li class="chapter " data-level="1.3.25" data-path="../date/">
             
                 <a href="../date/">
             
@@ -538,7 +698,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.25" data-path="../math/">
+        <li class="chapter " data-level="1.3.26" data-path="../math/">
             
                 <a href="../math/">
             
@@ -551,7 +711,20 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.26" data-path="../ecmascript/">
+        <li class="chapter " data-level="1.3.27" data-path="../module/">
+            
+                <a href="../module/">
+            
+                    
+                    ECMAScriptモジュール
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.28" data-path="../ecmascript/">
             
                 <a href="../ecmascript/">
             
@@ -564,12 +737,12 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.27" data-path="../other-parts/">
+        <li class="chapter " data-level="1.3.29" data-path="../other-parts/">
             
                 <a href="../other-parts/">
             
                     
-                    第1部: おわりに
+                    第一部: おわりに
             
                 </a>
             
@@ -582,12 +755,12 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6" data-path="../../use-case/">
+        <li class="chapter " data-level="1.4" data-path="../../use-case/">
             
                 <a href="../../use-case/">
             
                     
-                    第2部: 応用編（ユースケース）
+                    第二部: 応用編（ユースケース）
             
                 </a>
             
@@ -596,7 +769,7 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="1.6.1" data-path="../../use-case/setup-local-env/">
+        <li class="chapter " data-level="1.4.1" data-path="../../use-case/setup-local-env/">
             
                 <a href="../../use-case/setup-local-env/">
             
@@ -609,25 +782,12 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.2" data-path="../../use-case/module/">
-            
-                <a href="../../use-case/module/">
-            
-                    
-                    モジュール
-            
-                </a>
-            
-
-            
-        </li>
-    
-        <li class="chapter " data-level="1.6.3" data-path="../../use-case/ajaxapp/">
+        <li class="chapter " data-level="1.4.2" data-path="../../use-case/ajaxapp/">
             
                 <a href="../../use-case/ajaxapp/">
             
                     
-                    Ajaxで通信
+                    Ajax通信
             
                 </a>
             
@@ -636,12 +796,12 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="1.6.3.1" data-path="../../use-case/ajaxapp/entrypoint/">
+        <li class="chapter " data-level="1.4.2.1" data-path="../../use-case/ajaxapp/entrypoint/">
             
                 <a href="../../use-case/ajaxapp/entrypoint/">
             
                     
-                    エントリポイント
+                    エントリーポイント
             
                 </a>
             
@@ -649,9 +809,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.3.2" data-path="../../use-case/ajaxapp/xhr/">
+        <li class="chapter " data-level="1.4.2.2" data-path="../../use-case/ajaxapp/http/">
             
-                <a href="../../use-case/ajaxapp/xhr/">
+                <a href="../../use-case/ajaxapp/http/">
             
                     
                     HTTP通信
@@ -662,7 +822,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.3.3" data-path="../../use-case/ajaxapp/display/">
+        <li class="chapter " data-level="1.4.2.3" data-path="../../use-case/ajaxapp/display/">
             
                 <a href="../../use-case/ajaxapp/display/">
             
@@ -675,7 +835,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.3.4" data-path="../../use-case/ajaxapp/promise/">
+        <li class="chapter " data-level="1.4.2.4" data-path="../../use-case/ajaxapp/promise/">
             
                 <a href="../../use-case/ajaxapp/promise/">
             
@@ -693,7 +853,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.4" data-path="../../use-case/nodecli/">
+        <li class="chapter " data-level="1.4.3" data-path="../../use-case/nodecli/">
             
                 <a href="../../use-case/nodecli/">
             
@@ -707,7 +867,7 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="1.6.4.1" data-path="../../use-case/nodecli/helloworld/">
+        <li class="chapter " data-level="1.4.3.1" data-path="../../use-case/nodecli/helloworld/">
             
                 <a href="../../use-case/nodecli/helloworld/">
             
@@ -720,7 +880,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.4.2" data-path="../../use-case/nodecli/argument-parse/">
+        <li class="chapter " data-level="1.4.3.2" data-path="../../use-case/nodecli/argument-parse/">
             
                 <a href="../../use-case/nodecli/argument-parse/">
             
@@ -733,7 +893,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.4.3" data-path="../../use-case/nodecli/read-file/">
+        <li class="chapter " data-level="1.4.3.3" data-path="../../use-case/nodecli/read-file/">
             
                 <a href="../../use-case/nodecli/read-file/">
             
@@ -746,7 +906,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.4.4" data-path="../../use-case/nodecli/md-to-html/">
+        <li class="chapter " data-level="1.4.3.4" data-path="../../use-case/nodecli/md-to-html/">
             
                 <a href="../../use-case/nodecli/md-to-html/">
             
@@ -759,7 +919,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.4.5" data-path="../../use-case/nodecli/refactor-and-unittest/">
+        <li class="chapter " data-level="1.4.3.5" data-path="../../use-case/nodecli/refactor-and-unittest/">
             
                 <a href="../../use-case/nodecli/refactor-and-unittest/">
             
@@ -777,7 +937,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.5" data-path="../../use-case/todoapp/">
+        <li class="chapter " data-level="1.4.4" data-path="../../use-case/todoapp/">
             
                 <a href="../../use-case/todoapp/">
             
@@ -791,12 +951,12 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="1.6.5.1" data-path="../../use-case/todoapp/entrypoint/">
+        <li class="chapter " data-level="1.4.4.1" data-path="../../use-case/todoapp/entrypoint/">
             
                 <a href="../../use-case/todoapp/entrypoint/">
             
                     
-                    エントリポイント
+                    エントリーポイント
             
                 </a>
             
@@ -804,7 +964,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.5.2" data-path="../../use-case/todoapp/app-structure/">
+        <li class="chapter " data-level="1.4.4.2" data-path="../../use-case/todoapp/app-structure/">
             
                 <a href="../../use-case/todoapp/app-structure/">
             
@@ -817,12 +977,12 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.5.3" data-path="../../use-case/todoapp/form-event/">
+        <li class="chapter " data-level="1.4.4.3" data-path="../../use-case/todoapp/form-event/">
             
                 <a href="../../use-case/todoapp/form-event/">
             
                     
-                    フォームとイベント
+                    Todoアイテムの追加を実装する
             
                 </a>
             
@@ -830,7 +990,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.5.4" data-path="../../use-case/todoapp/event-model/">
+        <li class="chapter " data-level="1.4.4.4" data-path="../../use-case/todoapp/event-model/">
             
                 <a href="../../use-case/todoapp/event-model/">
             
@@ -843,12 +1003,12 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.5.5" data-path="../../use-case/todoapp/update-delete/">
+        <li class="chapter " data-level="1.4.4.5" data-path="../../use-case/todoapp/update-delete/">
             
                 <a href="../../use-case/todoapp/update-delete/">
             
                     
-                    Todoの更新と削除を実装する
+                    Todoアイテムの更新と削除を実装する
             
                 </a>
             
@@ -856,7 +1016,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.5.6" data-path="../../use-case/todoapp/final/">
+        <li class="chapter " data-level="1.4.4.6" data-path="../../use-case/todoapp/final/">
             
                 <a href="../../use-case/todoapp/final/">
             
@@ -879,14 +1039,53 @@
             
         </li>
     
+        <li class="chapter " data-level="1.5" data-path="../../appendix/links/">
+            
+                <a href="../../appendix/links/">
+            
+                    
+                    付録: 参考リンク集
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" data-path="../../cheatsheet/">
+            
+                <a href="../../cheatsheet/">
+            
+                    
+                    付録: JavaScriptチートシート
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7" data-path="../../outro/">
+            
+                <a href="../../outro/">
+            
+                    
+                    おわりに
+            
+                </a>
+            
+
+            
+        </li>
+    
 
     
 
     <li class="divider"></li>
 
     <li>
-        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
-            Published with GitBook
+        <a href="https://github.com/honkit/honkit" target="blank" class="gitbook-link">
+            Published with HonKit
         </a>
     </li>
 </ul>
@@ -904,8 +1103,17 @@
                     
 
 <!-- Header -->
+<meta name="keywords" content="JavaScript,ECMAScript,JS,入門,チュートリアル,書籍,本,無料,Node.js,ブラウザ"/>
+<link rel="author" href="https://www.hatena.ne.jp/efcl/"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css"/>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
+<!-- OGP -->
+<meta property="og:title" content="JavaScript Primer - 迷わないための入門書"/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://jsprimer.net/"/>
+<meta property="og:image" content="https://jsprimer.net/landing/img/cover-optimized.jpg"/>
+<meta property="og:site_name" content="JavaScript Primer"/>
+<meta property="og:description" content="JavaScript Primerは、JavaScriptの基礎から応用までを一貫して学べる入門書です。"/>
 <style>
     .book-header {
         display: flex;
@@ -943,6 +1151,11 @@
         /* Header分のズレを入れる */
         .page-wrapper {
             padding-top: 60px;
+        }
+
+        /* github-issue-feedbackを非表示にする */
+        .gitbook-plugin-github-issue-feedback {
+            display: none;
         }
     }
 
@@ -989,15 +1202,22 @@
     .header-right {
         order: 4;
         display: inline-flex;
-        flex-direction: column;
+        flex-direction: row;
         justify-content: center;
         align-items: center;
         /* icon size */
         font-size: 24px;
     }
 
-    .github-link {
+    .amazon-link, .github-link {
         color: #fff;
+        /* Padding and make Vertical */
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding-left: 4px;
+        padding-right: 4px;
     }
 
     /* Desktop */
@@ -1035,6 +1255,23 @@
         .algolia-autocomplete .algolia-docsearch-suggestion--subcategory-column {
             display: none !important;
         }
+
+        .algolia-autocomplete.algolia-autocomplete-right .ds-dropdown-menu {
+            right: inherit !important
+        }
+
+        .algolia-autocomplete.algolia-autocomplete-right .ds-dropdown-menu::before {
+            right: 50%;
+        }
+
+        .sbx-custom {
+            width: 92px !important;
+            padding: initial !important;
+        }
+
+        .amazon-link {
+            display: none;
+        }
     }
 
     /* SearchBox */
@@ -1042,12 +1279,6 @@
         height: 50px;
     }
 
-    @media (max-width: 768px) {
-        .sbx-custom {
-            width: 150px !important;
-            padding: initial !important;
-        }
-    }
 
     .sbx-custom {
         display: inline-block;
@@ -1225,9 +1456,9 @@
 <div class="book-header" role="navigation">
     
     <a class="book-header-title" href="../..">
-        <img class="book-header-title-img" alt="js-primer"
+        <img class="book-header-title-img" alt="JavaScript Primer"
              src="../../gitbook/icons/icon-128x128.png"/>
-        <h2 class="book-header-title-h" title="js-primer - JavaScriptの入門書">js-primer</h2>
+        <h2 class="book-header-title-h" title="JavaScript Primer - 迷わないための入門書">JavaScript Primer</h2>
     </a>
     <div class="searchbarWrapper header-center">
         <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
@@ -1259,26 +1490,39 @@
         </form>
     </div>
     <div class="header-right">
+        <!-- Icon: https://www.iconfinder.com/iconsets/circle-payment -->
+        <a class="amazon-link" title="Amazon: JavaScript Primer 改訂2版 迷わないための入門書"
+           href="https://www.amazon.co.jp/dp/4048931105/" target="_blank"><img
+                width="22"
+                height="22"
+                style="margin: 1px;"
+                src="../../gitbook/icons/amazon-icon.png" alt=""></a>
         <a class="github-link" title="GitHub: asciidwango/js-primer" href="https://github.com/asciidwango/js-primer"
            target="_blank"><i
                 class="fa fa-github fa-fw"></i></a>
     </div>
 </div>
 
-<script type="text/javascript">
-    document.querySelector('.searchbox [type="reset"]').addEventListener('click', function() {
-        this.parentNode.querySelector('input').focus();
+<script defer>
+    // focus on search box
+    document.querySelector(".searchbox [type=\"reset\"]").addEventListener("click", function() {
+        this.parentNode.querySelector("input").focus();
     });
-</script>
-<script>
+    // init DocSearch
     var search = docsearch({
-        apiKey: 'fd28ebaba94be0c39fb9fa1b2fed4f23', // use a SEARCH-ONLY api key here
-        indexName: 'asciidwango',
-        inputSelector: '.sbx-custom__input',
+        apiKey: "fd28ebaba94be0c39fb9fa1b2fed4f23", // use a SEARCH-ONLY api key here
+        indexName: "asciidwango",
+        inputSelector: ".sbx-custom__input",
         debug: false // set to `true` if you want to inspect the dropdown menu's CSS
     });
 </script>
-
+<script>
+    window.addEventListener("DOMContentLoaded", function() {
+        gitbook.events.on("page.change", function() {
+            setTimeout(() => console.clear(), 1000);
+        });
+    });
+</script>
 
 
 
@@ -1289,86 +1533,155 @@
                             
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="what-is-javascript"><a name="what-is-javascript" class="plugin-anchor" href="#what-is-javascript"><i class="fa fa-link" aria-hidden="true"></i></a>JavaScript&#x3068;&#x306F; </h1>
-<p>JavaScript&#x306F;&#x30A6;&#x30A7;&#x30D6;&#x30D6;&#x30E9;&#x30A6;&#x30B6;&#x3001;Node.js&#x3092;&#x59CB;&#x3081;&#x3001;&#x4ECA;&#x306F;IoT&#xFF08;Internet of Things&#xFF09;&#x30C7;&#x30D0;&#x30A4;&#x30B9;&#x306A;&#x3069;&#x5E45;&#x5E83;&#x3044;&#x74B0;&#x5883;&#x3067;&#x52D5;&#x4F5C;&#x3059;&#x308B;&#x8A00;&#x8A9E;&#x3068;&#x306A;&#x3063;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;</p>
-<!-- TODO(azu): 上手く並び替えたい。最初に否定から入るのは良いのかどうか? -->
-<p>&#x3057;&#x304B;&#x3057;&#x3001;&#x3059;&#x3079;&#x3066;&#x306E;&#x74B0;&#x5883;&#x3067;&#x5168;&#x304F;&#x540C;&#x3058;&#x30B3;&#x30FC;&#x30C9;&#x304C;&#x52D5;&#x304F;&#x308F;&#x3051;&#x3067;&#x306F;&#x3042;&#x308A;&#x307E;&#x305B;&#x3093;&#x3002;
-&#x305D;&#x306E;&#x7406;&#x7531;&#x306E;&#x3072;&#x3068;&#x3064;&#x3068;&#x3057;&#x3066;&#x3001;JavaScript&#x3068;&#x3044;&#x3046;&#x4ED5;&#x69D8;&#x304C;&#x3042;&#x308B;&#x308F;&#x3051;&#x3067;&#x306F;&#x306A;&#x304F;&#x3001;JavaScript&#x3068;&#x3044;&#x3046;&#x5B9F;&#x88C5;&#x304C;&#x3042;&#x308B;&#x3060;&#x3051;&#x3060;&#x304B;&#x3089;&#x3067;&#x3059;&#x3002;</p>
-<p>JavaScript&#x3068;&#x3044;&#x3046;&#x8A00;&#x8A9E;&#x306F;&#x3001;<a href="http://www.ecma-international.org/" title="Ecma International" target="_blank">Ecma International</a>&#x306B;&#x3088;&#x3063;&#x3066;&#x6A19;&#x6E96;&#x5316;&#x3055;&#x308C;&#x305F;<a href="http://www.ecma-international.org/publications/standards/Ecma-262.htm" title="Standard ECMA-262" target="_blank">ECMAScript</a>&#x3068;&#x3044;&#x3046;&#x4ED5;&#x69D8;&#x306E;&#x5B9F;&#x88C5;&#x306B;&#x306A;&#x308A;&#x307E;&#x3059;&#x3002;
-<a href="http://www.ecma-international.org/publications/standards/Ecma-262.htm" title="Standard ECMA-262" target="_blank">ECMAScript</a>&#x3068;&#x3044;&#x3046;&#x4ED5;&#x69D8;&#x3067;&#x5B9A;&#x7FA9;&#x3055;&#x308C;&#x3066;&#x3044;&#x308B;&#x6A5F;&#x80FD;&#x306F;&#x3001;&#x57FA;&#x672C;&#x7684;&#x306B;&#x3069;&#x306E;&#x5B9F;&#x884C;&#x74B0;&#x5883;&#x3067;&#x3082;&#x540C;&#x3058;&#x52D5;&#x4F5C;&#x3092;&#x3057;&#x307E;&#x3059;&#x3002;
-&#x3057;&#x304B;&#x3057;&#x3001;&#x305D;&#x308C;&#x4EE5;&#x5916;&#x306E;&#x6A5F;&#x80FD;&#x306B;&#x95A2;&#x3057;&#x3066;&#x306F;&#x3001;JavaScript&#x306E;&#x5B9F;&#x884C;&#x74B0;&#x5883;&#x306B;&#x3088;&#x3063;&#x3066;&#x7570;&#x306A;&#x308A;&#x307E;&#x3059;&#x3002;</p>
-<p>ECMAScript&#x306E;&#x4ED5;&#x69D8;&#x3067;&#x5B9A;&#x7FA9;&#x3055;&#x308C;&#x3066;&#x3044;&#x308B;&#x6A5F;&#x80FD;&#x3092;&#x5B66;&#x3076;&#x3053;&#x3068;&#x3067;&#x3001;&#x3069;&#x306E;&#x5B9F;&#x884C;&#x74B0;&#x5883;&#x3067;&#x3082;&#x5BFE;&#x5FDC;&#x3067;&#x304D;&#x308B;&#x57FA;&#x672C;&#x7684;&#x306A;&#x90E8;&#x5206;&#x3092;&#x5B66;&#x3079;&#x307E;&#x3059;&#x3002;
-&#x3053;&#x306E;&#x66F8;&#x7C4D;&#x3067;&#x306F;&#x3001;&#x660E;&#x78BA;&#x306B;&#x533A;&#x5225;&#x3059;&#x308B;&#x5FC5;&#x8981;&#x304C;&#x3042;&#x308B;&#x5834;&#x5408;&#x306F;&#x300C;ECMAScript&#x300D;&#x3068;&#x300C;JavaScript&#x300D;&#x3068;&#x3044;&#x3046;&#x7528;&#x8A9E;&#x3092;&#x4F7F;&#x3044;&#x5206;&#x3051;&#x307E;&#x3059;&#x3002;
-&#x3057;&#x304B;&#x3057;&#x3001;&#x591A;&#x304F;&#x306E;&#x5834;&#x5408;&#x306F;&#x300C;JavaScript&#x300D;&#x3068;&#x66F8;&#x3044;&#x305F;&#x5834;&#x5408;&#x3067;&#x3082;&#x3001;ECMAScript&#x3067;&#x5B9A;&#x7FA9;&#x3055;&#x308C;&#x3066;&#x3044;&#x308B;&#x6A5F;&#x80FD;&#x3092;&#x793A;&#x3059;&#x3053;&#x3068;&#x304C;&#x3042;&#x308A;&#x307E;&#x3059;&#x3002;</p>
-<p>&#x307E;&#x305A;&#x306F;JavaScript&#x3068;&#x306F;&#x3001;&#x3069;&#x306E;&#x3088;&#x3046;&#x306A;&#x8A00;&#x8A9E;&#x306A;&#x306E;&#x304B;&#x3092;&#x5927;&#x307E;&#x304B;&#x306B;&#x898B;&#x3066;&#x3044;&#x304D;&#x307E;&#x3059;&#x3002;</p>
-<h2 id="about-javascript"><a name="about-javascript" class="plugin-anchor" href="#about-javascript"><i class="fa fa-link" aria-hidden="true"></i></a>JavaScript&#x3063;&#x3066;&#x3069;&#x306E;&#x3088;&#x3046;&#x306A;&#x8A00;&#x8A9E;&#xFF1F; </h2>
-<p>JavaScript&#x306F;&#x3001;C&#x3001;Java&#x3001;Self&#x3001;Scheme&#x306A;&#x3069;&#x306E;&#x8A00;&#x8A9E;&#x306E;&#x5F71;&#x97FF;&#x3092;&#x53D7;&#x3051;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;</p>
-<p>&#x307E;&#x305F;&#x3001;JavaScript&#x306F;&#x30AF;&#x30E9;&#x30B9;&#x30D9;&#x30FC;&#x30B9;&#x3067;&#x306F;&#x306A;&#x304F;&#x30D7;&#x30ED;&#x30C8;&#x30BF;&#x30A4;&#x30D7;&#x30D9;&#x30FC;&#x30B9;&#x306E;&#x8A00;&#x8A9E;&#x3067;&#x3059;&#x3002;
-ECMAScript 2015&#xFF08;ES2015&#xFF09;&#x304B;&#x3089;<code>class</code>&#x69CB;&#x6587;&#x304C;&#x8FFD;&#x52A0;&#x3055;&#x308C;&#x307E;&#x3057;&#x305F;&#x304C;&#x3001;&#x3053;&#x306E;&#x30AF;&#x30E9;&#x30B9;&#x3082;&#x30D7;&#x30ED;&#x30C8;&#x30BF;&#x30A4;&#x30D7;&#x30D9;&#x30FC;&#x30B9;&#x306E;&#x4E0A;&#x3067;&#x5B9F;&#x73FE;&#x3055;&#x308C;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;</p>
-<p>&#x5927;&#x90E8;&#x5206;&#x304C;&#x30AA;&#x30D6;&#x30B8;&#x30A7;&#x30AF;&#x30C8;&#x3067;&#x3042;&#x308A;&#x3001;&#x305D;&#x306E;&#x30AA;&#x30D6;&#x30B8;&#x30A7;&#x30AF;&#x30C8;&#x540C;&#x58EB;&#x306E;&#x30B3;&#x30DF;&#x30E5;&#x30CB;&#x30B1;&#x30FC;&#x30B7;&#x30E7;&#x30F3;&#x306B;&#x3088;&#x3063;&#x3066;&#x6210;&#x308A;&#x7ACB;&#x3063;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;
-&#x30AA;&#x30D6;&#x30B8;&#x30A7;&#x30AF;&#x30C8;&#x306B;&#x306F;&#x3001;ECMAScript&#x306E;&#x4ED5;&#x69D8;&#x3068;&#x3057;&#x3066;&#x5B9A;&#x3081;&#x3089;&#x308C;&#x305F;<strong>&#x30D3;&#x30EB;&#x30C8;&#x30A4;&#x30F3;&#x30AA;&#x30D6;&#x30B8;&#x30A7;&#x30AF;&#x30C8;</strong>&#x3068;&#x3001;
-&#x5B9F;&#x884C;&#x74B0;&#x5883;&#x304C;&#x5B9A;&#x7FA9;&#x3057;&#x305F;&#x30AA;&#x30D6;&#x30B8;&#x30A7;&#x30AF;&#x30C8;&#x3068;&#x30E6;&#x30FC;&#x30B6;&#x306E;&#x5B9A;&#x7FA9;&#x3057;&#x305F;&#x30AA;&#x30D6;&#x30B8;&#x30A7;&#x30AF;&#x30C8;&#x304C;&#x5B58;&#x5728;&#x3057;&#x307E;&#x3059;&#x3002;</p>
-<p>&#x5B9F;&#x884C;&#x74B0;&#x5883;&#x304C;&#x5B9A;&#x7FA9;&#x3057;&#x3066;&#x3044;&#x308B;&#x30AA;&#x30D6;&#x30B8;&#x30A7;&#x30AF;&#x30C8;&#x3068;&#x3057;&#x3066;&#x306F;&#x3001;
-&#x30D6;&#x30E9;&#x30A6;&#x30B6;&#x304C;&#x3082;&#x3064;DOM&#xFF08;Document Object Model&#xFF09; API&#x3084;Node.js&#x304C;&#x3082;&#x3064;&#x30B3;&#x30A2;API&#x306A;&#x3069;&#x304C;&#x3042;&#x308A;&#x307E;&#x3059;&#x3002;</p>
-<p>&#x7B2C;&#x4E00;&#x90E8;&#x306E;&#x57FA;&#x672C;&#x6587;&#x6CD5;&#x3067;&#x306F;ECMAScript&#x306E;&#x5B9A;&#x7FA9;&#x3059;&#x308B;&#x69CB;&#x6587;&#x3084;&#x30D3;&#x30EB;&#x30C8;&#x30A4;&#x30F3;&#x30AA;&#x30D6;&#x30B8;&#x30A7;&#x30AF;&#x30C8;&#x3092;&#x6271;&#x3044;&#x307E;&#x3059;&#x3002;
-&#x7B2C;&#x4E8C;&#x90E8;&#x306E;&#x30E6;&#x30FC;&#x30B9;&#x30B1;&#x30FC;&#x30B9;&#x3067;&#x306F;&#x30D6;&#x30E9;&#x30A6;&#x30B6;&#x304C;&#x5B9A;&#x7FA9;&#x3059;&#x308B;DOM API&#x3084;Node.js&#x306E;&#x30B3;&#x30A2;API&#x3092;&#x6271;&#x3044;&#x3001;&#x5C0F;&#x3055;&#x306A;&#x30A2;&#x30D7;&#x30EA;&#x30B1;&#x30FC;&#x30B7;&#x30E7;&#x30F3;&#x3092;&#x4F5C;&#x6210;&#x3057;&#x307E;&#x3059;&#x3002;</p>
-<p>JavaScript&#x306E;&#x8A00;&#x8A9E;&#x7684;&#x306A;&#x7279;&#x5FB4;&#x3092;&#x7C21;&#x5358;&#x306B;&#x7D39;&#x4ECB;&#x3057;&#x3066;&#x3044;&#x304D;&#x307E;&#x3059;&#x3002;</p>
-<p>&#x307E;&#x305A;&#x3001;JavaScript&#x306F;&#x5927;&#x6587;&#x5B57;&#x5C0F;&#x6587;&#x5B57;&#x3092;&#x533A;&#x5225;&#x3057;&#x307E;&#x3059;&#x3002;
-&#x305F;&#x3068;&#x3048;&#x3070;&#x3001;&#x6B21;&#x306E;&#x3088;&#x3046;&#x306B;<code>name</code>&#x3068;&#x3044;&#x3046;&#x5909;&#x6570;&#x3092;&#x5927;&#x6587;&#x5B57;&#x3068;&#x5C0F;&#x6587;&#x5B57;&#x3067;&#x66F8;&#x3044;&#x305F;&#x5834;&#x5408;&#x306B;&#x3001;
-&#x305D;&#x308C;&#x305E;&#x308C;&#x306F;&#x5225;&#x3005;&#x306E;&#x540D;&#x524D;&#x306E;&#x5909;&#x6570;&#x3068;&#x3057;&#x3066;&#x8A8D;&#x8B58;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;</p>
-<pre><code class="lang-js"><span class="hljs-comment">// `name`&#x3068;&#x3044;&#x3046;&#x540D;&#x524D;&#x306E;&#x5909;&#x6570;&#x3092;&#x5BA3;&#x8A00;</span>
-<span class="hljs-keyword">const</span> name = <span class="hljs-string">&quot;azu&quot;</span>;
-<span class="hljs-comment">// `NAME`&#x3068;&#x3044;&#x3046;&#x540D;&#x524D;&#x306E;&#x5909;&#x6570;&#x3092;&#x5BA3;&#x8A00;</span>
-<span class="hljs-keyword">const</span> NAME = <span class="hljs-string">&quot;azu&quot;</span>;
+<style>
+    .page-sponsors {
+        background: #fafafa;
+    }
+    .page-sponsors .page-sponsors-list {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+        padding: 1em 0;
+        list-style: none;
+        gap: 8px;
+    }
+    .page-sponsors-footer {
+        text-align: center;
+        padding: 0;
+        margin: 0;
+    }
+</style>
+<div class="page-sponsors">
+
+    <div class="page-sponsors-footer">
+        JavaScript Primerの<a href="https://jsprimer.net/intro/sponsors/">スポンサーを募集中</a>
+    </div>
+
+</div>
+
+                                <html><head></head><body><h1 id="what-is-javascript"><a name="what-is-javascript" class="plugin-anchor" href="#what-is-javascript"><i class="fa fa-link" aria-hidden="true"></i></a>JavaScriptとは </h1>
+<p>JavaScriptを学びはじめる前に、まずJavaScriptとはどのようなプログラミング言語なのかを紹介します。</p>
+<p>JavaScriptは主にウェブブラウザの中で動くプログラミング言語です。
+ウェブサイトで操作をしたら表示が書き換わったり、ウェブサイトのサーバーと通信してデータを取得したりと現在のウェブサイトには欠かせないプログラミング言語です。
+このようなJavaScriptを活用してアプリケーションのように操作できるウェブサイトをウェブアプリとも言います。</p>
+<p>JavaScriptはウェブブラウザだけではなく、Node.jsというサーバー側のアプリケーションを作る仕組みでも利用されています。
+また、デスクトップアプリやスマートフォンアプリ、IoT（Internet of Things）デバイスでもJavaScriptを使って動かせるものがあります。
+このように、JavaScriptはかなり幅広い環境で動いているプログラミング言語で、さまざまな種類のアプリケーションを作成できます。</p>
+<h2 id="javascript-ecmascript"><a name="javascript-ecmascript" class="plugin-anchor" href="#javascript-ecmascript"><i class="fa fa-link" aria-hidden="true"></i></a>JavaScriptとECMAScript </h2>
+<p>JavaScriptという言語は<a href="../ecmascript/">ECMAScript</a>という仕様によって動作が決められています。
+<a href="../ecmascript/">ECMAScript</a>という仕様では、どの実行環境でも共通な動作のみが定義されているため、基本的にどの実行環境でも同じ動作をします。</p>
+<p>一方で、実行環境によって異なる部分もあります。
+たとえば、ブラウザではUI（ユーザーインターフェース）を操作するためのJavaScriptの機能が定義されていますが、サーバー側の処理を書くNode.jsではそれらの機能は不要です。
+このように、実行環境によって必要な機能は異なるため、それらの機能は実行環境ごとに定義（実装）されています。</p>
+<p>そのため、「ECMAScript」はどの実行環境でも共通の部分、「JavaScript」はECMAScriptと実行環境の固有機能も含んだ範囲というのがイメージしやすいでしょう。</p>
+<p><img src="img/javascript-ecmascript.png" alt="JavaScriptとECMAScriptの範囲"></img></p>
+<p>ECMAScriptの仕様で定義されている機能を学ぶことで、どの実行環境でも対応できる基本的な部分を学べます。
+この書籍では、この違いを明確に区別する必要がある場合は「ECMAScript」と「JavaScript」という単語を使い分けます。
+そうでない場合、「JavaScript」という単語を使います。</p>
+<p>また、このECMAScriptという仕様（共通の部分）も毎年アップデートされ、新しい文法や機能が追加されています。
+そのため、実行環境によっては古いバージョンのECMAScriptを実装したものとなっている場合があります。
+ECMAScriptは2015年にECMAScript 2015（ES2015）として大きくアップデートされた仕様が公開されました。</p>
+<p>今からJavaScriptを学ぶなら、ES2015以降を基本にしたほうがわかりやすいため、この書籍はES2015に基づいた内容となっています。
+また、既存のコードはES2015より前のバージョンを元にしたものも多いため、それらのコードに関しても解説しています。</p>
+<p>まずは、JavaScript（ECMAScript）とはどのような言語なのかを大まかに見ていきます。</p>
+<h2 id="about-javascript"><a name="about-javascript" class="plugin-anchor" href="#about-javascript"><i class="fa fa-link" aria-hidden="true"></i></a>JavaScriptってどのような言語？ </h2>
+<p>JavaScriptは、元々Netscape Navigatorというブラウザのために開発されたプログラミング言語です。
+C、Java、Self、Schemeなどのプログラミング言語の影響を受けて作られました。</p>
+<p>JavaScriptは、大部分がオブジェクト（値や処理を1つにまとめたものと考えてください）であり、そのオブジェクト同士のコミュニケーションによって成り立っています。
+オブジェクトには、ECMAScriptの仕様として定められたオブジェクト、
+実行環境が定義したオブジェクト、ユーザー（つまりあなたです）の定義したオブジェクトが存在します。</p>
+<p>この書籍の「<a href="../">第一部: 基本文法</a>」ではECMAScriptの定義する構文やオブジェクトを学んでいきます。
+「<a href="../../use-case/">第二部: 応用編（ユースケース）</a>」ではブラウザやNode.jsといった実行環境が定義するオブジェクトを学びながら、小さなアプリケーションを作成していきます。
+ユーザーの定義したオブジェクトは、コードを書いていくと自然と登場するため、適宜見ていきます。</p>
+<p>次に、JavaScriptの言語的な特徴を簡単に紹介していきます。</p>
+<h3 id="case-sensitive"><a name="case-sensitive" class="plugin-anchor" href="#case-sensitive"><i class="fa fa-link" aria-hidden="true"></i></a>大文字と小文字を区別する </h3>
+<p>まず、JavaScriptは大文字小文字を区別します。
+たとえば、次のように<code>name</code>という変数を大文字と小文字で書いた場合に、
+それぞれは別々の<code>name</code>と<code>NAME</code>という名前の変数として認識されます。</p>
+<pre><code class="lang-js"><span class="hljs-comment">// `name`という名前の変数を宣言</span>
+<span class="hljs-keyword">const</span> name = <span class="hljs-string">"azu"</span>;
+<span class="hljs-comment">// `NAME`という名前の変数を宣言</span>
+<span class="hljs-keyword">const</span> <span class="hljs-variable constant_">NAME</span> = <span class="hljs-string">"azu"</span>;
 </code></pre>
-<p>&#x307E;&#x305F;&#x3001;&#x30AF;&#x30E9;&#x30B9;&#x306F;&#x5927;&#x6587;&#x5B57;&#x3067;&#x958B;&#x59CB;&#x3057;&#x306A;&#x3051;&#x308C;&#x3070;&#x306A;&#x3089;&#x306A;&#x3044;&#x3068;&#x3044;&#x3063;&#x305F;&#x547D;&#x540D;&#x898F;&#x5247;&#x304C;&#x610F;&#x5473;&#x3092;&#x3082;&#x3064;&#x30B1;&#x30FC;&#x30B9;&#x306F;&#x3042;&#x308A;&#x307E;&#x305B;&#x3093;&#x3002;
-&#x305D;&#x306E;&#x305F;&#x3081;&#x3001;&#x3042;&#x304F;&#x307E;&#x3067;&#x5225;&#x3005;&#x306E;&#x540D;&#x524D;&#x3068;&#x3057;&#x3066;&#x8A8D;&#x8B58;&#x3055;&#x308C;&#x308B;&#x3068;&#x3044;&#x3046;&#x3060;&#x3051;&#x306B;&#x306A;&#x3063;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;</p>
-<p>&#x307E;&#x305F;&#x3001;JavaScript&#x306B;&#x306F;&#x7279;&#x5225;&#x306A;&#x610F;&#x5473;&#x3092;&#x3082;&#x3064;&#x30AD;&#x30FC;&#x30EF;&#x30FC;&#x30C9;&#xFF08;&#x307E;&#x305F;&#x306F;&#x4E88;&#x7D04;&#x8A9E;&#xFF09;&#x304C;&#x5B58;&#x5728;&#x3057;&#x307E;&#x3059;&#x3002;
-&#x3053;&#x306E;&#x30AD;&#x30FC;&#x30EF;&#x30FC;&#x30C9;&#x3068;&#x540C;&#x3058;&#x540D;&#x524D;&#x306E;&#x5909;&#x6570;&#x3084;&#x95A2;&#x6570;&#x306F;&#x5BA3;&#x8A00;&#x3067;&#x304D;&#x307E;&#x305B;&#x3093;&#x3002;
-&#x5148;&#x307B;&#x3069;&#x306E;&#x3001;&#x5909;&#x6570;&#x3092;&#x5BA3;&#x8A00;&#x3059;&#x308B;<code>const</code>&#x3082;&#x30AD;&#x30FC;&#x30EF;&#x30FC;&#x30C9;&#x306E;&#x3072;&#x3068;&#x3064;&#x3068;&#x306A;&#x3063;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;
-&#x305D;&#x306E;&#x305F;&#x3081;&#x3001;<code>const</code>&#x3068;&#x3044;&#x3046;&#x5909;&#x6570;&#x540D;&#x306F;&#x5BA3;&#x8A00;&#x3067;&#x304D;&#x307E;&#x305B;&#x3093;&#x3002;</p>
-<p>JavaScript&#x306F;&#x3001;&#x6587;&#xFF08;Statement&#xFF09;&#x3054;&#x3068;&#x306B;&#x51E6;&#x7406;&#x3057;&#x3066;&#x3044;&#x304D;&#x3001;&#x6587;&#x306F;&#x30BB;&#x30DF;&#x30B3;&#x30ED;&#x30F3;&#xFF08;<code>;</code>&#xFF09;&#x306B;&#x3088;&#x3063;&#x3066;&#x533A;&#x5207;&#x3089;&#x308C;&#x307E;&#x3059;&#x3002;
-&#x7279;&#x6B8A;&#x306A;&#x30EB;&#x30FC;&#x30EB;&#x306B;&#x3082;&#x3068;&#x3065;&#x304D;&#x3001;&#x30BB;&#x30DF;&#x30B3;&#x30ED;&#x30F3;&#x304C;&#x306A;&#x3044;&#x6587;&#x3082;&#x3001;&#x884C;&#x672B;&#x306B;&#x81EA;&#x52D5;&#x3067;&#x30BB;&#x30DF;&#x30B3;&#x30ED;&#x30F3;&#x304C;&#x633F;&#x5165;&#x3055;&#x308C;&#x308B;&#x3068;&#x3044;&#x3046;&#x4ED5;&#x7D44;&#x307F;&#x3082;&#x6301;&#x3063;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;<sup><a href="#fn_1" id="reffn_1">1</a></sup>
-&#x3057;&#x304B;&#x3057;&#x3001;&#x6697;&#x9ED9;&#x7684;&#x306A;&#x3082;&#x306E;&#x3078;&#x983C;&#x308B;&#x3068;&#x610F;&#x56F3;&#x3057;&#x306A;&#x3044;&#x6319;&#x52D5;&#x304C;&#x767A;&#x751F;&#x3059;&#x308B;&#x305F;&#x3081;&#x3001;&#x30BB;&#x30DF;&#x30B3;&#x30ED;&#x30F3;&#x306F;&#x5E38;&#x306B;&#x66F8;&#x304F;&#x3088;&#x3046;&#x306B;&#x3057;&#x307E;&#x3059;&#x3002;</p>
-<p>&#x307E;&#x305F;&#x3001;&#x30B9;&#x30DA;&#x30FC;&#x30B9;&#x3001;&#x30BF;&#x30D6;&#x6587;&#x5B57;&#x306A;&#x3069;&#x306F;&#x7A7A;&#x767D;&#x6587;&#x5B57;&#xFF08;&#x30DB;&#x30EF;&#x30A4;&#x30C8;&#x30B9;&#x30DA;&#x30FC;&#x30B9;&#xFF09;&#x3068;&#x547C;&#x3070;&#x308C;&#x307E;&#x3059;&#x3002;
-&#x7A7A;&#x767D;&#x6587;&#x5B57;&#x3092;&#x3044;&#x304F;&#x3064;&#x6587;&#x306E;&#x4E2D;&#x306B;&#x7F6E;&#x3044;&#x3066;&#x3082;&#x6319;&#x52D5;&#x306B;&#x9055;&#x3044;&#x306F;&#x3042;&#x308A;&#x307E;&#x305B;&#x3093;&#x3002;</p>
-<p>JavaScript&#x306E;&#x5B9F;&#x884C;&#x30B3;&#x30F3;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x3068;&#x3057;&#x3066;&quot;Script&quot;&#x3068;&quot;Module&quot;&#x304C;&#x3042;&#x308A;&#x307E;&#x3059;&#x3002;
-&#x3053;&#x306E;2&#x3064;&#x306E;&#x5B9F;&#x884C;&#x30B3;&#x30F3;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x306E;&#x9055;&#x3044;&#x306F;&#x3001;&#x610F;&#x8B58;&#x3057;&#x306A;&#x304F;&#x3066;&#x3082;&#x554F;&#x984C;&#x306F;&#x3042;&#x308A;&#x307E;&#x305B;&#x3093;&#x3002;</p>
-<p>&quot;Module&quot;&#x306E;&#x5B9F;&#x884C;&#x30B3;&#x30F3;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x306F;&#x3001;JavaScript&#x3092;&#x30E2;&#x30B8;&#x30E5;&#x30FC;&#x30EB;&#x3068;&#x3057;&#x3066;&#x5B9F;&#x884C;&#x3059;&#x308B;&#x305F;&#x3081;&#x306B;&#x3001;ECMAScript 2015&#x3067;&#x5C0E;&#x5165;&#x3055;&#x308C;&#x305F;&#x3082;&#x306E;&#x3067;&#x3059;&#x3002;
-&quot;Module&quot;&#x306E;&#x5B9F;&#x884C;&#x30B3;&#x30F3;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x3067;&#x306F;&#x3001;&#x53E4;&#x304F;&#x5B89;&#x5168;&#x3067;&#x306A;&#x3044;&#x69CB;&#x6587;&#x3084;&#x6A5F;&#x80FD;&#x306F;&#x3001;&#x4E00;&#x90E8;&#x7981;&#x6B62;&#x3055;&#x308C;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;</p>
-<p>&#x6700;&#x5F8C;&#x306B;&#x3001;JavaScript&#x306B;&#x306F;<strong>strict mode</strong>&#x3068;&#x3044;&#x3046;&#x5B9F;&#x884C;&#x30E2;&#x30FC;&#x30C9;&#x304C;&#x5B58;&#x5728;&#x3057;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;
-&#x540D;&#x524D;&#x306E;&#x3068;&#x304A;&#x308A;&#x53B3;&#x683C;&#x306A;&#x5B9F;&#x884C;&#x30E2;&#x30FC;&#x30C9;&#x3067;&#x3001;&#x53E4;&#x304F;&#x5B89;&#x5168;&#x3067;&#x306A;&#x3044;&#x69CB;&#x6587;&#x3084;&#x6A5F;&#x80FD;&#x304C;&#x4E00;&#x90E8;&#x7981;&#x6B62;&#x3055;&#x308C;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;
-&quot;Module&quot;&#x306E;&#x5B9F;&#x884C;&#x30B3;&#x30F3;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x3067;&#x306F;&#x3001;&#x3053;&#x306E;strict mode&#x304C;&#x30C7;&#x30D5;&#x30A9;&#x30EB;&#x30C8;&#x3068;&#x306A;&#x3063;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;</p>
-<p><code>&quot;use strict&quot;</code>&#x3068;&#x3044;&#x3046;&#x6587;&#x5B57;&#x5217;&#x3092;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x307E;&#x305F;&#x306F;&#x95A2;&#x6570;&#x306E;&#x5148;&#x982D;&#x306B;&#x66F8;&#x304F;&#x3053;&#x3068;&#x3067;&#x3001;&#x305D;&#x306E;&#x30B9;&#x30B3;&#x30FC;&#x30D7;&#x306B;&#x3042;&#x308B;&#x30B3;&#x30FC;&#x30C9;&#x306F;strict mode&#x3067;&#x5B9F;&#x884C;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;</p>
-<pre><code class="lang-js"><span class="hljs-meta">&quot;use strict&quot;</span>;
-<span class="hljs-comment">// &#x3053;&#x306E;&#x30B3;&#x30FC;&#x30C9;&#x306F;strict mode&#x3067;&#x5B9F;&#x884C;&#x3055;&#x308C;&#x308B;</span>
+<p>また、大文字で開始しなければならないといった命名規則が意味を持つケースはありません。
+そのため、あくまで別々の名前として認識されるというだけになっています
+（変数についての詳細は「<a href="../variables/">変数と宣言</a>」の章で解説します）。</p>
+<h3 id="reserved-keyword"><a name="reserved-keyword" class="plugin-anchor" href="#reserved-keyword"><i class="fa fa-link" aria-hidden="true"></i></a>予約語を持つ </h3>
+<p>JavaScriptには特別な意味を持つキーワードがあり、これらは予約語とも呼ばれます。
+このキーワードと同じ名前の変数や関数は宣言できません。
+先ほどの、変数を宣言する<code>const</code>も予約語のひとつとなっています。
+そのため、<code>const</code>という名前の変数名は宣言できません。</p>
+<h3 id="statement-semicolon"><a name="statement-semicolon" class="plugin-anchor" href="#statement-semicolon"><i class="fa fa-link" aria-hidden="true"></i></a>文はセミコロンで区切られる </h3>
+<p>JavaScriptは、文（Statement）ごとに処理していき、文はセミコロン（<code>;</code>）によって区切られます。
+特殊なルールに基づき、セミコロンがない文も、行末に自動でセミコロンが挿入されるという仕組みも持っています。<sup><a href="#fn_1" id="reffn_1">1</a></sup>
+しかし、暗黙的なものへ頼ると意図しない挙動が発生するため、セミコロンは常に書くようにします
+（詳細は「<a href="../statement-expression/">文と式</a>」の章で解説します）。</p>
+<p>また、スペース、タブ文字などは空白文字（ホワイトスペース）と呼ばれます。
+これらの空白文字を文にいくつ置いても挙動に違いはありません。</p>
+<p>たとえば、次の<code>1</code>足す<code>1</code>を行う2つの文は、<code>+</code>の前後の空白文字の個数に違いはありますが、動作としてはまったく同じ意味となります。</p>
+<!-- textlint-disable eslint -->
+<pre><code class="lang-js"><span class="hljs-comment">// 式や文の間にスペースがいくつあっても同じ意味となる</span>
+<span class="hljs-number">1</span> + <span class="hljs-number">1</span>;
+<span class="hljs-number">1</span>   +   <span class="hljs-number">1</span>;
 </code></pre>
-<p>strict mode&#x3067;&#x306F;&#x3001;<code>eval</code>&#x3084;<code>with</code>&#x3068;&#x3044;&#x3063;&#x305F;&#x30EC;&#x30AC;&#x30B7;&#x30FC;&#x306A;&#x6A5F;&#x80FD;&#x3084;&#x69CB;&#x6587;&#x3092;&#x7981;&#x6B62;&#x3057;&#x307E;&#x3059;&#x3002;
-&#x307E;&#x305F;&#x3001;&#x3042;&#x304D;&#x3089;&#x304B;&#x306A;&#x554F;&#x984C;&#x3092;&#x542B;&#x3093;&#x3060;&#x30B3;&#x30FC;&#x30C9;&#x306B;&#x5BFE;&#x3057;&#x3066;&#x306F;&#x65E9;&#x671F;&#x7684;&#x306B;&#x4F8B;&#x5916;&#x3092;&#x6295;&#x3052;&#x308B;&#x3053;&#x3068;&#x3067;&#x3001;&#x958B;&#x767A;&#x8005;&#x304C;&#x9593;&#x9055;&#x3044;&#x306B;&#x6C17;&#x3065;&#x304D;&#x3084;&#x3059;&#x304F;&#x3057;&#x3066;&#x304F;&#x308C;&#x307E;&#x3059;&#x3002;</p>
-<p>&#x305F;&#x3068;&#x3048;&#x3070;&#x3001;&#x6B21;&#x306E;&#x3088;&#x3046;&#x306A;<code>var</code>&#x306A;&#x3069;&#x306E;&#x30AD;&#x30FC;&#x30EF;&#x30FC;&#x30C9;&#x3092;&#x542B;&#x307E;&#x305A;&#x306B;&#x5909;&#x6570;&#x3092;&#x5BA3;&#x8A00;&#x3057;&#x3088;&#x3046;&#x3068;&#x3057;&#x305F;&#x5834;&#x5408;&#x306B;&#x3001;strict mode&#x3067;&#x306F;&#x4F8B;&#x5916;&#x304C;&#x767A;&#x751F;&#x3057;&#x307E;&#x3059;&#x3002;
-&#xFF08;strict mode&#x3067;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F;&#x3001;&#x4F8B;&#x5916;&#x304C;&#x767A;&#x751F;&#x305B;&#x305A;&#x306B;&#x30B0;&#x30ED;&#x30FC;&#x30D0;&#x30EB;&#x5909;&#x6570;&#x304C;&#x4F5C;&#x3089;&#x308C;&#x307E;&#x3059;&#x3002;&#xFF09;</p>
-<pre><code class="lang-js"><span class="hljs-meta">&quot;use strict&quot;</span>;
+<!-- textlint-enable eslint -->
+<p>空白文字の置き方は人によって好みが異なるため、書き方も異なる場合があります。
+複数人で開発する場合は、これらの空白文字の置き方を決めたコーディングスタイルを決めるとよいでしょう。
+コーディングスタイルの統一については「<a href="../../appendix/links/">付録: 参考リンク集</a>」を参照してください。</p>
+<h3 id="strict-mode"><a name="strict-mode" class="plugin-anchor" href="#strict-mode"><i class="fa fa-link" aria-hidden="true"></i></a>strict mode </h3>
+<p>JavaScriptには<strong>strict mode</strong>という実行モードが存在しています。
+名前のとおり厳格な実行モードで、古く安全でない構文や機能が一部禁止されています。</p>
+<p><code>"use strict"</code>という文字列をファイルまたは関数の先頭に書くことで、そのスコープにあるコードはstrict modeで実行されます。
+また、後述する"Module"の実行コンテキストでは、このstrict modeがデフォルトとなっています。</p>
+<pre><code class="lang-js"><span class="hljs-meta">"use strict"</span>;
+<span class="hljs-comment">// このコードはstrict modeで実行される</span>
+</code></pre>
+<p>strict modeでは、<code>eval</code>や<code>with</code>といったレガシーな機能や構文を禁止します。
+また、明らかな問題を含んだコードに対しては早期的に例外を投げることで、開発者が間違いに気づきやすくしてくれます。</p>
+<p>たとえば、次のような<code>const</code>などのキーワードを含まずに変数を宣言しようとした場合に、strict modeでは例外が発生します。
+strict modeでない場合は、例外が発生せずにグローバル変数が作られます。</p>
+<pre><code class="lang-js"><span class="hljs-meta">"use strict"</span>;
 mistypedVariable = <span class="hljs-number">42</span>; <span class="hljs-comment">// =&gt; ReferenceError</span>
 </code></pre>
-<p>&#x3053;&#x306E;&#x3088;&#x3046;&#x306B;&#x3001;strict mode&#x3067;&#x306F;&#x958B;&#x767A;&#x8005;&#x304C;&#x5B89;&#x5168;&#x306B;&#x30B3;&#x30FC;&#x30C9;&#x3092;&#x66F8;&#x3051;&#x308B;&#x3088;&#x3046;&#x306B;&#x3001;JavaScript&#x306E;&#x843D;&#x3068;&#x3057;&#x7A74;&#x3092;&#x4E00;&#x90E8;&#x3075;&#x3055;&#x3044;&#x3067;&#x304F;&#x308C;&#x307E;&#x3059;&#x3002;
-&#x305D;&#x306E;&#x305F;&#x3081;&#x3001;&#x5E38;&#x306B;strict mode&#x3067;&#x5B9F;&#x884C;&#x3067;&#x304D;&#x308B;&#x30B3;&#x30FC;&#x30C9;&#x3092;&#x66F8;&#x304F;&#x3053;&#x3068;&#x304C;&#x3001;&#x3088;&#x308A;&#x5B89;&#x5168;&#x306A;&#x30B3;&#x30FC;&#x30C9;&#x306B;&#x3064;&#x306A;&#x304C;&#x308A;&#x307E;&#x3059;&#x3002;</p>
-<p>&#x672C;&#x66F8;&#x3067;&#x306F;&#x3001;&#x660E;&#x793A;&#x7684;&#x306B;&#x300C;strict mode&#x3067;&#x306F;&#x306A;&#x3044;&#x300D;&#x3053;&#x3068;&#x3092;&#x5BA3;&#x8A00;&#x3057;&#x305F;&#x5834;&#x5408;&#x3092;&#x9664;&#x304D;&#x3001;
-&#x3059;&#x3079;&#x3066;strict mode&#x3068;&#x3057;&#x3066;&#x5B9F;&#x884C;&#x3067;&#x304D;&#x308B;&#x30B3;&#x30FC;&#x30C9;&#x3092;&#x6271;&#x3044;&#x307E;&#x3059;&#x3002;</p>
+<p>このように、strict modeでは開発者が安全にコードを書けるように、JavaScriptの落とし穴を一部ふさいでくれます。
+そのため、常にstrict modeで実行できるコードを書くことが、より安全なコードにつながります。</p>
+<p>本書では、明示的に「strict modeではない」ことを宣言した場合を除き、
+すべてstrict modeとして実行できるコードを扱います。</p>
+<h3 id="script-module"><a name="script-module" class="plugin-anchor" href="#script-module"><i class="fa fa-link" aria-hidden="true"></i></a>実行コンテキスト: ScriptとModule  </h3>
+<p>JavaScriptの実行コンテキストとして"Script"と"Module"があります。
+コードを書く場合には、この2つの実行コンテキストの違いを意識することは多くありません。</p>
+<p>"Script"の実行コンテキストは、多くの実行環境ではデフォルトの実行コンテキストです。
+"Script"の実行コンテキストでは、デフォルトはstrict modeではありません。</p>
+<p>"Module"の実行コンテキストは、JavaScriptをモジュールとして実行するために、ECMAScript 2015で導入されたものです。
+"Module"の実行コンテキストでは、デフォルトがstrict modeとなり、古く安全でない構文や機能は一部禁止されています。
+また、モジュールの機能は"Module"の実行コンテキストでしか利用できません。モジュールについての詳細は「<a href="../module/">ECMAScriptモジュール</a>」の章で解説します。</p>
+<h3 id="ecmascript-updates"><a name="ecmascript-updates" class="plugin-anchor" href="#ecmascript-updates"><i class="fa fa-link" aria-hidden="true"></i></a>JavaScriptの仕様は毎年更新される </h3>
+<p>最後に、JavaScriptの仕様であるECMAScriptは毎年更新され、JavaScriptには新しい構文や機能が増え続けています。
+そのため、この書籍で学んだ後もまだまだ知らなかったことが出てくるはずです。</p>
+<p>一方で、ECMAScriptは後方互換性が慎重に考慮されているため、過去に書いたJavaScriptのコードが動かなくなる変更はほとんど入りません。
+そのため、この書籍で学んだことのすべてが無駄になることはありません。</p>
+<p>ECMAScriptの仕様がどのように策定されているかについては「<a href="../ecmascript/">ECMAScript</a>」の章で解説します。</p>
 <blockquote id="fn_1">
-<sup>1</sup>. Automatic Semicolon Insertion&#x3068;&#x547C;&#x3070;&#x308C;&#x308B;&#x4ED5;&#x7D44;&#x307F;&#x3067;&#x3059;&#x3002;<a href="#reffn_1" title="Jump back to footnote [1] in the text."> &#x21A9;</a>
+<sup>1</sup>. Automatic Semicolon Insertionと呼ばれる仕組みです。<a href="#reffn_1" title="Jump back to footnote [1] in the text."> ↩</a>
 </blockquote>
-
+</body></html>
                                 
+
                                 </section>
                             
                         </div>
                     </div>
                 
+<footer class="book_footer">
+    <p>Copyright (c) 2016-present <a href="https://github.com/asciidwango/js-primer" target="_blank">jsprimer project</a></p>
+</footer>
+
             </div>
 
             
                 
-                <a href="../" class="navigation navigation-prev " aria-label="Previous page: 第1部: 基本文法">
+                <a href="../" class="navigation navigation-prev " aria-label="Previous page: 第一部: 基本文法">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
@@ -1384,21 +1697,61 @@ mistypedVariable = <span class="hljs-number">42</span>; <span class="hljs-commen
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"author":"azu","title":"JavaScriptとは","level":"1.5.1","depth":2,"next":{"title":"コメント","level":"1.5.2","depth":2,"path":"basic/comments/README.md","ref":"./basic/comments/README.md","articles":[]},"previous":{"title":"第1部: 基本文法","level":"1.5","depth":1,"path":"basic/README.md","ref":"./basic/README.md","articles":[{"title":"JavaScriptとは","level":"1.5.1","depth":2,"path":"basic/introduction/README.md","ref":"./basic/introduction/README.md","articles":[]},{"title":"コメント","level":"1.5.2","depth":2,"path":"basic/comments/README.md","ref":"./basic/comments/README.md","articles":[]},{"title":"変数と宣言","level":"1.5.3","depth":2,"path":"basic/variables/README.md","ref":"./basic/variables/README.md","articles":[]},{"title":"値の評価と表示","level":"1.5.4","depth":2,"path":"basic/read-eval-print/README.md","ref":"./basic/read-eval-print/README.md","articles":[]},{"title":"データ型とリテラル","level":"1.5.5","depth":2,"path":"basic/data-type/README.md","ref":"./basic/data-type/README.md","articles":[]},{"title":"演算子","level":"1.5.6","depth":2,"path":"basic/operator/README.md","ref":"./basic/operator/README.md","articles":[]},{"title":"暗黙的な型変換","level":"1.5.7","depth":2,"path":"basic/implicit-coercion/README.md","ref":"./basic/implicit-coercion/README.md","articles":[]},{"title":"関数と宣言","level":"1.5.8","depth":2,"path":"basic/function-declaration/README.md","ref":"./basic/function-declaration/README.md","articles":[]},{"title":"文と式","level":"1.5.9","depth":2,"path":"basic/statement-expression/README.md","ref":"./basic/statement-expression/README.md","articles":[]},{"title":"条件分岐","level":"1.5.10","depth":2,"path":"basic/condition/README.md","ref":"./basic/condition/README.md","articles":[]},{"title":"ループと反復処理","level":"1.5.11","depth":2,"path":"basic/loop/README.md","ref":"./basic/loop/README.md","articles":[]},{"title":"オブジェクト","level":"1.5.12","depth":2,"path":"basic/object/README.md","ref":"./basic/object/README.md","articles":[]},{"title":"プロトタイプオブジェクト","level":"1.5.13","depth":2,"path":"basic/prototype-object/README.md","ref":"./basic/prototype-object/README.md","articles":[]},{"title":"配列","level":"1.5.14","depth":2,"path":"basic/array/README.md","ref":"./basic/array/README.md","articles":[]},{"title":"文字列","level":"1.5.15","depth":2,"path":"basic/string/README.md","ref":"./basic/string/README.md","articles":[]},{"title":"ラッパーオブジェクト","level":"1.5.16","depth":2,"path":"basic/wrapper-object/README.md","ref":"./basic/wrapper-object/README.md","articles":[]},{"title":"関数とスコープ","level":"1.5.17","depth":2,"path":"basic/function-scope/README.md","ref":"./basic/function-scope/README.md","articles":[]},{"title":"関数とthis","level":"1.5.18","depth":2,"path":"basic/function-this/README.md","ref":"./basic/function-this/README.md","articles":[]},{"title":"クラス","level":"1.5.19","depth":2,"path":"basic/class/README.md","ref":"./basic/class/README.md","articles":[]},{"title":"例外処理","level":"1.5.20","depth":2,"path":"basic/error-try-catch/README.md","ref":"./basic/error-try-catch/README.md","articles":[]},{"title":"非同期処理","level":"1.5.21","depth":2,"path":"basic/async/README.md","ref":"./basic/async/README.md","articles":[]},{"title":"Map/Set","level":"1.5.22","depth":2,"path":"basic/map-and-set/README.md","ref":"./basic/map-and-set/README.md","articles":[]},{"title":"JSON","level":"1.5.23","depth":2,"path":"basic/json/README.md","ref":"./basic/json/README.md","articles":[]},{"title":"Date","level":"1.5.24","depth":2,"path":"basic/date/README.md","ref":"./basic/date/README.md","articles":[]},{"title":"Math","level":"1.5.25","depth":2,"path":"basic/math/README.md","ref":"./basic/math/README.md","articles":[]},{"title":"ECMAScript","level":"1.5.26","depth":2,"path":"basic/ecmascript/README.md","ref":"./basic/ecmascript/README.md","articles":[]},{"title":"第1部: おわりに","level":"1.5.27","depth":2,"path":"basic/other-parts/README.md","ref":"./basic/other-parts/README.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["-search","-lunr","page-toc-button","include-codeblock","anchors","canonical-link","ga","js-console","github-issue-feedback","todo"],"root":"./source/","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"docSearch":{"apiKey":"fd28ebaba94be0c39fb9fa1b2fed4f23","index":"asciidwango"},"github-issue-feedback":{"repo":"asciidwango/js-primer"},"todo":{},"fontsettings":{"theme":"white","family":"sans","size":2},"js-console":{},"canonical-link":{"baseURL":"https://jsprimer.net"},"highlight":{},"page-toc-button":{"maxTocDepth":2,"minTocSize":2},"ga":{"configuration":"auto","token":"UA-2184335-18"},"include-codeblock":{"check":false,"edit":false,"lang":"","fixlang":false,"template":"./resources/gitbook-plugin-include-codeblock.hbs","theme":"chrome","unindent":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"edit-link":{"base":"https://github.com/asciidwango/js-primer/edit/master/source/","label":"Edit"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"anchors":{}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"index.md","glossary":"GLOSSARY.md","summary":"README.md"},"variables":{"esversion":"2018","console":"<a class=\"gitbook-plugin-js-console\" aria-hidden=\"true\"></a>"},"title":"JavaScriptの入門書 #jsprimer","gitbook":">=3.0.0","description":"この書籍はES2015以降をベースとしたJavaScript入門書となる予定"},"file":{"path":"basic/introduction/README.md","mtime":"2019-01-08T09:00:37.385Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-01-08T09:01:51.003Z"},"basePath":"../..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"author":"azu","description":"JavaScriptとはどのような用途に使われているプログラミング言語なのか、どのような言語的な特性をもっているのかについてを簡単に紹介します。","sponsors":[],"title":"JavaScriptとは","level":"1.3.1","depth":2,"next":{"title":"コメント","level":"1.3.2","depth":2,"path":"basic/comments/README.md","ref":"./basic/comments/README.md","articles":[]},"previous":{"title":"第一部: 基本文法","level":"1.3","depth":1,"path":"basic/README.md","ref":"./basic/README.md","articles":[{"title":"JavaScriptとは","level":"1.3.1","depth":2,"path":"basic/introduction/README.md","ref":"./basic/introduction/README.md","articles":[]},{"title":"コメント","level":"1.3.2","depth":2,"path":"basic/comments/README.md","ref":"./basic/comments/README.md","articles":[]},{"title":"変数と宣言","level":"1.3.3","depth":2,"path":"basic/variables/README.md","ref":"./basic/variables/README.md","articles":[]},{"title":"値の評価と表示","level":"1.3.4","depth":2,"path":"basic/read-eval-print/README.md","ref":"./basic/read-eval-print/README.md","articles":[]},{"title":"データ型とリテラル","level":"1.3.5","depth":2,"path":"basic/data-type/README.md","ref":"./basic/data-type/README.md","articles":[]},{"title":"演算子","level":"1.3.6","depth":2,"path":"basic/operator/README.md","ref":"./basic/operator/README.md","articles":[]},{"title":"暗黙的な型変換","level":"1.3.7","depth":2,"path":"basic/implicit-coercion/README.md","ref":"./basic/implicit-coercion/README.md","articles":[]},{"title":"関数と宣言","level":"1.3.8","depth":2,"path":"basic/function-declaration/README.md","ref":"./basic/function-declaration/README.md","articles":[]},{"title":"文と式","level":"1.3.9","depth":2,"path":"basic/statement-expression/README.md","ref":"./basic/statement-expression/README.md","articles":[]},{"title":"条件分岐","level":"1.3.10","depth":2,"path":"basic/condition/README.md","ref":"./basic/condition/README.md","articles":[]},{"title":"ループと反復処理","level":"1.3.11","depth":2,"path":"basic/loop/README.md","ref":"./basic/loop/README.md","articles":[]},{"title":"オブジェクト","level":"1.3.12","depth":2,"path":"basic/object/README.md","ref":"./basic/object/README.md","articles":[]},{"title":"プロトタイプオブジェクト","level":"1.3.13","depth":2,"path":"basic/prototype-object/README.md","ref":"./basic/prototype-object/README.md","articles":[]},{"title":"配列","level":"1.3.14","depth":2,"path":"basic/array/README.md","ref":"./basic/array/README.md","articles":[]},{"title":"文字列","level":"1.3.15","depth":2,"path":"basic/string/README.md","ref":"./basic/string/README.md","articles":[]},{"title":"文字列とUnicode","level":"1.3.16","depth":2,"path":"basic/string-unicode/README.md","ref":"./basic/string-unicode/README.md","articles":[]},{"title":"ラッパーオブジェクト","level":"1.3.17","depth":2,"path":"basic/wrapper-object/README.md","ref":"./basic/wrapper-object/README.md","articles":[]},{"title":"関数とスコープ","level":"1.3.18","depth":2,"path":"basic/function-scope/README.md","ref":"./basic/function-scope/README.md","articles":[]},{"title":"関数とthis","level":"1.3.19","depth":2,"path":"basic/function-this/README.md","ref":"./basic/function-this/README.md","articles":[]},{"title":"クラス","level":"1.3.20","depth":2,"path":"basic/class/README.md","ref":"./basic/class/README.md","articles":[]},{"title":"例外処理","level":"1.3.21","depth":2,"path":"basic/error-try-catch/README.md","ref":"./basic/error-try-catch/README.md","articles":[]},{"title":"非同期処理:Promise/Async Function","level":"1.3.22","depth":2,"path":"basic/async/README.md","ref":"./basic/async/README.md","articles":[]},{"title":"Map/Set","level":"1.3.23","depth":2,"path":"basic/map-and-set/README.md","ref":"./basic/map-and-set/README.md","articles":[]},{"title":"JSON","level":"1.3.24","depth":2,"path":"basic/json/README.md","ref":"./basic/json/README.md","articles":[]},{"title":"Date","level":"1.3.25","depth":2,"path":"basic/date/README.md","ref":"./basic/date/README.md","articles":[]},{"title":"Math","level":"1.3.26","depth":2,"path":"basic/math/README.md","ref":"./basic/math/README.md","articles":[]},{"title":"ECMAScriptモジュール","level":"1.3.27","depth":2,"path":"basic/module/README.md","ref":"./basic/module/README.md","articles":[]},{"title":"ECMAScript","level":"1.3.28","depth":2,"path":"basic/ecmascript/README.md","ref":"./basic/ecmascript/README.md","articles":[]},{"title":"第一部: おわりに","level":"1.3.29","depth":2,"path":"basic/other-parts/README.md","ref":"./basic/other-parts/README.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["-search","-lunr","page-toc-button","include-codeblock","anchors","canonical-link","js-console","github-issue-feedback","sandpack"],"root":"./source/","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"docSearch":{"index":"83I8JIFICQ","apiKey":"9169ce4cd84fcf2376f29d9585c89254"},"github-issue-feedback":{"repo":"asciidwango/js-primer","label":"問題を報告する"},"fontsettings":{"theme":"white","family":"sans","size":2},"js-console":{},"canonical-link":{"baseURL":"https://jsprimer.net"},"highlight":{},"page-toc-button":{"maxTocDepth":2,"minTocSize":2},"include-codeblock":{"check":false,"edit":false,"lang":"","fixlang":false,"template":"./resources/gitbook-plugin-include-codeblock.hbs","theme":"chrome","unindent":false},"sandpack":{},"edit-link":{"base":"https://github.com/asciidwango/js-primer/edit/master/source/","label":"Edit"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"anchors":{}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"IPAexMincho","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"index.md","glossary":"GLOSSARY.md","summary":"README.md"},"variables":{"esversion":"2024","nodeversion":"22.7.0","npmversion":"10.8.2","triplebackticks":"```","console":"<a class=\"gitbook-plugin-js-console\" aria-hidden=\"true\"></a>"},"title":"JavaScript Primer #jsprimer","gitbook":">=3.0.0","description":"JavaScriptの基本的な書き方からアプリケーションの作成などのユースケースを学ぶための入門書です"},"file":{"path":"basic/introduction/README.md","mtime":"2025-01-01T08:47:03.406Z","type":"markdown"},"gitbook":{"version":"6.0.2","time":"2025-01-01T08:47:22.257Z"},"basePath":"../..","book":{"language":""}});
         });
     </script>
 </div>
 
         
+    <noscript>
+        <style>
+            .honkit-cloak {
+                display: block !important;
+            }
+        </style>
+    </noscript>
+    <script>
+        // Restore sidebar state as critical path for prevent layout shift
+        function __init__getSidebarState(defaultValue){
+            var baseKey = "";
+            var key = baseKey + ":sidebar";
+            try {
+                var value = localStorage[key];
+                if (value === undefined) {
+                    return defaultValue;
+                }
+                var parsed = JSON.parse(value);
+                return parsed == null ? defaultValue : parsed;
+            } catch (e) {
+                return defaultValue;
+            }
+        }
+        function __init__restoreLastSidebarState() {
+            var isMobile = window.matchMedia("(max-width: 600px)").matches;
+            if (isMobile) {
+                // Init last state if not mobile
+                return;
+            }
+            var sidebarState = __init__getSidebarState(true);
+            var book = document.querySelector(".book");
+            // Show sidebar if it enabled
+            if (sidebarState && book) {
+                book.classList.add("without-animation", "with-summary");
+            }
+        }
+
+        try {
+            __init__restoreLastSidebarState();
+        } finally {
+            var book = document.querySelector(".book");
+            book.classList.remove("honkit-cloak");
+        }
+    </script>
     <script src="../../gitbook/gitbook.js"></script>
     <script src="../../gitbook/theme.js"></script>
     
         
         <script src="../../gitbook/gitbook-plugin-page-toc-button/plugin.js"></script>
-        
-    
-        
-        <script src="../../gitbook/gitbook-plugin-ga/plugin.js"></script>
         
     
         
@@ -1410,11 +1763,11 @@ mistypedVariable = <span class="hljs-number">42</span>; <span class="hljs-commen
         
     
         
-        <script src="../../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        <script src="../../gitbook/honkit-plugin-sandpack/honkit-plugin-sandpack.js"></script>
         
     
         
-        <script src="../../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        <script src="../../gitbook/@honkit/honkit-plugin-fontsettings/fontsettings.js"></script>
         
     
 

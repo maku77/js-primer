@@ -1,4 +1,5 @@
-const cleanup = require("jsdom-global")();
+import jsdom_global from "jsdom-global";
+const cleanup = jsdom_global();
 //! [main]
 import { TodoItemModel } from "../model/TodoItemModel.js";
 import { TodoItemView } from "./TodoItemView.js";
@@ -16,7 +17,7 @@ const todoItemElement = todoItemView.createElement(todoItemModel, {
         // チェックボックスが更新されたときに呼ばれるリスナー関数
     },
     onDeleteTodo: () => {
-        // 削除ボタンがクリックされたときによばれるリスナー関数
+        // 削除ボタンがクリックされたときに呼ばれるリスナー関数
     }
 });
 console.log(todoItemElement); // <li>要素が入る

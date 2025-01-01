@@ -3,11 +3,10 @@
 <html lang="" >
     <head>
         <meta charset="UTF-8">
-        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>Promiseを活用する · JavaScriptの入門書 #jsprimer</title>
+        <title>Promiseを活用する · JavaScript Primer #jsprimer</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="description" content="">
-        <meta name="generator" content="GitBook 3.2.3">
+        <meta name="description" content="Promiseを活用し、ソースコードの整理とエラーハンドリングを行います。">
+        <meta name="generator" content="HonKit 6.0.2">
         
         
         
@@ -25,11 +24,11 @@
                 
             
                 
-                <link rel="stylesheet" href="../../../gitbook/gitbook-plugin-highlight/website.css">
+                <link rel="stylesheet" href="../../../gitbook/@honkit/honkit-plugin-highlight/website.css">
                 
             
                 
-                <link rel="stylesheet" href="../../../gitbook/gitbook-plugin-fontsettings/website.css">
+                <link rel="stylesheet" href="../../../gitbook/@honkit/honkit-plugin-fontsettings/website.css">
                 
             
         
@@ -70,11 +69,77 @@
 
     <link rel="canonical" href="https://jsprimer.net/use-case/ajaxapp/promise/">
 
-<meta name="google-site-verification" content="bMotEbgYwkzA3k4PkuyK_NUdz0bKh-Phz0oUwNmRSVo" />
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DWY0DLHWB6"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag("js", new Date());
+
+    gtag("config", "G-DWY0DLHWB6");
+</script>
+<script type="module">
+    // コンソールUIでコード実行したらイベントとして送信する
+    const onExecuteCode = (scriptType) => {
+        gtag("event", "execute_code", {
+            "event_category": "console",
+            "event_label": "execute_code",
+            "script_type": scriptType || "unknown"
+        });
+    };
+    let observer;
+    const observeEvalEvent = () => {
+        if (observer) {
+            observer.disconnect();
+        }
+        const callback = function(mutationsList) {
+            for (const mutation of mutationsList) {
+                const mirrorConsole = Array.from(mutation.addedNodes).find(node => Boolean(node.dataset.mirrorConsole));
+                if (mirrorConsole) {
+                    return onExecuteCode(mirrorConsole.dataset.mirrorConsole);
+                }
+            }
+        };
+        observer = new MutationObserver(callback);
+        observer.observe(document.body, { childList: true });
+    };
+    const eventMap = new WeakMap();
+    // 問題を報告ボタンを押したらイベントとして送信する
+    const onClickIssueReport = () => {
+        console.log("click_issue_report");
+        gtag("event", "click_issue_report", {
+            "event_category": "contribution",
+            "event_label": "click_issue_report"
+        });
+    };
+    const observeIssueReport = () => {
+        const targetButton = document.querySelector(".gitbook-plugin-github-issue-feedback");
+        // すでにイベントが登録されていたら何もしない
+        if (eventMap.has(targetButton)) {
+            return;
+        }
+        if (targetButton) {
+            targetButton.addEventListener("click", onClickIssueReport);
+            eventMap.set(targetButton, onClickIssueReport);
+        }
+    };
+    window.addEventListener("DOMContentLoaded", function() {
+        gitbook.events.on("page.change", function() {
+            observeEvalEvent();
+            observeIssueReport();
+        });
+    });
+
+</script>
+<meta name="google-site-verification" content="bMotEbgYwkzA3k4PkuyK_NUdz0bKh-Phz0oUwNmRSVo"/>
 <style>
     /*
-    Disable antialias
-    */
+     * Disable antialias
+     */
     * {
         -webkit-font-smoothing: initial !important
     }
@@ -85,7 +150,7 @@
     }
 
     /* deny access chapter */
-    .summary li.chapter>span {
+    .summary li.chapter > span {
         cursor: not-allowed;
         opacity: .3;
     }
@@ -110,38 +175,88 @@
         line-height: inherit;
         margin-bottom: 0px !important;
     }
+
+    /* Markdown */
+    /* Support horizon scroll */
+    /* https://stackoverflow.com/questions/17770257/scrolling-tables-horizontally-without-wrapping-them-in-div */
+    .markdown-section table {
+        max-width: 100%;
+        overflow-x: auto;
+        display: block;
+    }
+    .markdown-section sup,
+    .markdown-section sub {
+        font-size: 75%;
+    }
+
+    .book_footer {
+        text-align: center;
+        color: #000000;
+        background: #ddd;
+        font-size: 16px;
+        margin-top: 16px;
+        padding: 16px;
+    }
+
+    /* github-issue-feedback */
+    .gitbook-plugin-github-issue-feedback {
+        background-color: #333;
+        color: #fff;
+        opacity: 0.8;
+        padding: 4px;
+        margin-right: 24px;
+        margin-bottom: 4px;
+        border-radius: 6px;
+    }
+
+    .gitbook-plugin-github-issue-feedback:hover {
+        opacity: 1;
+    }
+
+    /* Hide footer on mobile */
+    /* Use navigation width */
+    @media (max-width: 1240px) {
+        .book_footer {
+            display: none;
+        }
+    }
+
+    .navigation {
+        min-width: 50px;
+    }
+
+    @media (min-width: 1240px) {
+        .honkit-plugin-sandpack {
+            width: calc(100% + 180px);
+            margin: 0 0 1em -90px;
+        }
+    }
+
+    .honkit-plugin-sandpack, .honkit-plugin-sandpack--buttonContainer {
+        margin-bottom: 1em;
+    }
+
 </style>
 <meta name="theme-color" content="#ffffff">
 <link rel="manifest" href="../../../manifest.json">
-<script src="https://unpkg.com/service-worker-updatefound-refresh-dialog@1.1.0/dist/service-worker-updatefound-refresh-dialog.umd.js"></script>
-<script>
-    if ("serviceWorker" in navigator) {
-        const isLocalhost = Boolean(
-            // preview
-            /netlify.com/.test(window.location.hostname) ||
-            // local
-            window.location.hostname === "localhost" ||
-            // [::1] is the IPv6 localhost address.
-            window.location.hostname === "[::1]" ||
-            // 127.0.0.1/8 is considered localhost for IPv4.
-            window.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/)
-        );
-        if (!isLocalhost) {
-            window.addEventListener("load", () => {
-                navigator.serviceWorker.register("../../../sw.js")
-                    .then(function(registration) {
-                        serviceWorkerUpdatefoundRefreshDialog.register(registration);
-                    });
-            });
+<script defer async>
+    // unregister old service worker(remove workbox)
+    // https://github.com/asciidwango/js-primer/pull/1701
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for (const registration of registrations) {
+            registration.unregister();
         }
-    }
+    }).catch(function(err) {
+        console.error(new Error("Can not getRegistrations", {
+            cause: err
+        }));
+    });
 </script>
-
 
     </head>
     <body>
         
-<div class="book">
+<div class="book honkit-cloak">
     <div class="book-summary">
         
             
@@ -173,7 +288,47 @@
             
         </li>
     
-        <li class="chapter " data-level="1.2" data-path="../../../intro/preparation/">
+        <li class="chapter " data-level="1.2" data-path="../../../intro/">
+            
+                <a href="../../../intro/">
+            
+                    
+                    はじめに
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="../../../intro/authors/">
+            
+                <a href="../../../intro/authors/">
+            
+                    
+                    著者紹介
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="../../../intro/sponsors/">
+            
+                <a href="../../../intro/sponsors/">
+            
+                    
+                    JavaScript Primerスポンサー
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="../../../intro/preparation/">
             
                 <a href="../../../intro/preparation/">
             
@@ -186,20 +341,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.3" data-path="../../../intro/goal/">
-            
-                <a href="../../../intro/goal/">
-            
-                    
-                    本書の目的
-            
-                </a>
-            
-
-            
-        </li>
-    
-        <li class="chapter " data-level="1.4" data-path="../../../intro/feedback/">
+        <li class="chapter " data-level="1.2.4" data-path="../../../intro/feedback/">
             
                 <a href="../../../intro/feedback/">
             
@@ -212,12 +354,17 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5" data-path="../../../basic/">
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../../../basic/">
             
                 <a href="../../../basic/">
             
                     
-                    第1部: 基本文法
+                    第一部: 基本文法
             
                 </a>
             
@@ -226,7 +373,7 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="1.5.1" data-path="../../../basic/introduction/">
+        <li class="chapter " data-level="1.3.1" data-path="../../../basic/introduction/">
             
                 <a href="../../../basic/introduction/">
             
@@ -239,7 +386,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.2" data-path="../../../basic/comments/">
+        <li class="chapter " data-level="1.3.2" data-path="../../../basic/comments/">
             
                 <a href="../../../basic/comments/">
             
@@ -252,7 +399,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.3" data-path="../../../basic/variables/">
+        <li class="chapter " data-level="1.3.3" data-path="../../../basic/variables/">
             
                 <a href="../../../basic/variables/">
             
@@ -265,7 +412,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.4" data-path="../../../basic/read-eval-print/">
+        <li class="chapter " data-level="1.3.4" data-path="../../../basic/read-eval-print/">
             
                 <a href="../../../basic/read-eval-print/">
             
@@ -278,7 +425,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.5" data-path="../../../basic/data-type/">
+        <li class="chapter " data-level="1.3.5" data-path="../../../basic/data-type/">
             
                 <a href="../../../basic/data-type/">
             
@@ -291,7 +438,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.6" data-path="../../../basic/operator/">
+        <li class="chapter " data-level="1.3.6" data-path="../../../basic/operator/">
             
                 <a href="../../../basic/operator/">
             
@@ -304,7 +451,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.7" data-path="../../../basic/implicit-coercion/">
+        <li class="chapter " data-level="1.3.7" data-path="../../../basic/implicit-coercion/">
             
                 <a href="../../../basic/implicit-coercion/">
             
@@ -317,7 +464,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.8" data-path="../../../basic/function-declaration/">
+        <li class="chapter " data-level="1.3.8" data-path="../../../basic/function-declaration/">
             
                 <a href="../../../basic/function-declaration/">
             
@@ -330,7 +477,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.9" data-path="../../../basic/statement-expression/">
+        <li class="chapter " data-level="1.3.9" data-path="../../../basic/statement-expression/">
             
                 <a href="../../../basic/statement-expression/">
             
@@ -343,7 +490,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.10" data-path="../../../basic/condition/">
+        <li class="chapter " data-level="1.3.10" data-path="../../../basic/condition/">
             
                 <a href="../../../basic/condition/">
             
@@ -356,7 +503,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.11" data-path="../../../basic/loop/">
+        <li class="chapter " data-level="1.3.11" data-path="../../../basic/loop/">
             
                 <a href="../../../basic/loop/">
             
@@ -369,7 +516,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.12" data-path="../../../basic/object/">
+        <li class="chapter " data-level="1.3.12" data-path="../../../basic/object/">
             
                 <a href="../../../basic/object/">
             
@@ -382,7 +529,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.13" data-path="../../../basic/prototype-object/">
+        <li class="chapter " data-level="1.3.13" data-path="../../../basic/prototype-object/">
             
                 <a href="../../../basic/prototype-object/">
             
@@ -395,7 +542,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.14" data-path="../../../basic/array/">
+        <li class="chapter " data-level="1.3.14" data-path="../../../basic/array/">
             
                 <a href="../../../basic/array/">
             
@@ -408,7 +555,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.15" data-path="../../../basic/string/">
+        <li class="chapter " data-level="1.3.15" data-path="../../../basic/string/">
             
                 <a href="../../../basic/string/">
             
@@ -421,7 +568,20 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.16" data-path="../../../basic/wrapper-object/">
+        <li class="chapter " data-level="1.3.16" data-path="../../../basic/string-unicode/">
+            
+                <a href="../../../basic/string-unicode/">
+            
+                    
+                    文字列とUnicode
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.17" data-path="../../../basic/wrapper-object/">
             
                 <a href="../../../basic/wrapper-object/">
             
@@ -434,7 +594,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.17" data-path="../../../basic/function-scope/">
+        <li class="chapter " data-level="1.3.18" data-path="../../../basic/function-scope/">
             
                 <a href="../../../basic/function-scope/">
             
@@ -447,7 +607,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.18" data-path="../../../basic/function-this/">
+        <li class="chapter " data-level="1.3.19" data-path="../../../basic/function-this/">
             
                 <a href="../../../basic/function-this/">
             
@@ -460,7 +620,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.19" data-path="../../../basic/class/">
+        <li class="chapter " data-level="1.3.20" data-path="../../../basic/class/">
             
                 <a href="../../../basic/class/">
             
@@ -473,7 +633,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.20" data-path="../../../basic/error-try-catch/">
+        <li class="chapter " data-level="1.3.21" data-path="../../../basic/error-try-catch/">
             
                 <a href="../../../basic/error-try-catch/">
             
@@ -486,12 +646,12 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.21" data-path="../../../basic/async/">
+        <li class="chapter " data-level="1.3.22" data-path="../../../basic/async/">
             
                 <a href="../../../basic/async/">
             
                     
-                    非同期処理
+                    非同期処理:Promise/Async Function
             
                 </a>
             
@@ -499,7 +659,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.22" data-path="../../../basic/map-and-set/">
+        <li class="chapter " data-level="1.3.23" data-path="../../../basic/map-and-set/">
             
                 <a href="../../../basic/map-and-set/">
             
@@ -512,7 +672,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.23" data-path="../../../basic/json/">
+        <li class="chapter " data-level="1.3.24" data-path="../../../basic/json/">
             
                 <a href="../../../basic/json/">
             
@@ -525,7 +685,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.24" data-path="../../../basic/date/">
+        <li class="chapter " data-level="1.3.25" data-path="../../../basic/date/">
             
                 <a href="../../../basic/date/">
             
@@ -538,7 +698,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.25" data-path="../../../basic/math/">
+        <li class="chapter " data-level="1.3.26" data-path="../../../basic/math/">
             
                 <a href="../../../basic/math/">
             
@@ -551,7 +711,20 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.26" data-path="../../../basic/ecmascript/">
+        <li class="chapter " data-level="1.3.27" data-path="../../../basic/module/">
+            
+                <a href="../../../basic/module/">
+            
+                    
+                    ECMAScriptモジュール
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.28" data-path="../../../basic/ecmascript/">
             
                 <a href="../../../basic/ecmascript/">
             
@@ -564,12 +737,12 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5.27" data-path="../../../basic/other-parts/">
+        <li class="chapter " data-level="1.3.29" data-path="../../../basic/other-parts/">
             
                 <a href="../../../basic/other-parts/">
             
                     
-                    第1部: おわりに
+                    第一部: おわりに
             
                 </a>
             
@@ -582,12 +755,12 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6" data-path="../../">
+        <li class="chapter " data-level="1.4" data-path="../../">
             
                 <a href="../../">
             
                     
-                    第2部: 応用編（ユースケース）
+                    第二部: 応用編（ユースケース）
             
                 </a>
             
@@ -596,7 +769,7 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="1.6.1" data-path="../../setup-local-env/">
+        <li class="chapter " data-level="1.4.1" data-path="../../setup-local-env/">
             
                 <a href="../../setup-local-env/">
             
@@ -609,25 +782,12 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.2" data-path="../../module/">
-            
-                <a href="../../module/">
-            
-                    
-                    モジュール
-            
-                </a>
-            
-
-            
-        </li>
-    
-        <li class="chapter " data-level="1.6.3" data-path="../">
+        <li class="chapter " data-level="1.4.2" data-path="../">
             
                 <a href="../">
             
                     
-                    Ajaxで通信
+                    Ajax通信
             
                 </a>
             
@@ -636,12 +796,12 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="1.6.3.1" data-path="../entrypoint/">
+        <li class="chapter " data-level="1.4.2.1" data-path="../entrypoint/">
             
                 <a href="../entrypoint/">
             
                     
-                    エントリポイント
+                    エントリーポイント
             
                 </a>
             
@@ -649,9 +809,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.3.2" data-path="../xhr/">
+        <li class="chapter " data-level="1.4.2.2" data-path="../http/">
             
-                <a href="../xhr/">
+                <a href="../http/">
             
                     
                     HTTP通信
@@ -662,7 +822,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.3.3" data-path="../display/">
+        <li class="chapter " data-level="1.4.2.3" data-path="../display/">
             
                 <a href="../display/">
             
@@ -675,7 +835,7 @@
             
         </li>
     
-        <li class="chapter active" data-level="1.6.3.4" data-path="./">
+        <li class="chapter active" data-level="1.4.2.4" data-path="./">
             
                 <a href="./">
             
@@ -693,7 +853,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.4" data-path="../../nodecli/">
+        <li class="chapter " data-level="1.4.3" data-path="../../nodecli/">
             
                 <a href="../../nodecli/">
             
@@ -707,7 +867,7 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="1.6.4.1" data-path="../../nodecli/helloworld/">
+        <li class="chapter " data-level="1.4.3.1" data-path="../../nodecli/helloworld/">
             
                 <a href="../../nodecli/helloworld/">
             
@@ -720,7 +880,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.4.2" data-path="../../nodecli/argument-parse/">
+        <li class="chapter " data-level="1.4.3.2" data-path="../../nodecli/argument-parse/">
             
                 <a href="../../nodecli/argument-parse/">
             
@@ -733,7 +893,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.4.3" data-path="../../nodecli/read-file/">
+        <li class="chapter " data-level="1.4.3.3" data-path="../../nodecli/read-file/">
             
                 <a href="../../nodecli/read-file/">
             
@@ -746,7 +906,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.4.4" data-path="../../nodecli/md-to-html/">
+        <li class="chapter " data-level="1.4.3.4" data-path="../../nodecli/md-to-html/">
             
                 <a href="../../nodecli/md-to-html/">
             
@@ -759,7 +919,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.4.5" data-path="../../nodecli/refactor-and-unittest/">
+        <li class="chapter " data-level="1.4.3.5" data-path="../../nodecli/refactor-and-unittest/">
             
                 <a href="../../nodecli/refactor-and-unittest/">
             
@@ -777,7 +937,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.5" data-path="../../todoapp/">
+        <li class="chapter " data-level="1.4.4" data-path="../../todoapp/">
             
                 <a href="../../todoapp/">
             
@@ -791,12 +951,12 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="1.6.5.1" data-path="../../todoapp/entrypoint/">
+        <li class="chapter " data-level="1.4.4.1" data-path="../../todoapp/entrypoint/">
             
                 <a href="../../todoapp/entrypoint/">
             
                     
-                    エントリポイント
+                    エントリーポイント
             
                 </a>
             
@@ -804,7 +964,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.5.2" data-path="../../todoapp/app-structure/">
+        <li class="chapter " data-level="1.4.4.2" data-path="../../todoapp/app-structure/">
             
                 <a href="../../todoapp/app-structure/">
             
@@ -817,12 +977,12 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.5.3" data-path="../../todoapp/form-event/">
+        <li class="chapter " data-level="1.4.4.3" data-path="../../todoapp/form-event/">
             
                 <a href="../../todoapp/form-event/">
             
                     
-                    フォームとイベント
+                    Todoアイテムの追加を実装する
             
                 </a>
             
@@ -830,7 +990,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.5.4" data-path="../../todoapp/event-model/">
+        <li class="chapter " data-level="1.4.4.4" data-path="../../todoapp/event-model/">
             
                 <a href="../../todoapp/event-model/">
             
@@ -843,12 +1003,12 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.5.5" data-path="../../todoapp/update-delete/">
+        <li class="chapter " data-level="1.4.4.5" data-path="../../todoapp/update-delete/">
             
                 <a href="../../todoapp/update-delete/">
             
                     
-                    Todoの更新と削除を実装する
+                    Todoアイテムの更新と削除を実装する
             
                 </a>
             
@@ -856,7 +1016,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.5.6" data-path="../../todoapp/final/">
+        <li class="chapter " data-level="1.4.4.6" data-path="../../todoapp/final/">
             
                 <a href="../../todoapp/final/">
             
@@ -879,14 +1039,53 @@
             
         </li>
     
+        <li class="chapter " data-level="1.5" data-path="../../../appendix/links/">
+            
+                <a href="../../../appendix/links/">
+            
+                    
+                    付録: 参考リンク集
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" data-path="../../../cheatsheet/">
+            
+                <a href="../../../cheatsheet/">
+            
+                    
+                    付録: JavaScriptチートシート
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7" data-path="../../../outro/">
+            
+                <a href="../../../outro/">
+            
+                    
+                    おわりに
+            
+                </a>
+            
+
+            
+        </li>
+    
 
     
 
     <li class="divider"></li>
 
     <li>
-        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
-            Published with GitBook
+        <a href="https://github.com/honkit/honkit" target="blank" class="gitbook-link">
+            Published with HonKit
         </a>
     </li>
 </ul>
@@ -904,8 +1103,17 @@
                     
 
 <!-- Header -->
+<meta name="keywords" content="JavaScript,ECMAScript,JS,入門,チュートリアル,書籍,本,無料,Node.js,ブラウザ"/>
+<link rel="author" href="https://www.hatena.ne.jp/efcl/"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css"/>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
+<!-- OGP -->
+<meta property="og:title" content="JavaScript Primer - 迷わないための入門書"/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://jsprimer.net/"/>
+<meta property="og:image" content="https://jsprimer.net/landing/img/cover-optimized.jpg"/>
+<meta property="og:site_name" content="JavaScript Primer"/>
+<meta property="og:description" content="JavaScript Primerは、JavaScriptの基礎から応用までを一貫して学べる入門書です。"/>
 <style>
     .book-header {
         display: flex;
@@ -943,6 +1151,11 @@
         /* Header分のズレを入れる */
         .page-wrapper {
             padding-top: 60px;
+        }
+
+        /* github-issue-feedbackを非表示にする */
+        .gitbook-plugin-github-issue-feedback {
+            display: none;
         }
     }
 
@@ -989,15 +1202,22 @@
     .header-right {
         order: 4;
         display: inline-flex;
-        flex-direction: column;
+        flex-direction: row;
         justify-content: center;
         align-items: center;
         /* icon size */
         font-size: 24px;
     }
 
-    .github-link {
+    .amazon-link, .github-link {
         color: #fff;
+        /* Padding and make Vertical */
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding-left: 4px;
+        padding-right: 4px;
     }
 
     /* Desktop */
@@ -1035,6 +1255,23 @@
         .algolia-autocomplete .algolia-docsearch-suggestion--subcategory-column {
             display: none !important;
         }
+
+        .algolia-autocomplete.algolia-autocomplete-right .ds-dropdown-menu {
+            right: inherit !important
+        }
+
+        .algolia-autocomplete.algolia-autocomplete-right .ds-dropdown-menu::before {
+            right: 50%;
+        }
+
+        .sbx-custom {
+            width: 92px !important;
+            padding: initial !important;
+        }
+
+        .amazon-link {
+            display: none;
+        }
     }
 
     /* SearchBox */
@@ -1042,12 +1279,6 @@
         height: 50px;
     }
 
-    @media (max-width: 768px) {
-        .sbx-custom {
-            width: 150px !important;
-            padding: initial !important;
-        }
-    }
 
     .sbx-custom {
         display: inline-block;
@@ -1225,9 +1456,9 @@
 <div class="book-header" role="navigation">
     
     <a class="book-header-title" href="../../..">
-        <img class="book-header-title-img" alt="js-primer"
+        <img class="book-header-title-img" alt="JavaScript Primer"
              src="../../../gitbook/icons/icon-128x128.png"/>
-        <h2 class="book-header-title-h" title="js-primer - JavaScriptの入門書">js-primer</h2>
+        <h2 class="book-header-title-h" title="JavaScript Primer - 迷わないための入門書">JavaScript Primer</h2>
     </a>
     <div class="searchbarWrapper header-center">
         <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
@@ -1259,26 +1490,39 @@
         </form>
     </div>
     <div class="header-right">
+        <!-- Icon: https://www.iconfinder.com/iconsets/circle-payment -->
+        <a class="amazon-link" title="Amazon: JavaScript Primer 改訂2版 迷わないための入門書"
+           href="https://www.amazon.co.jp/dp/4048931105/" target="_blank"><img
+                width="22"
+                height="22"
+                style="margin: 1px;"
+                src="../../../gitbook/icons/amazon-icon.png" alt=""></a>
         <a class="github-link" title="GitHub: asciidwango/js-primer" href="https://github.com/asciidwango/js-primer"
            target="_blank"><i
                 class="fa fa-github fa-fw"></i></a>
     </div>
 </div>
 
-<script type="text/javascript">
-    document.querySelector('.searchbox [type="reset"]').addEventListener('click', function() {
-        this.parentNode.querySelector('input').focus();
+<script defer>
+    // focus on search box
+    document.querySelector(".searchbox [type=\"reset\"]").addEventListener("click", function() {
+        this.parentNode.querySelector("input").focus();
     });
-</script>
-<script>
+    // init DocSearch
     var search = docsearch({
-        apiKey: 'fd28ebaba94be0c39fb9fa1b2fed4f23', // use a SEARCH-ONLY api key here
-        indexName: 'asciidwango',
-        inputSelector: '.sbx-custom__input',
+        apiKey: "fd28ebaba94be0c39fb9fa1b2fed4f23", // use a SEARCH-ONLY api key here
+        indexName: "asciidwango",
+        inputSelector: ".sbx-custom__input",
         debug: false // set to `true` if you want to inspect the dropdown menu's CSS
     });
 </script>
-
+<script>
+    window.addEventListener("DOMContentLoaded", function() {
+        gitbook.events.on("page.change", function() {
+            setTimeout(() => console.clear(), 1000);
+        });
+    });
+</script>
 
 
 
@@ -1289,43 +1533,68 @@
                             
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="use-promise"><a name="use-promise" class="plugin-anchor" href="#use-promise"><i class="fa fa-link" aria-hidden="true"></i></a>Promise&#x3092;&#x6D3B;&#x7528;&#x3059;&#x308B; </h1>
-<p>&#x3053;&#x3053;&#x307E;&#x3067;&#x3067;&#x3001;XHR&#x3092;&#x4F7F;&#x3063;&#x3066;Ajax&#x901A;&#x4FE1;&#x3092;&#x884C;&#x3044;&#x3001;&#x30B5;&#x30FC;&#x30D0;&#x30FC;&#x304B;&#x3089;&#x53D6;&#x5F97;&#x3057;&#x305F;&#x30C7;&#x30FC;&#x30BF;&#x3092;&#x8868;&#x793A;&#x3067;&#x304D;&#x307E;&#x3057;&#x305F;&#x3002;
-&#x6700;&#x5F8C;&#x306B;&#x3001;<strong>Promise</strong>&#x3092;&#x4F7F;&#x3063;&#x3066;&#x30BD;&#x30FC;&#x30B9;&#x30B3;&#x30FC;&#x30C9;&#x3092;&#x6574;&#x7406;&#x3059;&#x308B;&#x3053;&#x3068;&#x3067;&#x3001;&#x30A8;&#x30E9;&#x30FC;&#x30CF;&#x30F3;&#x30C9;&#x30EA;&#x30F3;&#x30B0;&#x3092;&#x3057;&#x3063;&#x304B;&#x308A;&#x884C;&#x3044;&#x307E;&#x3059;&#x3002;</p>
-<h2 id="split-function"><a name="split-function" class="plugin-anchor" href="#split-function"><i class="fa fa-link" aria-hidden="true"></i></a>&#x95A2;&#x6570;&#x306E;&#x5206;&#x5272; </h2>
-<p>&#x307E;&#x305A;&#x306F;&#x3001;&#x5927;&#x304D;&#x304F;&#x306A;&#x308A;&#x3059;&#x304E;&#x305F;<code>getUserInfo</code>&#x95A2;&#x6570;&#x3092;&#x6574;&#x7406;&#x3057;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;
-&#x3053;&#x306E;&#x95A2;&#x6570;&#x3067;&#x306F;&#x3001;XHR&#x3092;&#x4F7F;&#x3063;&#x305F;&#x30C7;&#x30FC;&#x30BF;&#x306E;&#x53D6;&#x5F97;&#x30FB;HTML&#x6587;&#x5B57;&#x5217;&#x306E;&#x7D44;&#x307F;&#x7ACB;&#x3066;&#x30FB;&#x7D44;&#x307F;&#x7ACB;&#x3066;&#x305F;HTML&#x306E;&#x8868;&#x793A;&#x3092;&#x884C;&#x3063;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;
-&#x305D;&#x3053;&#x3067;&#x3001;HTML&#x6587;&#x5B57;&#x5217;&#x3092;&#x7D44;&#x307F;&#x7ACB;&#x3066;&#x308B;<code>createView</code>&#x95A2;&#x6570;&#x3068;HTML&#x3092;&#x8868;&#x793A;&#x3059;&#x308B;<code>displayView</code>&#x95A2;&#x6570;&#x3092;&#x4F5C;&#x308A;&#x3001;&#x51E6;&#x7406;&#x3092;&#x5206;&#x5272;&#x3057;&#x307E;&#x3059;&#x3002;</p>
-<p>&#x307E;&#x305F;&#x3001;&#x5F8C;&#x8FF0;&#x3059;&#x308B;&#x30A8;&#x30E9;&#x30FC;&#x30CF;&#x30F3;&#x30C9;&#x30EA;&#x30F3;&#x30B0;&#x3092;&#x884C;&#x3044;&#x3084;&#x3059;&#x304F;&#x3059;&#x308B;&#x305F;&#x3081;&#x3001;&#x30A2;&#x30D7;&#x30EA;&#x30B1;&#x30FC;&#x30B7;&#x30E7;&#x30F3;&#x306B;&#x30A8;&#x30F3;&#x30C8;&#x30EA;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x3092;&#x8A2D;&#x3051;&#x307E;&#x3059;&#x3002;
-index.js&#x306B;&#x65B0;&#x3057;&#x304F;<code>main</code>&#x95A2;&#x6570;&#x3092;&#x4F5C;&#x308A;&#x3001;&#x305D;&#x306E;&#x4E2D;&#x3067;<code>getUserInfo</code>&#x95A2;&#x6570;&#x3092;&#x547C;&#x3073;&#x51FA;&#x3059;&#x3088;&#x3046;&#x306B;&#x3057;&#x307E;&#x3059;&#x3002;</p>
-<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">main</span>(<span class="hljs-params"></span>) </span>{
-    getUserInfo(<span class="hljs-string">&quot;js-primer-example&quot;</span>);
+<style>
+    .page-sponsors {
+        background: #fafafa;
+    }
+    .page-sponsors .page-sponsors-list {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+        padding: 1em 0;
+        list-style: none;
+        gap: 8px;
+    }
+    .page-sponsors-footer {
+        text-align: center;
+        padding: 0;
+        margin: 0;
+    }
+</style>
+<div class="page-sponsors">
+
+    <div class="page-sponsors-footer">
+        JavaScript Primerの<a href="https://jsprimer.net/intro/sponsors/">スポンサーを募集中</a>
+    </div>
+
+</div>
+
+                                <html><head></head><body><h1 id="use-promise"><a name="use-promise" class="plugin-anchor" href="#use-promise"><i class="fa fa-link" aria-hidden="true"></i></a>Promiseを活用する </h1>
+<p>ここまでのセクションで、Fetch APIを使ってAjax通信を行い、サーバーから取得したデータを表示できました。
+最後に、Fetch APIの返り値でもある<strong>Promise</strong>を活用してソースコードを整理することで、エラーハンドリングをしっかり行います。</p>
+<h2 id="split-function"><a name="split-function" class="plugin-anchor" href="#split-function"><i class="fa fa-link" aria-hidden="true"></i></a>関数の分割 </h2>
+<p>まずは、大きくなりすぎた<code>fetchUserInfo</code>関数を整理しましょう。
+この関数では、Fetch APIを使ったデータの取得・HTML文字列の組み立て・組み立てたHTMLの表示をしています。
+そこで、HTML文字列を組み立てる<code>createView</code>関数とHTMLを表示する<code>displayView</code>関数を作り、処理を分割します。</p>
+<p>また、後述するエラーハンドリングを行いやすくするため、アプリケーションにエントリーポイントを設けます。
+<code>index.js</code>に新しく<code>main</code>関数を作り、<code>main</code>関数から<code>fetchUserInfo</code>関数を呼び出すようにします。</p>
+<pre><code class="lang-js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">main</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-title function_">fetchUserInfo</span>(<span class="hljs-string">"js-primer-example"</span>);
 }
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getUserInfo</span>(<span class="hljs-params">userId</span>) </span>{
-    <span class="hljs-keyword">const</span> request = <span class="hljs-keyword">new</span> XMLHttpRequest();
-    request.open(<span class="hljs-string">&quot;GET&quot;</span>, <span class="hljs-string">`https://api.github.com/users/<span class="hljs-subst">${userId}</span>`</span>);
-    request.addEventListener(<span class="hljs-string">&quot;load&quot;</span>, (event) =&gt; {
-        <span class="hljs-keyword">if</span> (event.target.status !== <span class="hljs-number">200</span>) {
-            <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`<span class="hljs-subst">${event.target.status}</span>: <span class="hljs-subst">${event.target.statusText}</span>`</span>);
-            <span class="hljs-keyword">return</span>;
-        }
-
-        <span class="hljs-keyword">const</span> userInfo = <span class="hljs-built_in">JSON</span>.parse(event.target.responseText);
-
-        <span class="hljs-keyword">const</span> view = createView(userInfo);
-        displayView(view);
-    });
-    request.addEventListener(<span class="hljs-string">&quot;error&quot;</span>, () =&gt; {
-        <span class="hljs-built_in">console</span>.error(<span class="hljs-string">&quot;Network Error&quot;</span>);
-    });
-    request.send();
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">fetchUserInfo</span>(<span class="hljs-params">userId</span>) {
+    <span class="hljs-title function_">fetch</span>(<span class="hljs-string">`https://api.github.com/users/<span class="hljs-subst">${<span class="hljs-built_in">encodeURIComponent</span>(userId)}</span>`</span>)
+        .<span class="hljs-title function_">then</span>(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
+            <span class="hljs-keyword">if</span> (!response.<span class="hljs-property">ok</span>) {
+                <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">error</span>(<span class="hljs-string">"エラーレスポンス"</span>, response);
+            } <span class="hljs-keyword">else</span> {
+                <span class="hljs-keyword">return</span> response.<span class="hljs-title function_">json</span>().<span class="hljs-title function_">then</span>(<span class="hljs-function"><span class="hljs-params">userInfo</span> =&gt;</span> {
+                    <span class="hljs-comment">// HTMLの組み立て</span>
+                    <span class="hljs-keyword">const</span> view = <span class="hljs-title function_">createView</span>(userInfo);
+                    <span class="hljs-comment">// HTMLの挿入</span>
+                    <span class="hljs-title function_">displayView</span>(view);
+                });
+            }
+        }).<span class="hljs-title function_">catch</span>(<span class="hljs-function"><span class="hljs-params">error</span> =&gt;</span> {
+            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">error</span>(error);
+        });
 }
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createView</span>(<span class="hljs-params">userInfo</span>) </span>{
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">createView</span>(<span class="hljs-params">userInfo</span>) {
     <span class="hljs-keyword">return</span> escapeHTML<span class="hljs-string">`
     &lt;h4&gt;<span class="hljs-subst">${userInfo.name}</span> (@<span class="hljs-subst">${userInfo.login}</span>)&lt;/h4&gt;
-    &lt;img src=&quot;<span class="hljs-subst">${userInfo.avatar_url}</span>&quot; alt=&quot;<span class="hljs-subst">${userInfo.login}</span>&quot; height=&quot;100&quot;&gt;
+    &lt;img src="<span class="hljs-subst">${userInfo.avatar_url}</span>" alt="<span class="hljs-subst">${userInfo.login}</span>" height="100"&gt;
     &lt;dl&gt;
         &lt;dt&gt;Location&lt;/dt&gt;
         &lt;dd&gt;<span class="hljs-subst">${userInfo.location}</span>&lt;/dd&gt;
@@ -1335,218 +1604,197 @@ index.js&#x306B;&#x65B0;&#x3057;&#x304F;<code>main</code>&#x95A2;&#x6570;&#x3092
     `</span>;
 }
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">displayView</span>(<span class="hljs-params">view</span>) </span>{
-    <span class="hljs-keyword">const</span> result = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">&quot;result&quot;</span>);
-    result.innerHTML = view;
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">displayView</span>(<span class="hljs-params">view</span>) {
+    <span class="hljs-keyword">const</span> result = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">"result"</span>);
+    result.<span class="hljs-property">innerHTML</span> = view;
 }
 </code></pre>
-<h2 id="wrap-xhr"><a name="wrap-xhr" class="plugin-anchor" href="#wrap-xhr"><i class="fa fa-link" aria-hidden="true"></i></a>XHR&#x3092;Promise&#x3067;&#x30E9;&#x30C3;&#x30D7;&#x3059;&#x308B; </h2>
-<p>&#x6B21;&#x306B;&#x3001;<code>getUserInfo</code>&#x95A2;&#x6570;&#x3067;&#x884C;&#x3063;&#x3066;&#x3044;&#x308B;XHR&#x306E;&#x51E6;&#x7406;&#x3092;&#x6574;&#x7406;&#x3057;&#x307E;&#x3059;&#x3002;
-&#x3053;&#x308C;&#x307E;&#x3067;&#x306F;XHR&#x306E;&#x30B3;&#x30FC;&#x30EB;&#x30D0;&#x30C3;&#x30AF;&#x95A2;&#x6570;&#x306E;&#x4E2D;&#x3067;&#x51E6;&#x7406;&#x3092;&#x884C;&#x3063;&#x3066;&#x3044;&#x307E;&#x3057;&#x305F;&#x304C;&#x3001;&#x3053;&#x308C;&#x3092;<strong>Promise</strong>&#x3092;&#x4F7F;&#x3063;&#x305F;&#x51E6;&#x7406;&#x306B;&#x66F8;&#x304D;&#x63DB;&#x3048;&#x307E;&#x3059;&#x3002;
-&#x30B3;&#x30FC;&#x30EB;&#x30D0;&#x30C3;&#x30AF;&#x95A2;&#x6570;&#x3092;&#x4F7F;&#x3046;&#x3068;&#x3001;&#x30BD;&#x30FC;&#x30B9;&#x30B3;&#x30FC;&#x30C9;&#x306E;&#x30CD;&#x30B9;&#x30C8;&#x304C;&#x6DF1;&#x304F;&#x306A;&#x3063;&#x305F;&#x308A;&#x3001;&#x4F8B;&#x5916;&#x51E6;&#x7406;&#x304C;&#x8907;&#x96D1;&#x306B;&#x306A;&#x3063;&#x305F;&#x308A;&#x3057;&#x307E;&#x3059;&#x3002;
-Promise&#x3092;&#x7528;&#x3044;&#x308B;&#x3053;&#x3068;&#x3067;&#x3001;&#x53EF;&#x8AAD;&#x6027;&#x3092;&#x4FDD;&#x3061;&#x306A;&#x304C;&#x3089;&#x30A8;&#x30E9;&#x30FC;&#x30CF;&#x30F3;&#x30C9;&#x30EA;&#x30F3;&#x30B0;&#x3092;&#x7C21;&#x5358;&#x306B;&#x884C;&#x3048;&#x307E;&#x3059;&#x3002;</p>
-<!-- textlint-disable no-js-function-paren -->
-<p>&#x30B3;&#x30FC;&#x30EB;&#x30D0;&#x30C3;&#x30AF;&#x95A2;&#x6570;&#x3092;&#x4F7F;&#x3046;&#x5F62;&#x5F0F;&#x306E;API&#x3092;Promise&#x306B;&#x7F6E;&#x304D;&#x63DB;&#x3048;&#x308B;&#x306E;&#x306F;&#x3001;&#x6B21;&#x306E;&#x30B3;&#x30FC;&#x30C9;&#x306E;&#x3088;&#x3046;&#x306B;<code>new Promise()</code>&#x3092;&#x7528;&#x3044;&#x308B;&#x306E;&#x304C;&#x4E00;&#x822C;&#x7684;&#x3067;&#x3059;&#x3002;
-Promise&#x306E;&#x30B3;&#x30F3;&#x30B9;&#x30C8;&#x30E9;&#x30AF;&#x30BF;&#x306B;&#x306F;&#x3001;<code>resolve</code>&#x3068;<code>reject</code>&#x306E;2&#x3064;&#x306E;&#x95A2;&#x6570;&#x30AA;&#x30D6;&#x30B8;&#x30A7;&#x30AF;&#x30C8;&#x3092;&#x5F15;&#x6570;&#x3068;&#x3059;&#x308B;&#x95A2;&#x6570;&#x3092;&#x6E21;&#x3057;&#x307E;&#x3059;&#x3002;
-&#x3072;&#x3068;&#x3064;&#x3081;&#x306E;&#x5F15;&#x6570;&#x306F;&#x975E;&#x540C;&#x671F;&#x51E6;&#x7406;&#x304C;&#x6210;&#x529F;&#x3057;&#x305F;&#x3068;&#x304D;&#x306B;&#x547C;&#x3073;&#x51FA;&#x3059;&#x95A2;&#x6570;&#x3067;&#x3001;&#x3075;&#x305F;&#x3064;&#x3081;&#x306F;&#x5931;&#x6557;&#x3057;&#x305F;&#x6642;&#x306B;&#x547C;&#x3073;&#x51FA;&#x3059;&#x95A2;&#x6570;&#x3067;&#x3059;&#x3002;</p>
-<!-- textlint-enable no-js-function-paren -->
-<!-- doctest:async:16 -->
-<pre><code class="lang-js"><span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>((resolve, reject) =&gt; {
-    <span class="hljs-comment">// &#x3053;&#x3053;&#x3067;&#x975E;&#x540C;&#x671F;&#x51E6;&#x7406;&#x3092;&#x884C;&#x3046;</span>
-});
-</code></pre>
-<p>Promise&#x306E;&#x30B3;&#x30F3;&#x30B9;&#x30C8;&#x30E9;&#x30AF;&#x30BF;&#x306B;&#x6E21;&#x3059;&#x95A2;&#x6570;&#x3067;&#x3001;XHR&#x306E;&#x51E6;&#x7406;&#x3092;&#x884C;&#x3044;&#x307E;&#x3059;&#x3002;
-&#x4F5C;&#x6210;&#x3055;&#x308C;&#x305F;Promise&#x306F;&#x6210;&#x529F;&#x304B;&#x5931;&#x6557;&#x306E;&#x3069;&#x3061;&#x3089;&#x304B;&#x3067;&#x5B8C;&#x4E86;&#x3055;&#x305B;&#x306A;&#x3051;&#x308C;&#x3070;&#x306A;&#x308A;&#x307E;&#x305B;&#x3093;&#x3002;
-&#x975E;&#x540C;&#x671F;&#x51E6;&#x7406;&#x304C;&#x6210;&#x529F;&#x3057;&#x305F;&#x3089;&#x7B2C;1&#x5F15;&#x6570;&#x306E;<code>resolve</code>&#x95A2;&#x6570;&#x3092;&#x3001;&#x5931;&#x6557;&#x306A;&#x3089;&#x7B2C;2&#x5F15;&#x6570;&#x306E;<code>reject</code>&#x95A2;&#x6570;&#x3092;&#x547C;&#x3073;&#x51FA;&#x3057;&#x307E;&#x3059;&#x3002;</p>
-<p>&#x4F5C;&#x6210;&#x3057;&#x305F;Promise&#x306E;&#x30AA;&#x30D6;&#x30B8;&#x30A7;&#x30AF;&#x30C8;&#x3092;<code>return</code>&#x3059;&#x308B;&#x3053;&#x3068;&#x3067;&#x3001;<code>getUserInfo</code>&#x95A2;&#x6570;&#x306F;Promise&#x3092;&#x8FD4;&#x3059;&#x95A2;&#x6570;&#x306B;&#x306A;&#x308A;&#x307E;&#x3057;&#x305F;&#x3002;
-<code>getUserInfo</code>&#x95A2;&#x6570;&#x304C;Promise&#x3092;&#x8FD4;&#x3059;&#x3053;&#x3068;&#x3067;&#x3001;&#x305D;&#x308C;&#x3092;&#x547C;&#x3073;&#x51FA;&#x3059;<code>main</code>&#x95A2;&#x6570;&#x306E;&#x65B9;&#x3067;&#x975E;&#x540C;&#x671F;&#x51E6;&#x7406;&#x306E;&#x7D50;&#x679C;&#x3092;&#x6271;&#x3048;&#x308B;&#x3088;&#x3046;&#x306B;&#x306A;&#x308A;&#x307E;&#x3059;&#x3002;</p>
-<!-- doctest:async:16 -->
-<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getUserInfo</span>(<span class="hljs-params">userId</span>) </span>{
-    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>((resolve, reject) =&gt; {    
-        <span class="hljs-keyword">const</span> request = <span class="hljs-keyword">new</span> XMLHttpRequest();
-        request.open(<span class="hljs-string">&quot;GET&quot;</span>, <span class="hljs-string">`https://api.github.com/users/<span class="hljs-subst">${userId}</span>`</span>);
-        request.addEventListener(<span class="hljs-string">&quot;load&quot;</span>, (event) =&gt; {
-            <span class="hljs-keyword">if</span> (event.target.status !== <span class="hljs-number">200</span>) {
-                <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`<span class="hljs-subst">${event.target.status}</span>: <span class="hljs-subst">${event.target.statusText}</span>`</span>);
-                reject(); <span class="hljs-comment">// &#x30B9;&#x30C6;&#x30FC;&#x30BF;&#x30B9;&#x30B3;&#x30FC;&#x30C9;&#x304C;200&#x3058;&#x3083;&#x306A;&#x3044;&#x306E;&#x3067;&#x5931;&#x6557;</span>
-            }
+<p>ボタンのclickイベントで呼び出す関数もこれまでの<code>fetchUserInfo</code>関数から<code>main</code>関数に変更します。</p>
+<div class="code-filename-block">
+    <p class="code-filename">index.html</p>
+</div>
 
-            <span class="hljs-keyword">const</span> userInfo = <span class="hljs-built_in">JSON</span>.parse(event.target.responseText);
-
-            <span class="hljs-keyword">const</span> view = createView(userInfo);
-            displayView(view); 
-            resolve(); <span class="hljs-comment">// &#x5B8C;&#x4E86;</span>
-        });
-        request.addEventListener(<span class="hljs-string">&quot;error&quot;</span>, () =&gt; {
-            <span class="hljs-built_in">console</span>.error(<span class="hljs-string">&quot;Network Error&quot;</span>);
-            reject(); <span class="hljs-comment">// &#x901A;&#x4FE1;&#x30A8;&#x30E9;&#x30FC;&#x304C;&#x767A;&#x751F;&#x3057;&#x305F;&#x306E;&#x3067;&#x5931;&#x6557;</span>
-        });
-        request.send();
-    });
-}
-</code></pre>
-<h3 id="error-handling"><a name="error-handling" class="plugin-anchor" href="#error-handling"><i class="fa fa-link" aria-hidden="true"></i></a>&#x30A8;&#x30E9;&#x30FC;&#x30CF;&#x30F3;&#x30C9;&#x30EA;&#x30F3;&#x30B0; </h3>
-<p>&#x3053;&#x306E;&#x307E;&#x307E;&#x3067;&#x306F;Promise&#x306B;&#x7F6E;&#x304D;&#x63DB;&#x3048;&#x305F;&#x610F;&#x5473;&#x304C;&#x306A;&#x3044;&#x306E;&#x3067;&#x3001;Promise&#x3092;&#x4F7F;&#x3063;&#x305F;&#x30A8;&#x30E9;&#x30FC;&#x30CF;&#x30F3;&#x30C9;&#x30EA;&#x30F3;&#x30B0;&#x3092;&#x884C;&#x3044;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;
-Promise&#x306E;&#x30B3;&#x30F3;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x5185;&#x3067;&#x767A;&#x751F;&#x3057;&#x305F;&#x30A8;&#x30E9;&#x30FC;&#x306F;&#x3001;<code>Promise#catch</code>&#x30E1;&#x30BD;&#x30C3;&#x30C9;&#x3092;&#x4F7F;&#x3063;&#x3066;&#x4E00;&#x7B87;&#x6240;&#x3067;&#x53D7;&#x3051;&#x53D6;&#x308C;&#x307E;&#x3059;&#x3002;
-&#x6B21;&#x306E;&#x30B3;&#x30FC;&#x30C9;&#x3067;&#x306F;&#x3001;<code>getUserInfo</code>&#x95A2;&#x6570;&#x304B;&#x3089;&#x8FD4;&#x3055;&#x308C;&#x305F;Promise&#x30AA;&#x30D6;&#x30B8;&#x30A7;&#x30AF;&#x30C8;&#x3092;&#x4F7F;&#x3044;&#x3001;&#x30A8;&#x30E9;&#x30FC;&#x304C;&#x8D77;&#x304D;&#x305F;&#x6642;&#x306B;&#x30ED;&#x30B0;&#x3092;&#x51FA;&#x529B;&#x3057;&#x307E;&#x3059;&#x3002;
-<code>reject</code>&#x95A2;&#x6570;&#x306B;&#x6E21;&#x3057;&#x305F;&#x30A8;&#x30E9;&#x30FC;&#x306F;<code>catch</code>&#x306E;&#x30B3;&#x30FC;&#x30EB;&#x30D0;&#x30C3;&#x30AF;&#x95A2;&#x6570;&#x3067;&#x7B2C;1&#x5F15;&#x6570;&#x3068;&#x3057;&#x3066;&#x53D7;&#x3051;&#x53D6;&#x308C;&#x307E;&#x3059;&#x3002;</p>
-<!-- doctest:async:16 -->
-<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">main</span>(<span class="hljs-params"></span>) </span>{
-    getUserInfo(<span class="hljs-string">&quot;js-primer-example&quot;</span>)
-        .catch((error) =&gt; {
-            <span class="hljs-built_in">console</span>.error(<span class="hljs-string">`&#x30A8;&#x30E9;&#x30FC;&#x304C;&#x767A;&#x751F;&#x3057;&#x307E;&#x3057;&#x305F; (<span class="hljs-subst">${error}</span>)`</span>);
-        });
-}
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getUserInfo</span>(<span class="hljs-params">userId</span>) </span>{
-    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>((resolve, reject) =&gt; {    
-        <span class="hljs-keyword">const</span> request = <span class="hljs-keyword">new</span> XMLHttpRequest();
-        request.open(<span class="hljs-string">&quot;GET&quot;</span>, <span class="hljs-string">`https://api.github.com/users/<span class="hljs-subst">${userId}</span>`</span>);
-        request.addEventListener(<span class="hljs-string">&quot;load&quot;</span>, (event) =&gt; {
-            <span class="hljs-keyword">if</span> (event.target.status !== <span class="hljs-number">200</span>) {
-                reject(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">`<span class="hljs-subst">${event.target.status}</span>: <span class="hljs-subst">${event.target.statusText}</span>`</span>));
-            }
-
-            <span class="hljs-keyword">const</span> userInfo = <span class="hljs-built_in">JSON</span>.parse(event.target.responseText);
-
-            <span class="hljs-keyword">const</span> view = createView(userInfo);
-            displayView(view); 
-            resolve();
-        });
-        request.addEventListener(<span class="hljs-string">&quot;error&quot;</span>, () =&gt; {
-            reject(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">&quot;&#x30CD;&#x30C3;&#x30C8;&#x30EF;&#x30FC;&#x30AF;&#x30A8;&#x30E9;&#x30FC;&quot;</span>));
-        });
-        request.send();
-    });
-}
-</code></pre>
-<h3 id="rewrite-to-promise-chain"><a name="rewrite-to-promise-chain" class="plugin-anchor" href="#rewrite-to-promise-chain"><i class="fa fa-link" aria-hidden="true"></i></a>Promise&#x30C1;&#x30A7;&#x30FC;&#x30F3;&#x3078;&#x306E;&#x7F6E;&#x304D;&#x63DB;&#x3048; </h3>
-<p>Promise&#x306F;<code>Promise#then</code>&#x30E1;&#x30BD;&#x30C3;&#x30C9;&#x3092;&#x4F7F;&#x3046;&#x3053;&#x3068;&#x3067;&#x3001;&#x8907;&#x6570;&#x306E;&#x51E6;&#x7406;&#x306E;&#x9023;&#x9396;&#x3092;&#x8868;&#x73FE;&#x3067;&#x304D;&#x307E;&#x3059;&#x3002;
-&#x8907;&#x6570;&#x306E;&#x51E6;&#x7406;&#x3092;<code>then</code>&#x3067;&#x5206;&#x5272;&#x3057;&#x3001;&#x9023;&#x9396;&#x3055;&#x305B;&#x305F;&#x3082;&#x306E;&#x3092;&#x3001;&#x3053;&#x3053;&#x3067;&#x306F;<strong><a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Promise/then#%E3%83%81%E3%82%A7%E3%83%BC%E3%83%B3" target="_blank">Promise&#x30C1;&#x30A7;&#x30FC;&#x30F3;</a></strong>&#x3068;&#x547C;&#x3073;&#x307E;&#x3059;&#x3002;
-&#x57FA;&#x672C;&#x7684;&#x306B;&#x3001;<code>then</code>&#x306F;&#x30B3;&#x30FC;&#x30EB;&#x30D0;&#x30C3;&#x30AF;&#x95A2;&#x6570;&#x306E;&#x623B;&#x308A;&#x5024;&#x3092;&#x305D;&#x306E;&#x307E;&#x307E;&#x6B21;&#x306E;<code>then</code>&#x3078;&#x6E21;&#x3057;&#x307E;&#x3059;&#x3002;
-&#x305F;&#x3060;&#x3057;&#x3001;&#x30B3;&#x30FC;&#x30EB;&#x30D0;&#x30C3;&#x30AF;&#x95A2;&#x6570;&#x306E;&#x623B;&#x308A;&#x5024;&#x304C;Promise&#x3067;&#x3042;&#x308B;&#x5834;&#x5408;&#x306F;&#x305D;&#x306E;&#x5B8C;&#x4E86;&#x3092;&#x5F85;&#x3061;&#x3001;Promise&#x306E;&#x7D50;&#x679C;&#x306E;&#x5024;&#x3092;&#x6B21;&#x306E;<code>then</code>&#x306B;&#x6E21;&#x3057;&#x307E;&#x3059;&#x3002;
-&#x3064;&#x307E;&#x308A;&#x3001;<code>then</code>&#x306E;&#x30B3;&#x30FC;&#x30EB;&#x30D0;&#x30C3;&#x30AF;&#x95A2;&#x6570;&#x304C;&#x540C;&#x671F;&#x51E6;&#x7406;&#x304B;&#x3089;&#x975E;&#x540C;&#x671F;&#x51E6;&#x7406;&#x306B;&#x5909;&#x308F;&#x3063;&#x305F;&#x3068;&#x3057;&#x3066;&#x3082;&#x3001;&#x6B21;&#x306E;<code>then</code>&#x304C;&#x53D7;&#x3051;&#x53D6;&#x308B;&#x5024;&#x306E;&#x578B;&#x306F;&#x5909;&#x308F;&#x3089;&#x306A;&#x3044;&#x3068;&#x3044;&#x3046;&#x3053;&#x3068;&#x3067;&#x3059;&#x3002;</p>
-<p>Promise&#x30C1;&#x30A7;&#x30FC;&#x30F3;&#x3092;&#x4F7F;&#x3063;&#x3066;&#x51E6;&#x7406;&#x3092;&#x5206;&#x5272;&#x3059;&#x308B;&#x5229;&#x70B9;&#x306F;&#x3001;&#x540C;&#x671F;&#x51E6;&#x7406;&#x3068;&#x975E;&#x540C;&#x671F;&#x51E6;&#x7406;&#x3092;&#x533A;&#x5225;&#x305B;&#x305A;&#x306B;&#x9023;&#x9396;&#x3067;&#x304D;&#x308B;&#x3053;&#x3068;&#x3067;&#x3059;&#x3002;
-&#x4E00;&#x822C;&#x306B;&#x3001;&#x540C;&#x671F;&#x7684;&#x306B;&#x66F8;&#x304B;&#x308C;&#x305F;&#x51E6;&#x7406;&#x3092;&#x5F8C;&#x304B;&#x3089;&#x975E;&#x540C;&#x671F;&#x51E6;&#x7406;&#x3078;&#x3068;&#x5909;&#x66F4;&#x3059;&#x308B;&#x3053;&#x3068;&#x306F;&#x3001;&#x5168;&#x4F53;&#x3092;&#x66F8;&#x304D;&#x63DB;&#x3048;&#x308B;&#x5FC5;&#x8981;&#x304C;&#x3042;&#x308B;&#x305F;&#x3081;&#x96E3;&#x3057;&#x3044;&#x3067;&#x3059;&#x3002;
-&#x305D;&#x306E;&#x305F;&#x3081;&#x3001;&#x6700;&#x521D;&#x304B;&#x3089;&#x51E6;&#x7406;&#x3092;&#x5206;&#x3051;&#x3066;&#x304A;&#x304D;&#x3001;&#x51E6;&#x7406;&#x3092;<code>then</code>&#x3092;&#x4F7F;&#x3063;&#x3066;&#x7E4B;&#x3050;&#x3053;&#x3068;&#x3067;&#x3001;&#x5909;&#x66F4;&#x306B;&#x5F37;&#x3044;&#x30B3;&#x30FC;&#x30C9;&#x3092;&#x66F8;&#x304F;&#x3053;&#x3068;&#x304C;&#x3067;&#x304D;&#x307E;&#x3059;&#x3002;
-&#x3069;&#x306E;&#x3088;&#x3046;&#x306B;&#x51E6;&#x7406;&#x3092;&#x533A;&#x5207;&#x308B;&#x304B;&#x306F;&#x3001;&#x305D;&#x308C;&#x305E;&#x308C;&#x306E;&#x95A2;&#x6570;&#x304C;&#x53D7;&#x3051;&#x53D6;&#x308B;&#x5024;&#x306E;&#x578B;&#x3068;&#x3001;&#x8FD4;&#x3059;&#x5024;&#x306E;&#x578B;&#x306B;&#x6CE8;&#x76EE;&#x3059;&#x308B;&#x306E;&#x304C;&#x3088;&#x3044;&#x3067;&#x3057;&#x3087;&#x3046;&#x3002;
-Promise&#x30C1;&#x30A7;&#x30FC;&#x30F3;&#x3067;&#x51E6;&#x7406;&#x3092;&#x5206;&#x3051;&#x308B;&#x3053;&#x3068;&#x3067;&#x3001;&#x305D;&#x308C;&#x305E;&#x308C;&#x306E;&#x51E6;&#x7406;&#x304C;&#x7C21;&#x6F54;&#x306B;&#x306A;&#x308A;&#x30B3;&#x30FC;&#x30C9;&#x306E;&#x898B;&#x901A;&#x3057;&#x304C;&#x3088;&#x304F;&#x306A;&#x308A;&#x307E;&#x3059;&#x3002;</p>
-<p>&#x3055;&#x3066;&#x3001;&#x4ECA;&#x306E;<code>getUserInfo</code>&#x95A2;&#x6570;&#x3067;&#x306F;load&#x30A4;&#x30D9;&#x30F3;&#x30C8;&#x306E;&#x30B3;&#x30FC;&#x30EB;&#x30D0;&#x30C3;&#x30AF;&#x95A2;&#x6570;&#x3067;HTML&#x306E;&#x7D44;&#x307F;&#x7ACB;&#x3066;&#x3068;&#x8868;&#x793A;&#x3082;&#x884C;&#x3063;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;
-&#x3053;&#x308C;&#x3092;Promise&#x30C1;&#x30A7;&#x30FC;&#x30F3;&#x3092;&#x4F7F;&#x3046;&#x3088;&#x3046;&#x306B;&#x66F8;&#x304D;&#x63DB;&#x3048;&#x308B;&#x3068;&#x3001;&#x6B21;&#x306E;&#x3088;&#x3046;&#x306B;&#x3067;&#x304D;&#x307E;&#x3059;&#x3002;
-<code>getUserInfo</code>&#x95A2;&#x6570;&#x3067;&#x306F;&#x3001;<code>resolve</code>&#x95A2;&#x6570;&#x306B;<code>userInfo</code>&#x3092;&#x6E21;&#x3057;&#x3001;&#x6B21;&#x306E;<code>then</code>&#x3067;&#x30B3;&#x30FC;&#x30EB;&#x30D0;&#x30C3;&#x30AF;&#x95A2;&#x6570;&#x306E;&#x5F15;&#x6570;&#x3068;&#x3057;&#x3066;&#x53D7;&#x3051;&#x53D6;&#x3063;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;
-&#x540C;&#x3058;&#x3088;&#x3046;&#x306B;&#x3001;<code>userInfo</code>&#x3092;&#x53D7;&#x3051;&#x53D6;&#x3063;&#x305F;&#x95A2;&#x6570;&#x306F;<code>createView</code>&#x95A2;&#x6570;&#x3092;&#x547C;&#x3073;&#x51FA;&#x3057;&#x3001;&#x305D;&#x306E;&#x623B;&#x308A;&#x5024;&#x3092;&#x6B21;&#x306E;<code>then</code>&#x306B;&#x6E21;&#x3057;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;</p>
-<!-- doctest:async:16 -->
-<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">main</span>(<span class="hljs-params"></span>) </span>{
-    getUserInfo(<span class="hljs-string">&quot;js-primer-example&quot;</span>)
-        .then((userInfo) =&gt; createView(userInfo))
-        .then((view) =&gt; displayView(view))
-        .catch((error) =&gt; {
-            <span class="hljs-built_in">console</span>.error(<span class="hljs-string">`&#x30A8;&#x30E9;&#x30FC;&#x304C;&#x767A;&#x751F;&#x3057;&#x307E;&#x3057;&#x305F; (<span class="hljs-subst">${error}</span>)`</span>);
-        });
-}
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getUserInfo</span>(<span class="hljs-params">userId</span>) </span>{
-    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>((resolve, reject) =&gt; {    
-        <span class="hljs-keyword">const</span> request = <span class="hljs-keyword">new</span> XMLHttpRequest();
-        request.open(<span class="hljs-string">&quot;GET&quot;</span>, <span class="hljs-string">`https://api.github.com/users/<span class="hljs-subst">${userId}</span>`</span>);
-        request.addEventListener(<span class="hljs-string">&quot;load&quot;</span>, (event) =&gt; {
-            <span class="hljs-keyword">if</span> (event.target.status !== <span class="hljs-number">200</span>) {
-                reject(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">`<span class="hljs-subst">${event.target.status}</span>: <span class="hljs-subst">${event.target.statusText}</span>`</span>));
-            }
-
-            <span class="hljs-keyword">const</span> userInfo = <span class="hljs-built_in">JSON</span>.parse(event.target.responseText);
-            resolve(userInfo);
-        });
-        request.addEventListener(<span class="hljs-string">&quot;error&quot;</span>, () =&gt; {
-            reject(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">&quot;&#x30CD;&#x30C3;&#x30C8;&#x30EF;&#x30FC;&#x30AF;&#x30A8;&#x30E9;&#x30FC;&quot;</span>));
-        });
-        request.send();
-    });
-}
-</code></pre>
-<h2 id="fetch-api"><a name="fetch-api" class="plugin-anchor" href="#fetch-api"><i class="fa fa-link" aria-hidden="true"></i></a>[&#x30B3;&#x30E9;&#x30E0;] Fetch API </h2>
-<p><a href="https://developer.mozilla.org/ja/docs/Web/API/Fetch_API" target="_blank">Fetch API</a>&#x3068;&#x306F;&#x3001;&#x30DA;&#x30FC;&#x30B8;&#x306E;&#x5916;&#x90E8;&#x304B;&#x3089;&#x30EA;&#x30BD;&#x30FC;&#x30B9;&#x3092;&#x53D6;&#x5F97;&#x3059;&#x308B;&#x305F;&#x3081;&#x306E;&#x30A4;&#x30F3;&#x30BF;&#x30FC;&#x30D5;&#x30A7;&#x30FC;&#x30B9;&#x3092;&#x5B9A;&#x7FA9;&#x3057;&#x305F;&#x3001;Web&#x30D6;&#x30E9;&#x30A6;&#x30B6;&#x306E;&#x6A19;&#x6E96;API&#x3067;&#x3059;&#x3002;
-Fetch API&#x306F;<code>fetch</code>&#x95A2;&#x6570;&#x306A;&#x3069;&#x3001;&#x30EA;&#x30BD;&#x30FC;&#x30B9;&#x3092;&#x53D6;&#x5F97;&#x3059;&#x308B;&#x305F;&#x3081;&#x306E;API&#x3092;&#x5B9A;&#x7FA9;&#x3057;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;
-<code>fetch</code>&#x95A2;&#x6570;&#x306F;Promise&#x3092;&#x8FD4;&#x3059;&#x306E;&#x304C;&#x7279;&#x5FB4;&#x3067;&#x3059;&#x3002;
-&#x305F;&#x3068;&#x3048;&#x3070;&#x3001;&#x672C;&#x7AE0;&#x3067;&#x6271;&#x3063;&#x305F;XHR&#x306B;&#x3088;&#x308B;<code>getUserInfo</code>&#x95A2;&#x6570;&#x306F;&#x3001;<code>fetch</code>&#x95A2;&#x6570;&#x3092;&#x4F7F;&#x3046;&#x3068;&#x6B21;&#x306E;&#x3088;&#x3046;&#x306B;&#x306A;&#x308A;&#x307E;&#x3059;&#x3002;</p>
-<!-- doctest:async:16 -->
-<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getUserInfo</span>(<span class="hljs-params">userId</span>) </span>{
-    <span class="hljs-comment">// &#x6697;&#x9ED9;&#x306B;GET&#x30EA;&#x30AF;&#x30A8;&#x30B9;&#x30C8;&#x3068;&#x306A;&#x308B;</span>
-    <span class="hljs-comment">// Response&#x30AA;&#x30D6;&#x30B8;&#x30A7;&#x30AF;&#x30C8;&#x304C;then&#x306B;&#x6E21;&#x3055;&#x308C;&#x308B;</span>
-    <span class="hljs-keyword">return</span> fetch(<span class="hljs-string">`https://api.github.com/users/<span class="hljs-subst">${userId}</span>`</span>)
-        .then(response =&gt; {
-            <span class="hljs-keyword">if</span> (!response.status !== <span class="hljs-number">200</span>) {
-                <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">`<span class="hljs-subst">${response.status}</span>: <span class="hljs-subst">${response.statusText}</span>`</span>);
-            }
-            <span class="hljs-comment">// json&#x30E1;&#x30BD;&#x30C3;&#x30C9;&#x306F;&#x3001;&#x30EC;&#x30B9;&#x30DD;&#x30F3;&#x30B9;&#x30DC;&#x30C7;&#x30A3;&#x3092;JSON&#x3068;&#x3057;&#x3066;&#x30D1;&#x30FC;&#x30B9;&#x3057;&#x305F;Promise&#x30AA;&#x30D6;&#x30B8;&#x30A7;&#x30AF;&#x30C8;&#x3092;&#x8FD4;&#x3059;</span>
-            <span class="hljs-keyword">return</span> response.json();
-        }, error =&gt; {
-            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">&quot;&#x30CD;&#x30C3;&#x30C8;&#x30EF;&#x30FC;&#x30AF;&#x30A8;&#x30E9;&#x30FC;&quot;</span>);
-        });
-}
-</code></pre>
-<p>&#x4ECA;&#x56DE;&#x306E;&#x30E6;&#x30FC;&#x30B9;&#x30B1;&#x30FC;&#x30B9;&#x3067;&#x306F;Fetch&#x3078;&#x306E;&#x7F6E;&#x304D;&#x63DB;&#x3048;&#x304C;&#x53EF;&#x80FD;&#x3067;&#x3059;&#x304C;&#x3001;&#x30B3;&#x30FC;&#x30EB;&#x30D0;&#x30C3;&#x30AF;&#x95A2;&#x6570;&#x3092;Promise&#x3067;&#x30E9;&#x30C3;&#x30D7;&#x3059;&#x308B;&#x624B;&#x6CD5;&#x3092;&#x5B66;&#x3076;&#x305F;&#x3081;&#x306B;&#x3001;&#x3042;&#x3048;&#x3066;XHR&#x3092;&#x5229;&#x7528;&#x3057;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;
-&#x307E;&#x305F;&#x3001;&#x30D7;&#x30ED;&#x30B0;&#x30EC;&#x30B9;&#x30A4;&#x30D9;&#x30F3;&#x30C8;&#x3084;&#x30EA;&#x30AF;&#x30A8;&#x30B9;&#x30C8;&#x306E;&#x4E2D;&#x65AD;&#x306A;&#x3069;XHR&#x3067;&#x3057;&#x304B;&#x4F7F;&#x3048;&#x306A;&#x3044;&#x6A5F;&#x80FD;&#x3082;&#x3042;&#x308B;&#x305F;&#x3081;&#x3001;&#x5E38;&#x306B;Fetch&#x3067;&#x7F6E;&#x304D;&#x63DB;&#x3048;&#x3089;&#x308C;&#x308B;&#x308F;&#x3051;&#x3067;&#x306F;&#x3042;&#x308A;&#x307E;&#x305B;&#x3093;&#x3002;</p>
-<p>Fetch&#x306E;&#x8A73;&#x3057;&#x3044;&#x4F7F;&#x3044;&#x65B9;&#x306B;&#x3064;&#x3044;&#x3066;&#x306F;<a href="https://developer.mozilla.org/ja/docs/Web/API/Fetch_API/Using_Fetch" target="_blank">Fetch&#x306B;&#x95A2;&#x3059;&#x308B;&#x30C9;&#x30AD;&#x30E5;&#x30E1;&#x30F3;&#x30C8;</a>&#x3092;&#x53C2;&#x7167;&#x3057;&#x3066;&#x304F;&#x3060;&#x3055;&#x3044;&#x3002;</p>
-<h2 id="changeable-userid"><a name="changeable-userid" class="plugin-anchor" href="#changeable-userid"><i class="fa fa-link" aria-hidden="true"></i></a>&#x30E6;&#x30FC;&#x30B6;&#x30FC;ID&#x3092;&#x5909;&#x66F4;&#x3067;&#x304D;&#x308B;&#x3088;&#x3046;&#x306B;&#x3059;&#x308B; </h2>
-<p>&#x4ED5;&#x4E0A;&#x3052;&#x3068;&#x3057;&#x3066;&#x3001;&#x4ECA;&#x307E;&#x3067;<code>js-primer-example</code>&#x3067;&#x56FA;&#x5B9A;&#x3068;&#x3057;&#x3066;&#x3044;&#x305F;&#x30E6;&#x30FC;&#x30B6;&#x30FC;ID&#x3092;&#x5909;&#x66F4;&#x3067;&#x304D;&#x308B;&#x3088;&#x3046;&#x306B;&#x3057;&#x307E;&#x3057;&#x3087;&#x3046;&#x3002;
-index.html&#x306B;<code>&lt;input&gt;</code>&#x30BF;&#x30B0;&#x3092;&#x8FFD;&#x52A0;&#x3057;&#x3001;JavaScript&#x304B;&#x3089;&#x5024;&#x3092;&#x53D6;&#x5F97;&#x3059;&#x308B;&#x305F;&#x3081;&#x306B;<code>userId</code>&#x3068;&#x3044;&#x3046;ID&#x3092;&#x4ED8;&#x4E0E;&#x3057;&#x3066;&#x304A;&#x304D;&#x307E;&#x3059;&#x3002;</p>
-<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">&quot;en&quot;</span>&gt;</span>
+<pre><code class="lang-html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">html</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">"ja"</span>&gt;</span>
   <span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">&quot;utf-8&quot;</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">"utf-8"</span> /&gt;</span>
     <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>Ajax Example<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span>
   <span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
   <span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
     <span class="hljs-tag">&lt;<span class="hljs-name">h2</span>&gt;</span>GitHub User Info<span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span>
 
-    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;userId&quot;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;js-primer-example&quot;</span> /&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onclick</span>=<span class="hljs-string">&quot;main();&quot;</span>&gt;</span>Get user info<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"userId"</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text"</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"js-primer-example"</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onclick</span>=<span class="hljs-string">"main();"</span>&gt;</span>Get user info<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
 
-    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;result&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"result"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
 
-    <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;index.js&quot;</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"index.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
   <span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
 <span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span>
 </code></pre>
-<p>index.js&#x306B;&#x3082;<code>&lt;input&gt;</code>&#x30BF;&#x30B0;&#x304B;&#x3089;&#x5024;&#x3092;&#x53D7;&#x3051;&#x53D6;&#x308B;&#x305F;&#x3081;&#x306E;&#x51E6;&#x7406;&#x3092;&#x8FFD;&#x52A0;&#x3059;&#x308B;&#x3068;&#x3001;&#x6700;&#x7D42;&#x7684;&#x306B;&#x6B21;&#x306E;&#x3088;&#x3046;&#x306B;&#x306A;&#x308A;&#x307E;&#x3059;&#x3002;</p>
-<pre><code class="lang-javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">main</span>(<span class="hljs-params"></span>) </span>{
-    <span class="hljs-keyword">const</span> userId = getUserId();
-    getUserInfo(userId)
-        .then((userInfo) =&gt; createView(userInfo))
-        .then((view) =&gt; displayView(view))
-        .catch((error) =&gt; {
-            <span class="hljs-built_in">console</span>.error(<span class="hljs-string">`&#x30A8;&#x30E9;&#x30FC;&#x304C;&#x767A;&#x751F;&#x3057;&#x307E;&#x3057;&#x305F; (<span class="hljs-subst">${error}</span>)`</span>);
+<h2 id="error-handling"><a name="error-handling" class="plugin-anchor" href="#error-handling"><i class="fa fa-link" aria-hidden="true"></i></a>Promiseのエラーハンドリング </h2>
+<p>次に<code>fetchUserInfo</code>関数を変更し、Fetch APIの返り値でもあるPromiseオブジェクトを<code>return</code>します。
+この変更によって、<code>fetchUserInfo</code>関数を呼び出す<code>main</code>関数のほうで非同期処理の結果を扱えるようになります。
+Promiseチェーンの中で投げられたエラーは、Promiseの<code>catch</code>メソッドを使って一箇所で受け取れます。</p>
+<p>次のコードでは、<code>fetchUserInfo</code>関数から返されたPromiseオブジェクトを、<code>main</code>関数でエラーハンドリングしてログを出力します。
+<code>fetchUserInfo</code>関数の<code>catch</code>メソッドでハンドリングしていたエラーは、<code>main</code>関数の<code>catch</code>メソッドでハンドリングされます。
+一方、Responseの<code>ok</code>プロパティで判定していた400や500などのエラーレスポンスがそのままでは<code>main</code>関数でハンドリングできません。
+そこで、<code>Promise.reject</code>メソッドを使ってRejectedなPromiseを返し、Promiseチェーンをエラーの状態にします。
+Promiseチェーンがエラーとなるため、<code>main</code>関数の<code>catch</code>でハンドリングできます。</p>
+<pre><code class="lang-js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">main</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-title function_">fetchUserInfo</span>(<span class="hljs-string">"js-primer-example"</span>)
+        .<span class="hljs-title function_">catch</span>(<span class="hljs-function">(<span class="hljs-params">error</span>) =&gt;</span> {
+            <span class="hljs-comment">// Promiseチェーンの中で発生したエラーを受け取る</span>
+            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">error</span>(<span class="hljs-string">`エラーが発生しました (<span class="hljs-subst">${error}</span>)`</span>);
         });
 }
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getUserInfo</span>(<span class="hljs-params">userId</span>) </span>{
-    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>((resolve, reject) =&gt; {
-        <span class="hljs-keyword">const</span> request = <span class="hljs-keyword">new</span> XMLHttpRequest();
-        request.open(<span class="hljs-string">&quot;GET&quot;</span>, <span class="hljs-string">`https://api.github.com/users/<span class="hljs-subst">${userId}</span>`</span>);
-        request.addEventListener(<span class="hljs-string">&quot;load&quot;</span>, (event) =&gt; {
-            <span class="hljs-keyword">if</span> (event.target.status !== <span class="hljs-number">200</span>) {
-                reject(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">`<span class="hljs-subst">${event.target.status}</span>: <span class="hljs-subst">${event.target.statusText}</span>`</span>));
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">fetchUserInfo</span>(<span class="hljs-params">userId</span>) {
+    <span class="hljs-comment">// fetchの返り値のPromiseをreturnする</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-title function_">fetch</span>(<span class="hljs-string">`https://api.github.com/users/<span class="hljs-subst">${<span class="hljs-built_in">encodeURIComponent</span>(userId)}</span>`</span>)
+        .<span class="hljs-title function_">then</span>(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
+            <span class="hljs-keyword">if</span> (!response.<span class="hljs-property">ok</span>) {
+                <span class="hljs-comment">// エラーレスポンスからRejectedなPromiseを作成して返す</span>
+                <span class="hljs-keyword">return</span> <span class="hljs-title class_">Promise</span>.<span class="hljs-title function_">reject</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">`<span class="hljs-subst">${response.status}</span>: <span class="hljs-subst">${response.statusText}</span>`</span>));
+            } <span class="hljs-keyword">else</span> {
+                <span class="hljs-keyword">return</span> response.<span class="hljs-title function_">json</span>().<span class="hljs-title function_">then</span>(<span class="hljs-function"><span class="hljs-params">userInfo</span> =&gt;</span> {
+                    <span class="hljs-comment">// HTMLの組み立て</span>
+                    <span class="hljs-keyword">const</span> view = <span class="hljs-title function_">createView</span>(userInfo);
+                    <span class="hljs-comment">// HTMLの挿入</span>
+                    <span class="hljs-title function_">displayView</span>(view);
+                });
             }
-
-            <span class="hljs-keyword">const</span> userInfo = <span class="hljs-built_in">JSON</span>.parse(event.target.responseText);
-            resolve(userInfo);
+        })
+        .<span class="hljs-title function_">catch</span>(<span class="hljs-function"><span class="hljs-params">err</span> =&gt;</span> {
+            <span class="hljs-keyword">return</span> <span class="hljs-title class_">Promise</span>.<span class="hljs-title function_">reject</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">`Failed fetch user(id: <span class="hljs-subst">${userId}</span>) info`</span>, { <span class="hljs-attr">cause</span>: err }));
         });
-        request.addEventListener(<span class="hljs-string">&quot;error&quot;</span>, () =&gt; {
-            reject(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">&quot;&#x30CD;&#x30C3;&#x30C8;&#x30EF;&#x30FC;&#x30AF;&#x30A8;&#x30E9;&#x30FC;&quot;</span>));
+}
+</code></pre>
+<h3 id="refactor-promise-chain"><a name="refactor-promise-chain" class="plugin-anchor" href="#refactor-promise-chain"><i class="fa fa-link" aria-hidden="true"></i></a>Promiseチェーンのリファクタリング </h3>
+<!-- textlint-disable ja-technical-writing/sentence-length -->
+<p>現在の<code>fetchUserInfo</code>関数はデータの取得に加えて、HTMLの組み立て（<code>createView</code>）と表示（<code>displayView</code>）も行っています。
+<code>fetchUserInfo</code>関数に処理が集中して見通しが悪いため、<code>fetchUserInfo</code>関数はデータの取得だけを行うように変更します。
+併せて<code>main</code>関数で、データの取得（<code>fetchUserInfo</code>）、HTMLの組み立て（<code>createView</code>）と表示（<code>displayView</code>）という一連の流れをPromiseチェーンで行うように変更していきます。</p>
+<!-- textlint-enable ja-technical-writing/sentence-length -->
+<p>Promiseの<code>then</code>メソッドでつながるPromiseチェーンは、<code>then</code>に渡されたコールバック関数の返り値をそのまま次の<code>then</code>へ渡します。
+ただし、コールバック関数の返り値がPromiseである場合は、そのPromiseで解決された値を次の<code>then</code>に渡します。
+つまり、<code>then</code>のコールバック関数が同期処理から非同期処理に変わったとしても、次の<code>then</code>が受け取る値の型は変わらないということです。</p>
+<p>Promiseチェーンを使って処理を分割する利点は、同期処理と非同期処理を区別せずに連鎖できることです。
+一般に、同期的に書かれた処理を後から非同期処理へと変更するのは、全体を書き換える必要があるため難しいです。
+そのため、最初から処理を分けておき、処理を<code>then</code>を使ってつなぐことで、変更に強いコードを書けます。
+どのように処理を区切るかは、それぞれの関数が受け取る値の型と、返す値の型に注目するのがよいでしょう。
+Promiseチェーンで処理を分けることで、それぞれの処理が簡潔になりコードの見通しがよくなります。</p>
+<p><code>index.js</code>の<code>fetchUserInfo</code>関数と<code>main</code>関数を次のように書き換えます。
+まず、<code>fetchUserInfo</code>関数がResponseの<code>json</code>メソッドの返り値をそのまま返すように変更します。
+Responseの<code>json</code>メソッドの返り値はJSONオブジェクトで解決されるPromiseなので、次の<code>then</code>ではユーザー情報のJSONオブジェクトが渡されます。
+次に、<code>main</code>関数が<code>fetchUserInfo</code>関数のPromiseチェーンで、HTMLの組み立て（<code>createView</code>）と表示（<code>displayView</code>）を行うように変更します。</p>
+<pre><code class="lang-js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">main</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-title function_">fetchUserInfo</span>(<span class="hljs-string">"js-primer-example"</span>)
+        <span class="hljs-comment">// ここではJSONオブジェクトで解決されるPromise</span>
+        .<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">userInfo</span>) =&gt;</span> <span class="hljs-title function_">createView</span>(userInfo))
+        <span class="hljs-comment">// ここではHTML文字列で解決されるPromise</span>
+        .<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">view</span>) =&gt;</span> <span class="hljs-title function_">displayView</span>(view))
+        <span class="hljs-comment">// Promiseチェーンでエラーがあった場合はキャッチされる</span>
+        .<span class="hljs-title function_">catch</span>(<span class="hljs-function">(<span class="hljs-params">error</span>) =&gt;</span> {
+            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">error</span>(<span class="hljs-string">`エラーが発生しました (<span class="hljs-subst">${error}</span>)`</span>);
         });
-        request.send();
-    });
 }
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getUserId</span>(<span class="hljs-params"></span>) </span>{
-    <span class="hljs-keyword">const</span> value = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">&quot;userId&quot;</span>).value;
-    <span class="hljs-keyword">return</span> <span class="hljs-built_in">encodeURIComponent</span>(value);
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">fetchUserInfo</span>(<span class="hljs-params">userId</span>) {
+    <span class="hljs-keyword">return</span> <span class="hljs-title function_">fetch</span>(<span class="hljs-string">`https://api.github.com/users/<span class="hljs-subst">${<span class="hljs-built_in">encodeURIComponent</span>(userId)}</span>`</span>)
+        .<span class="hljs-title function_">then</span>(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
+            <span class="hljs-keyword">if</span> (!response.<span class="hljs-property">ok</span>) {
+                <span class="hljs-keyword">return</span> <span class="hljs-title class_">Promise</span>.<span class="hljs-title function_">reject</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">`<span class="hljs-subst">${response.status}</span>: <span class="hljs-subst">${response.statusText}</span>`</span>));
+            } <span class="hljs-keyword">else</span> {
+                <span class="hljs-comment">// JSONオブジェクトで解決されるPromiseを返す</span>
+                <span class="hljs-keyword">return</span> response.<span class="hljs-title function_">json</span>();
+            }
+        })
+        .<span class="hljs-title function_">catch</span>(<span class="hljs-function"><span class="hljs-params">err</span> =&gt;</span> {
+            <span class="hljs-keyword">return</span> <span class="hljs-title class_">Promise</span>.<span class="hljs-title function_">reject</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">`Failed fetch user(id: <span class="hljs-subst">${userId}</span>) info`</span>, { <span class="hljs-attr">cause</span>: err }));
+        });
+}
+</code></pre>
+<h3 id="rewrite-to-async-function"><a name="rewrite-to-async-function" class="plugin-anchor" href="#rewrite-to-async-function"><i class="fa fa-link" aria-hidden="true"></i></a>Async Functionへの置き換え </h3>
+<p>Promiseチェーンによって、Promiseの非同期処理と同じ見た目で同期処理を記述できるようになりました。
+さらにAsync Functionを使うと、同期処理と同じ見た目でPromiseの非同期処理を記述できるようになります。
+Promiseの<code>then</code>メソッドによるコールバック関数の入れ子がなくなり、手続き的で可読性が高いコードになります。
+また、エラーハンドリングも同期処理と同じく<code>try...catch</code>構文を使うことができます。</p>
+<p><code>main</code>関数を次のように書き換えましょう。まず関数宣言の前に<code>async</code>をつけてAsync Functionにしています。
+次に<code>fetchUserInfo</code>関数の呼び出しに<code>await</code>をつけます。
+これによりPromiseに解決されたJSONオブジェクトを<code>userInfo</code>変数に代入できます。</p>
+<p>もし<code>fetchUserInfo</code>関数の中で例外が投げられた場合は、<code>try...catch</code>構文でエラーハンドリングできます。
+このように、あらかじめ非同期処理の関数がPromiseを返すようにしておくと、Async Functionにリファクタリングしやすくなります。</p>
+<pre><code class="lang-js"><span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">main</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-keyword">try</span> {
+        <span class="hljs-keyword">const</span> userInfo = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetchUserInfo</span>(<span class="hljs-string">"js-primer-example"</span>);
+        <span class="hljs-keyword">const</span> view = <span class="hljs-title function_">createView</span>(userInfo);
+        <span class="hljs-title function_">displayView</span>(view);
+    } <span class="hljs-keyword">catch</span> (error) {
+        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">error</span>(<span class="hljs-string">`エラーが発生しました (<span class="hljs-subst">${error}</span>)`</span>);
+    }
+}
+</code></pre>
+<h2 id="changeable-userid"><a name="changeable-userid" class="plugin-anchor" href="#changeable-userid"><i class="fa fa-link" aria-hidden="true"></i></a>ユーザーIDを変更できるようにする </h2>
+<p>仕上げとして、今まで<code>js-primer-example</code>で固定としていたユーザーIDを変更できるようにしましょう。
+index.htmlに<code>&lt;input&gt;</code>タグを追加し、JavaScriptから値を取得するために<code>userId</code>というIDを付与しておきます。</p>
+<div class="code-filename-block">
+    <p class="code-filename">index.html</p>
+</div>
+
+<pre><code class="lang-html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">html</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">"ja"</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">"utf-8"</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>Ajax Example<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">h2</span>&gt;</span>GitHub User Info<span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span>
+
+    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"userId"</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text"</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"js-primer-example"</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onclick</span>=<span class="hljs-string">"main();"</span>&gt;</span>Get user info<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+
+    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"result"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+
+    <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"index.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span>
+</code></pre>
+<p>index.jsにも<code>&lt;input&gt;</code>タグから値を受け取るための処理を追加すると、最終的に次のようになります。</p>
+<div class="code-filename-block">
+    <p class="code-filename">index.js</p>
+</div>
+
+<pre><code class="lang-javascript"><span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">main</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-keyword">try</span> {
+        <span class="hljs-keyword">const</span> userId = <span class="hljs-title function_">getUserId</span>();
+        <span class="hljs-keyword">const</span> userInfo = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetchUserInfo</span>(userId);
+        <span class="hljs-keyword">const</span> view = <span class="hljs-title function_">createView</span>(userInfo);
+        <span class="hljs-title function_">displayView</span>(view);
+    } <span class="hljs-keyword">catch</span> (error) {
+        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">error</span>(<span class="hljs-string">`エラーが発生しました (<span class="hljs-subst">${error}</span>)`</span>);
+    }
 }
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createView</span>(<span class="hljs-params">userInfo</span>) </span>{
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">fetchUserInfo</span>(<span class="hljs-params">userId</span>) {
+    <span class="hljs-keyword">return</span> <span class="hljs-title function_">fetch</span>(<span class="hljs-string">`https://api.github.com/users/<span class="hljs-subst">${<span class="hljs-built_in">encodeURIComponent</span>(userId)}</span>`</span>)
+        .<span class="hljs-title function_">then</span>(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
+            <span class="hljs-keyword">if</span> (!response.<span class="hljs-property">ok</span>) {
+                <span class="hljs-keyword">return</span> <span class="hljs-title class_">Promise</span>.<span class="hljs-title function_">reject</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">`<span class="hljs-subst">${response.status}</span>: <span class="hljs-subst">${response.statusText}</span>`</span>));
+            } <span class="hljs-keyword">else</span> {
+                <span class="hljs-keyword">return</span> response.<span class="hljs-title function_">json</span>();
+            }
+        });
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">getUserId</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-keyword">return</span> <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">"userId"</span>).<span class="hljs-property">value</span>;
+}
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">createView</span>(<span class="hljs-params">userInfo</span>) {
     <span class="hljs-keyword">return</span> escapeHTML<span class="hljs-string">`
     &lt;h4&gt;<span class="hljs-subst">${userInfo.name}</span> (@<span class="hljs-subst">${userInfo.login}</span>)&lt;/h4&gt;
-    &lt;img src=&quot;<span class="hljs-subst">${userInfo.avatar_url}</span>&quot; alt=&quot;<span class="hljs-subst">${userInfo.login}</span>&quot; height=&quot;100&quot;&gt;
+    &lt;img src="<span class="hljs-subst">${userInfo.avatar_url}</span>" alt="<span class="hljs-subst">${userInfo.login}</span>" height="100"&gt;
     &lt;dl&gt;
         &lt;dt&gt;Location&lt;/dt&gt;
         &lt;dd&gt;<span class="hljs-subst">${userInfo.location}</span>&lt;/dd&gt;
@@ -1556,41 +1804,60 @@ index.html&#x306B;<code>&lt;input&gt;</code>&#x30BF;&#x30B0;&#x3092;&#x8FFD;&#x5
     `</span>;
 }
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">displayView</span>(<span class="hljs-params">view</span>) </span>{
-    <span class="hljs-keyword">const</span> result = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">&quot;result&quot;</span>);
-    result.innerHTML = view;
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">displayView</span>(<span class="hljs-params">view</span>) {
+    <span class="hljs-keyword">const</span> result = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">"result"</span>);
+    result.<span class="hljs-property">innerHTML</span> = view;
 }
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">escapeSpecialChars</span>(<span class="hljs-params">str</span>) </span>{
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">escapeSpecialChars</span>(<span class="hljs-params">str</span>) {
     <span class="hljs-keyword">return</span> str
-        .replace(<span class="hljs-regexp">/&amp;/g</span>, <span class="hljs-string">&quot;&amp;amp;&quot;</span>)
-        .replace(<span class="hljs-regexp">/&lt;/g</span>, <span class="hljs-string">&quot;&amp;lt;&quot;</span>)
-        .replace(<span class="hljs-regexp">/&gt;/g</span>, <span class="hljs-string">&quot;&amp;gt;&quot;</span>)
-        .replace(<span class="hljs-regexp">/&quot;/g</span>, <span class="hljs-string">&quot;&amp;quot;&quot;</span>)
-        .replace(<span class="hljs-regexp">/&apos;/g</span>, <span class="hljs-string">&quot;&amp;#039;&quot;</span>);
+        .<span class="hljs-title function_">replace</span>(<span class="hljs-regexp">/&amp;/g</span>, <span class="hljs-string">"&amp;amp;"</span>)
+        .<span class="hljs-title function_">replace</span>(<span class="hljs-regexp">/&lt;/g</span>, <span class="hljs-string">"&amp;lt;"</span>)
+        .<span class="hljs-title function_">replace</span>(<span class="hljs-regexp">/&gt;/g</span>, <span class="hljs-string">"&amp;gt;"</span>)
+        .<span class="hljs-title function_">replace</span>(<span class="hljs-regexp">/"/g</span>, <span class="hljs-string">"&amp;quot;"</span>)
+        .<span class="hljs-title function_">replace</span>(<span class="hljs-regexp">/'/g</span>, <span class="hljs-string">"&amp;#039;"</span>);
 }
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">escapeHTML</span>(<span class="hljs-params">strings, ...values</span>) </span>{
-    <span class="hljs-keyword">return</span> strings.reduce((result, string, i) =&gt; {
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">escapeHTML</span>(<span class="hljs-params">strings, ...values</span>) {
+    <span class="hljs-keyword">return</span> strings.<span class="hljs-title function_">reduce</span>(<span class="hljs-function">(<span class="hljs-params">result, str, i</span>) =&gt;</span> {
         <span class="hljs-keyword">const</span> value = values[i - <span class="hljs-number">1</span>];
-        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> value === <span class="hljs-string">&quot;string&quot;</span>) {
-            <span class="hljs-keyword">return</span> result + escapeSpecialChars(value) + string;
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> value === <span class="hljs-string">"string"</span>) {
+            <span class="hljs-keyword">return</span> result + <span class="hljs-title function_">escapeSpecialChars</span>(value) + str;
         } <span class="hljs-keyword">else</span> {
-            <span class="hljs-keyword">return</span> result + <span class="hljs-built_in">String</span>(value) + string;
+            <span class="hljs-keyword">return</span> result + <span class="hljs-title class_">String</span>(value) + str;
         }
     });
 }
 </code></pre>
-<p>&#x30A2;&#x30D7;&#x30EA;&#x30B1;&#x30FC;&#x30B7;&#x30E7;&#x30F3;&#x3092;&#x5B9F;&#x884C;&#x3059;&#x308B;&#x3068;&#x3001;&#x6B21;&#x306E;&#x3088;&#x3046;&#x306B;&#x306A;&#x308A;&#x307E;&#x3059;&#x3002;
-&#x8981;&#x4EF6;&#x3092;&#x6E80;&#x305F;&#x3059;&#x3053;&#x3068;&#x304C;&#x3067;&#x304D;&#x305F;&#x306E;&#x3067;&#x3001;&#x3053;&#x306E;&#x30A2;&#x30D7;&#x30EA;&#x30B1;&#x30FC;&#x30B7;&#x30E7;&#x30F3;&#x306F;&#x3053;&#x308C;&#x3067;&#x5B8C;&#x6210;&#x3067;&#x3059;&#x3002;</p>
-<p><img src="img/fig-1.png" alt="&#x5B8C;&#x6210;&#x3057;&#x305F;&#x30A2;&#x30D7;&#x30EA;&#x30B1;&#x30FC;&#x30B7;&#x30E7;&#x30F3;"></p>
-
+<p>アプリケーションを実行すると、次のようになります。
+要件を満たすことができたので、このアプリケーションはこれで完成です。</p>
+<p><img src="img/fig-1.png" alt="完成したアプリケーション"></img></p>
+<h2 id="section-checklist"><a name="section-checklist" class="plugin-anchor" href="#section-checklist"><i class="fa fa-link" aria-hidden="true"></i></a>このセクションのチェックリスト </h2>
+<ul>
+<li>HTMLの組み立てと表示の処理を<code>createView</code>関数と<code>displayView</code>関数に分離した</li>
+<li><code>main</code>関数を宣言し、<code>fetchUserInfo</code>関数が返すPromiseのエラーハンドリングを行った</li>
+<li>Promiseチェーンを使って<code>fetchUserInfo</code>関数をリファクタリングした</li>
+<li><a href="../../../basic/async/#async-function">Async Function</a> を使って<code>main</code>関数をリファクタリングした</li>
+<li><code>index.html</code>に<code>&lt;input&gt;</code>タグを追加し、<code>getUserId</code>関数でユーザーIDを取得した</li>
+</ul>
+<p>この章で作成したアプリは次のURLで確認できます。</p>
+<ul>
+<li><a href="https://jsprimer.net/use-case/ajaxapp/promise/example/" target="_blank">https://jsprimer.net/use-case/ajaxapp/promise/example/</a></li>
+</ul>
+<!-- sandpackの問題でindex.jsがscriptタグとは異なる読み方がされ、globalに関数が追加されない。そのためappendCodeでglobalThisに関数を追加する -->
+<!-- sandpack:{"files":{"/index.js":{"code":"async function main() {\n    try {\n        const userId = getUserId();\n        const userInfo = await fetchUserInfo(userId);\n        const view = createView(userInfo);\n        displayView(view);\n    } catch (error) {\n        console.error(`エラーが発生しました (${error})`);\n    }\n}\n\nfunction fetchUserInfo(userId) {\n    return fetch(`https://api.github.com/users/${encodeURIComponent(userId)}`)\n        .then(response => {\n            if (!response.ok) {\n                return Promise.reject(new Error(`${response.status}: ${response.statusText}`));\n            } else {\n                return response.json();\n            }\n        });\n}\n\nfunction getUserId() {\n    return document.getElementById(\"userId\").value;\n}\n\nfunction createView(userInfo) {\n    return escapeHTML`\n    <h4>${userInfo.name} (@${userInfo.login})</h4>\n    <img src=\"${userInfo.avatar_url}\" alt=\"${userInfo.login}\" height=\"100\">\n    <dl>\n        <dt>Location</dt>\n        <dd>${userInfo.location}</dd>\n        <dt>Repositories</dt>\n        <dd>${userInfo.public_repos}</dd>\n    </dl>\n    `;\n}\n\nfunction displayView(view) {\n    const result = document.getElementById(\"result\");\n    result.innerHTML = view;\n}\n\nfunction escapeSpecialChars(str) {\n    return str\n        .replace(/&/g, \"&amp;\")\n        .replace(/</g, \"&lt;\")\n        .replace(/>/g, \"&gt;\")\n        .replace(/\"/g, \"&quot;\")\n        .replace(/'/g, \"&#039;\");\n}\n\nfunction escapeHTML(strings, ...values) {\n    return strings.reduce((result, str, i) => {\n        const value = values[i - 1];\n        if (typeof value === \"string\") {\n            return result + escapeSpecialChars(value) + str;\n        } else {\n            return result + String(value) + str;\n        }\n    });\n}\n/* この行は本編とは無関係であるため無視してください。 */ window.main = main;"},"/index.html":{"active":true,"code":"<!DOCTYPE html>\n<html lang=\"ja\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <title>Ajax Example</title>\n  </head>\n  <body>\n    <h2>GitHub User Info</h2>\n\n    <input id=\"userId\" type=\"text\" value=\"js-primer-example\" />\n    <button onclick=\"main();\">Get user info</button>\n\n    <div id=\"result\"></div>\n\n    <script src=\"index.js\"></script>\n  </body>\n</html>\n"},"/example/index.js":{"code":"/* このファイルは本編とは無関係のファイルなので無視してください。 本編のindex.jsは一つ上のディレクトリにあります */","hidden":true}},"entry":"/index.js","main":"/index.js","environment":"static","template":"vanilla","options":{"showLineNumbers":true,"editorHeight":550,"showConsole":true,"showConsoleButton":true},"honkitSettings":{"isOpen":true,"hideExitButton":true}} -->
+</body></html>
                                 
+
                                 </section>
                             
                         </div>
                     </div>
                 
+<footer class="book_footer">
+    <p>Copyright (c) 2016-present <a href="https://github.com/asciidwango/js-primer" target="_blank">jsprimer project</a></p>
+</footer>
+
             </div>
 
             
@@ -1611,21 +1878,61 @@ index.html&#x306B;<code>&lt;input&gt;</code>&#x30BF;&#x30B0;&#x3092;&#x8FFD;&#x5
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"author":"laco","title":"Promiseを活用する","level":"1.6.3.4","depth":3,"next":{"title":"Node.jsでCLIアプリ","level":"1.6.4","depth":2,"path":"use-case/nodecli/README.md","ref":"./use-case/nodecli/README.md","articles":[{"title":"Node.jsでHello World","level":"1.6.4.1","depth":3,"path":"use-case/nodecli/helloworld/README.md","ref":"./use-case/nodecli/helloworld/README.md","articles":[]},{"title":"コマンドライン引数を処理する","level":"1.6.4.2","depth":3,"path":"use-case/nodecli/argument-parse/README.md","ref":"./use-case/nodecli/argument-parse/README.md","articles":[]},{"title":"ファイルを読み込む","level":"1.6.4.3","depth":3,"path":"use-case/nodecli/read-file/README.md","ref":"./use-case/nodecli/read-file/README.md","articles":[]},{"title":"MarkdownをHTMLに変換する","level":"1.6.4.4","depth":3,"path":"use-case/nodecli/md-to-html/README.md","ref":"./use-case/nodecli/md-to-html/README.md","articles":[]},{"title":"ユニットテストを記述する","level":"1.6.4.5","depth":3,"path":"use-case/nodecli/refactor-and-unittest/README.md","ref":"./use-case/nodecli/refactor-and-unittest/README.md","articles":[]}]},"previous":{"title":"データを表示する","level":"1.6.3.3","depth":3,"path":"use-case/ajaxapp/display/README.md","ref":"./use-case/ajaxapp/display/README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-search","-lunr","page-toc-button","include-codeblock","anchors","canonical-link","ga","js-console","github-issue-feedback","todo"],"root":"./source/","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"docSearch":{"apiKey":"fd28ebaba94be0c39fb9fa1b2fed4f23","index":"asciidwango"},"github-issue-feedback":{"repo":"asciidwango/js-primer"},"todo":{},"fontsettings":{"theme":"white","family":"sans","size":2},"js-console":{},"canonical-link":{"baseURL":"https://jsprimer.net"},"highlight":{},"page-toc-button":{"maxTocDepth":2,"minTocSize":2},"ga":{"configuration":"auto","token":"UA-2184335-18"},"include-codeblock":{"check":false,"edit":false,"lang":"","fixlang":false,"template":"./resources/gitbook-plugin-include-codeblock.hbs","theme":"chrome","unindent":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"edit-link":{"base":"https://github.com/asciidwango/js-primer/edit/master/source/","label":"Edit"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"anchors":{}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"index.md","glossary":"GLOSSARY.md","summary":"README.md"},"variables":{"esversion":"2018","console":"<a class=\"gitbook-plugin-js-console\" aria-hidden=\"true\"></a>"},"title":"JavaScriptの入門書 #jsprimer","gitbook":">=3.0.0","description":"この書籍はES2015以降をベースとしたJavaScript入門書となる予定"},"file":{"path":"use-case/ajaxapp/promise/README.md","mtime":"2019-01-08T09:00:37.393Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-01-08T09:01:51.003Z"},"basePath":"../../..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"author":"laco","description":"Promiseを活用し、ソースコードの整理とエラーハンドリングを行います。","sponsors":[],"title":"Promiseを活用する","level":"1.4.2.4","depth":3,"next":{"title":"Node.jsでCLIアプリ","level":"1.4.3","depth":2,"path":"use-case/nodecli/README.md","ref":"./use-case/nodecli/README.md","articles":[{"title":"Node.jsでHello World","level":"1.4.3.1","depth":3,"path":"use-case/nodecli/helloworld/README.md","ref":"./use-case/nodecli/helloworld/README.md","articles":[]},{"title":"コマンドライン引数を処理する","level":"1.4.3.2","depth":3,"path":"use-case/nodecli/argument-parse/README.md","ref":"./use-case/nodecli/argument-parse/README.md","articles":[]},{"title":"ファイルを読み込む","level":"1.4.3.3","depth":3,"path":"use-case/nodecli/read-file/README.md","ref":"./use-case/nodecli/read-file/README.md","articles":[]},{"title":"MarkdownをHTMLに変換する","level":"1.4.3.4","depth":3,"path":"use-case/nodecli/md-to-html/README.md","ref":"./use-case/nodecli/md-to-html/README.md","articles":[]},{"title":"ユニットテストを記述する","level":"1.4.3.5","depth":3,"path":"use-case/nodecli/refactor-and-unittest/README.md","ref":"./use-case/nodecli/refactor-and-unittest/README.md","articles":[]}]},"previous":{"title":"データを表示する","level":"1.4.2.3","depth":3,"path":"use-case/ajaxapp/display/README.md","ref":"./use-case/ajaxapp/display/README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-search","-lunr","page-toc-button","include-codeblock","anchors","canonical-link","js-console","github-issue-feedback","sandpack"],"root":"./source/","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"docSearch":{"index":"83I8JIFICQ","apiKey":"9169ce4cd84fcf2376f29d9585c89254"},"github-issue-feedback":{"repo":"asciidwango/js-primer","label":"問題を報告する"},"fontsettings":{"theme":"white","family":"sans","size":2},"js-console":{},"canonical-link":{"baseURL":"https://jsprimer.net"},"highlight":{},"page-toc-button":{"maxTocDepth":2,"minTocSize":2},"include-codeblock":{"check":false,"edit":false,"lang":"","fixlang":false,"template":"./resources/gitbook-plugin-include-codeblock.hbs","theme":"chrome","unindent":false},"sandpack":{},"edit-link":{"base":"https://github.com/asciidwango/js-primer/edit/master/source/","label":"Edit"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"anchors":{}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"IPAexMincho","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"index.md","glossary":"GLOSSARY.md","summary":"README.md"},"variables":{"esversion":"2024","nodeversion":"22.7.0","npmversion":"10.8.2","triplebackticks":"```","console":"<a class=\"gitbook-plugin-js-console\" aria-hidden=\"true\"></a>"},"title":"JavaScript Primer #jsprimer","gitbook":">=3.0.0","description":"JavaScriptの基本的な書き方からアプリケーションの作成などのユースケースを学ぶための入門書です"},"file":{"path":"use-case/ajaxapp/promise/README.md","mtime":"2025-01-01T08:47:03.418Z","type":"markdown"},"gitbook":{"version":"6.0.2","time":"2025-01-01T08:47:22.257Z"},"basePath":"../../..","book":{"language":""}});
         });
     </script>
 </div>
 
         
+    <noscript>
+        <style>
+            .honkit-cloak {
+                display: block !important;
+            }
+        </style>
+    </noscript>
+    <script>
+        // Restore sidebar state as critical path for prevent layout shift
+        function __init__getSidebarState(defaultValue){
+            var baseKey = "";
+            var key = baseKey + ":sidebar";
+            try {
+                var value = localStorage[key];
+                if (value === undefined) {
+                    return defaultValue;
+                }
+                var parsed = JSON.parse(value);
+                return parsed == null ? defaultValue : parsed;
+            } catch (e) {
+                return defaultValue;
+            }
+        }
+        function __init__restoreLastSidebarState() {
+            var isMobile = window.matchMedia("(max-width: 600px)").matches;
+            if (isMobile) {
+                // Init last state if not mobile
+                return;
+            }
+            var sidebarState = __init__getSidebarState(true);
+            var book = document.querySelector(".book");
+            // Show sidebar if it enabled
+            if (sidebarState && book) {
+                book.classList.add("without-animation", "with-summary");
+            }
+        }
+
+        try {
+            __init__restoreLastSidebarState();
+        } finally {
+            var book = document.querySelector(".book");
+            book.classList.remove("honkit-cloak");
+        }
+    </script>
     <script src="../../../gitbook/gitbook.js"></script>
     <script src="../../../gitbook/theme.js"></script>
     
         
         <script src="../../../gitbook/gitbook-plugin-page-toc-button/plugin.js"></script>
-        
-    
-        
-        <script src="../../../gitbook/gitbook-plugin-ga/plugin.js"></script>
         
     
         
@@ -1637,11 +1944,11 @@ index.html&#x306B;<code>&lt;input&gt;</code>&#x30BF;&#x30B0;&#x3092;&#x8FFD;&#x5
         
     
         
-        <script src="../../../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        <script src="../../../gitbook/honkit-plugin-sandpack/honkit-plugin-sandpack.js"></script>
         
     
         
-        <script src="../../../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        <script src="../../../gitbook/@honkit/honkit-plugin-fontsettings/fontsettings.js"></script>
         
     
 
